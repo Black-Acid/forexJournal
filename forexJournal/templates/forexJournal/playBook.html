@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Playbook{% endblock title %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'forexJournal/playBook.css' %}">
+{% endblock css_files %}
+
+{% block content %}
+    <main class="table">
+        <section class="header-items">
+            <h2>Strategies</h2>
+            <button type="button" id="modalsss">Add new Strategy</button>
+        </section>
+        <section class="table-body">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Strategy Name</th>
+                        <th>Trades</th>
+                        <th>Net PnL</th>
+                        <th>Win Rate</th>
+                        <th>Profit Factor</th>
+                        <th>Expectancy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for strategy in strategies %}
+                        <tr>
+                            <td>{{ strategy.strategy_name}}</td>
+                            <td>{{ strategy.trade_count}}</td>
+                            <td>{{ strategy.total_pnl }}</td>
+                            <td>76%</td>
+                            <td>1.87</td>
+                            <td>$2,083</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        <div class="strategy-modal hidden" id="page">
+            <button class="close-modal">&times;</button>
+            <div class="container">
+                <div class="form-box">
+                    <div class="progress">
+                        <div class="logo"><span>Well</span>done</div>
+                        <ul class="progress-steps">
+                            <li class="step active">
+                                <span>1</span>
+                                <p>Basics<br><span>Few secs to complete</span></p>
+                            </li>
+                            <li class="step">
+                                <span>2</span>
+                                <p>Core Content<br><span>Few secs to complete</span></p>
+                            </li>
+                            <li class="step">
+                                <span>3</span>
+                                <p>SCC<br><span>Few secs to complete</span></p>
+                            </li>
+                        </ul>
+                    </div>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <div class="form-one form-step active">
+                            <div class="bg-svg"></div>
+                            <h2>Basic details</h2>
+                            <p>Please Enter the following details</p>
+                            <div>
+                                <label>Strategy Name</label>
+                                <input type="text"  name="Strategy-name" placeholder="e.g. Inversed FVG">
+                            </div>
+                            <div>
+                                <label>Indicators</label>
+                                <input type="text" name="indicators"   placeholder="e.g. RSI, Moving Averages, MACD">
+                            </div>
+                            <div>
+                                <label>Time-Frame</label>
+                                <input type="text" name="time-frame" placeholder="e.g.30mins, 1hr, 4hrs, Daily">
+                            </div>
+                            <div>
+                                <label>Risk to Reward</label>
+                                <input type="text" name="risk-reward" placeholder="e.g. 1:3 per every trade minimum">
+                            </div>
+                        </div>
+                        <div class="form-two form-step">
+                            <div class="bg-svg"></div>
+                            <h2>Core-Details</h2>
+                            <div>
+                                <label>Description</label>
+                                <textarea name="Description" id="core-strategy"  placeholder="
+                                describe your strategy here"></textarea>
+                            </div>
+                            <div>
+                                <label>Entry criteria</label>
+                                <textarea name="Entry-criteria" id="Entry" placeholder="
+                                Write down your Entry rules"></textarea>
+                            </div>
+                            <div>
+                                <label>Exit criteria</label>
+                                <textarea name="Exit-criteria" id="Exit"  placeholder="
+                                Write down your exit rules here"></textarea>
+                            </div>
+                            <div class="checkbox">
+                                <label>Market Conditions</label>
+                                <div>
+                                    <label for="trending">Trending</label>
+                                    <input type="checkbox" id="trending" name="market_conditions" value="trending">
+                                </div>
+                                <div>
+                                    <label for="ranging">Ranging</label>
+                                    <input type="checkbox" id="ranging" name="market_conditions" value="ranging">
+                                </div>
+                                <div>
+                                    <label for="volatile">Volatile</label>
+                                    <input type="checkbox" id="volatile" name="market_conditions" value="volatile">
+                                </div>
+                                {% comment %} <select id="market_conditions" name="market_conditions" multiple required>
+                                    <option value="trending">Trending</option>
+                                    <option value="ranging">Ranging</option>
+                                    <option value="volatile">Volatile</option>
+                                </select> {% endcomment %}
+                            </div>
+                        </div>
+                        <div class="form-three form-step">
+                            <div class="bg-svg"></div>
+                            <h2>Sub core-content</h2>
+                            <div>
+                                <label>Rules to follow</label>
+                                <textarea name="Rules-to-follow" id="rules" ></textarea>
+                            </div>
+                            <div>
+                                <label>Risk Management</label>
+                                <textarea name="Risk-management" id="Risk-management" ></textarea>
+                            </div>
+                            <div>
+                                <label>Dollar value of risk</label>
+                                <input type="text"  name="dollar-value"    placeholder="Dollar value of what you plan to risk oer trade">
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn-prev" disabled>back</button>
+                            <button type="button" class="btn-next">Next Step</button>
+                            <button type="submit" class="btn-submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+    <script src="{% static 'playBook.js' %}"></script>
+{% endblock content %} 

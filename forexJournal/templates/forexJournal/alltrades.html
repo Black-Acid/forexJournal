@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Journal{% endblock title %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'forexJournal/alltrades.css' %}">
+{% endblock css_files %}
+
+{% block content %}
+    <div class="calender-container">
+        <div id="calendar"></div>
+    </div>
+    <div class="modal-overlay hidden" id="overlay"></div>
+
+    <div class="hidden" id="trades-modal">
+        <div class="modal-header">
+            <div class="descriptives">
+                <h2 id="modal-date">Mon, Aug 15,2024</h2>
+                <h2><span>Net PnL $<span id="Net-Pnl">$102.42</span></span></h2>
+            </div>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div>
+            <div class="menus">
+                <h2>Total trades: <span id="total-trades">0</span></h2>
+                <h2>Winners: <span id="winners"></span></h2>
+                <h2>Gross PnL: $ <span id="pnl">102.42</span> </h2>
+                <h2>Commissions: $0.00 </h2>
+            </div>
+        </div>
+        <div class="table-box">
+            <table class="my-table">
+                <tr class="rows">
+                    <th>Instrument</th>
+                    <th>Open time</th>
+                    <th>Position</th>
+                    <th>PnL</th>
+                    <th>Net ROI</th>
+                    <th>Realised R-Multiple</th>
+                    <th>Strategy</th>
+                </tr>
+                <tbody id="table-body">
+
+                </tbody>
+                {% comment %} <tr>
+                    <td>GBPUSD</td>
+                    <td>8:51 am</td>
+                    <td>BUY</td>
+                    <td>$25.67</td>
+                    <td>2.44</td>
+                    <td> - </td>
+                    <td> - </td>
+                </tr>
+                <tr>
+                    <td>XAUUSD</td>
+                    <td>10:51 am</td>
+                    <td>BUY</td>
+                    <td>$75.67</td>
+                    <td>3.44</td>
+                    <td> - </td>
+                    <td> - </td>
+                </tr> {% endcomment %}
+            </table>
+        </div>
+        <div class="detail-box">
+            <button type="button">Cancel</button>
+            <button type="button" id="view-details-button">View Details</button>
+        </div>
+    </div>
+
+
+
+
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+    <script src="{% static 'calender.js' %}"></script>
+{% endblock content %}

@@ -1,0 +1,217 @@
+
+
+body {
+    overflow: hidden; /* This will remove any scrolling */
+    height: 100vh; /* Make the body exactly the height of the viewport */
+}
+
+
+#first-part{
+    width: 15rem;
+    padding: 1rem;
+    height: 85vh;
+    border-right: 1px solid white;
+}
+
+
+/* FullCalendar main container */
+#calendar {
+    width: 100%; /* Make the calendar take full width */
+    overflow: hidden;
+    border: none;
+}
+
+/* Container for the calendar */
+.calender-container {
+    display: flex; /* Ensure flexbox layout */
+    justify-content: center; /* Center the calendar */
+    margin-right: 2.5rem;
+    overflow: hidden; /* Prevent overflow issues */
+    border: none;
+}
+
+/* Style for day cells */
+.fc-daygrid-day {
+    display: inline-block; 
+    width: calc(100% / 7 - 10px); 
+    height: 6.5rem;
+    margin: 2px; 
+    background: var(--divBack); 
+    box-sizing: border-box; 
+    border-radius: 5px;
+    border: none;
+}
+
+.fc-scroller-harness {
+    display: flex; /* Use flex to keep headers aligned */
+    justify-content: center; /* Center align the header text */
+    /* height: 60px;  */
+    width: 100%; /* Same width as day cells without margin */
+    /* padding: 10px;  */
+    /* background: red; */
+    box-sizing: border-box; /* Include padding in width */
+    font-size: 1rem; /* Increase font size for better visibility */
+    overflow: hidden;
+    
+}
+
+/* Prevent wrapping in the header */
+.fc-daygrid {
+    white-space: nowrap; /* Prevent wrapping of headers */
+}
+
+
+.fc td,
+.fc th {
+    border: none; 
+}
+
+
+.fc-toolbar,
+.fc-scrollgrid,
+.fc-scrollgrid-section-header {
+    border: none !important; 
+}
+
+
+
+.hidden{
+    display: none;
+}
+
+#trades-modal{
+    position: absolute;
+    top: 21%;
+    left: 15%;
+    width: 70%;
+    background: white;
+    height: 50%;
+    padding: 1rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    color: black;
+    border-radius: 5px;
+    z-index: 10;
+    border: 3px solid var(--selectedColor);
+}
+
+.modal-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    /* background: blue; */
+}
+
+.modal-header button{
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.modal-header h2{
+    font-size: 1.5rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.modal-header span{
+    color: rgb(0, 229, 0);
+}
+
+.descriptives{
+    display: flex;
+    justify-content: space-between;
+    /* background: red; */
+    width: 24rem;
+}
+
+.my-table{
+    width: 100%;
+    text-align: left;
+    height: 10rem;
+    border-collapse: collapse;
+    margin-top: 2rem;
+  
+}
+
+.rows{
+    border-bottom: 0.5px solid #b0b0b0;
+}
+
+.rows th{
+    border-bottom: 0.5px solid #b0b0b0;
+    font-size: 1.2rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    background-color: #d7f5d8;
+    padding-left: 1rem;
+    border-radius: 5px;
+}
+
+.my-table td{
+    border-bottom: 0.5px solid #b0b0b0;
+    font-size: 1.1rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    padding-left: 1rem;
+}
+
+.menus{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: -2rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal; 
+    font-size: 0.8rem;
+}
+
+
+.my-table tr:hover{
+    background: #d7f5d8;
+    border-radius: 5px;
+}
+
+.detail-box{
+    margin-left: 56rem;
+    margin-top: 2.5rem;
+    width: 25%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.detail-box button{
+    height: 3rem;
+    width: 9rem;
+    font-size: 1rem;
+    background: #d7f5d8;
+    border-radius: 5px;
+    border: none;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.detail-box button:hover{
+    background: rgb(109, 249, 109);
+    transform: scale(1.05);  /* Slightly increases the size */
+}
+
+.modal-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
+    backdrop-filter: blur(8px); /* Blurring the background */
+    z-index: 5;
+}
+
+
+tr.selected {
+    background-color: rgb(109, 249, 109);  /* Light grey background */
+    color: white;  /* Darker text color */
+}

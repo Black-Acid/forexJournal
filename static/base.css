@@ -1,0 +1,89 @@
+:root{
+    --main-color:#000101;
+    --divBack: hsl(207, 35%, 10%);
+    --selectedColor: #B0E94E;
+    --selectedColor2: #efef05;
+}
+
+body{
+    color: white;
+    background: var(--main-color);
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 4fr ;
+}
+
+#first-part{
+    width: 14rem;
+    padding: 1rem;
+    height: 100vh;
+    
+}
+
+#profile{
+    display: flex;
+    align-items: center;
+    padding-left: 1rem;
+}
+
+#profile img{
+    margin-right: 2rem;
+    object-fit: cover;
+    object-position: top;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--selectedColor);
+}
+
+#profile h2{
+    font-size: 1.2rem;
+    margin-left: -1.5rem;
+}
+
+.new-trade{
+    width: 70%;
+    height: 2.5rem;
+    margin-left: 1rem;
+    margin-top: 1rem;
+    background-color: var(--selectedColor);
+    font-size: 1rem;
+    border-radius: 7px;
+}
+
+
+
+#first-part ul{
+    list-style: none;
+    margin-top: 2rem;
+
+    height: 15rem;
+}
+
+#first-part li{
+    margin-top: 2rem;
+}
+
+#first-part a{
+    text-decoration: none;
+    color: rgb(69, 55, 55);
+    font-size: 1.2rem;
+    padding-left: 10px;
+}
+
+li .active{
+    border: 1px solid black;
+    background: var(--selectedColor);
+    padding: 0.5rem;
+    border-radius: 5px;
+}
+
+#first-part ul a:hover{
+    border: 1px solid black;
+    background: var(--selectedColor);
+    padding: 0.5rem;
+    border-radius: 5px;  
+    transform: scale(1.05); /* Slightly enlarge the link */
+    transition: all 0.3s ease;   
+}
+  

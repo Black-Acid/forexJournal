@@ -1,0 +1,224 @@
+/* Base CSS */
+body {
+    height: 100%;
+    /* overflow: hidden; */
+}
+
+.whole-body {
+    margin-left: 20rem;
+    width: 78vw;
+}
+
+#first-part {
+    width: 15rem;
+    padding: 1rem;
+    min-height: 100%;
+    border-right: 0.0625rem solid white; /* 1px = 0.0625rem */
+    position: fixed;
+}
+
+#trade-details-container {
+    width: 100%;
+    margin-top: 2rem;
+    margin-right: 5rem;
+    display: grid;
+    grid-template-columns: 3fr 6fr; /* 1.5 parts for details, 6 parts for the chart */
+    height: 90vh;
+    overflow: hidden;
+}
+
+.trade-details {
+    background-color: #e7f9dc;
+    padding: 1rem;
+    color: black;
+    height: 95.6%;
+    border-radius: 0.3125rem; /* 5px = 0.3125rem */
+    margin-top: -1rem;
+}
+
+.forex-chart {
+    background-color: lightgray;
+    margin: 0 !important;
+    box-shadow: none;
+    background: yellow;
+    height: 50rem; /* 800px = 50rem */
+    border-radius: 0.3125rem; /* 5px = 0.3125rem */
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+}
+
+#asset {
+    font-size: 1.7rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+#date {
+    margin-top: -1.3rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+#order_type {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    margin-top: -1.3rem;
+    color: rgb(91, 133, 29);
+}
+
+.property, .value {
+    font-size: 1.2rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.first {
+    font-size: 1.5rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    color: rgb(1, 149, 1);
+}
+
+#toolbar {
+    border: 0.0625rem solid #ccc; /* 1px = 0.0625rem */
+    background-color: #f3f3f3;
+    margin-bottom: 0.625rem; /* 10px = 0.625rem */
+}
+
+#editor {
+    height: 18.75rem; /* 300px = 18.75rem */
+    border: 0.0625rem solid white; /* 1px = 0.0625rem */
+    font-size: 1.3rem;
+    border-radius: 0.3125rem; /* 5px = 0.3125rem */
+    margin-top: 0.5rem;
+}
+
+.ql-toolbar {
+    margin-top: 2rem;
+    border-radius: 0.3125rem; /* 5px = 0.3125rem */
+}
+
+.value input {
+    width: 5rem;
+    margin-left: 0.5rem;
+    height: 1.7rem;
+    border-radius: 0.3125rem; /* 5px = 0.3125rem */
+    background: transparent;
+    border: 0.0625rem solid black; /* 1px = 0.0625rem */
+    padding-left: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.value select {
+    padding: 0.4rem;
+    border-radius: 0.3125rem; /* 5px = 0.3125rem */
+    font-size: 1rem;
+    background: transparent;
+}
+
+.trade-details button {
+    margin-top: 0.5rem;
+    margin-left: 10rem;
+    height: 2.5rem;
+    width: 6rem;
+    border-radius: 0.3125rem; /* 5px = 0.3125rem */
+    border: 0.0625rem solid var(--selectedColor); /* 1px = 0.0625rem */
+    background: var(--selectedColor);
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.trade-details button:hover {
+    transform: scale(1.1);
+}
+
+::-webkit-scrollbar {
+    width: 0.9375rem; /* 15px = 0.9375rem */
+}
+
+::-webkit-scrollbar-track {
+    background: #e7ffd1;
+    border-radius: 0.625rem; /* 10px = 0.625rem */
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(#39ff2b, #ff2222);
+    border-radius: 0.625rem; /* 10px = 0.625rem */
+}
+
+/* Media Queries */
+
+/* Small screens (max-width: 600px) */
+@media (max-width: 37.5rem) { /* 600px = 37.5rem */
+    #first-part {
+        width: 100%;
+        border-right: none;
+    }
+
+    #trade-details-container {
+        display: block;
+        height: auto;
+    }
+
+    .trade-details {
+        margin-top: 1rem;
+        width: 100%;
+    }
+
+    .forex-chart {
+        height: 25rem; /* 400px = 25rem */
+        margin-top: 1rem;
+    }
+
+    .trade-details button {
+        margin-left: 0;
+    }
+}
+
+/* Medium screens (601px to 900px) */
+@media (min-width: 37.5625rem) and (max-width: 56.25rem) { /* 601px = 37.5625rem, 900px = 56.25rem */
+    #first-part {
+        width: 10rem;
+    }
+
+    #trade-details-container {
+        grid-template-columns: 2fr 4fr;
+    }
+
+    .forex-chart {
+        height: 37.5rem; /* 600px = 37.5rem */
+    }
+
+    .trade-details button {
+        margin-left: 5rem;
+    }
+}
+
+/* Large screens (min-width: 901px) */
+@media (min-width: 56.3125rem) { /* 901px = 56.3125rem */
+    #first-part {
+        width: 15rem;
+    }
+
+    #trade-details-container {
+        grid-template-columns: 3fr 6fr;
+    }
+
+    .forex-chart {
+        height: 50rem;
+    }
+
+    .trade-details button {
+        margin-left: 10rem;
+    }
+}

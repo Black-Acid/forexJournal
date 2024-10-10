@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Journal{% endblock title %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'forexJournal/journal.css' %}">
+{% endblock css_files %}
+
+{% block content %}
+<div class="main-content">
+    <div>
+
+    </div>
+    <ul class="list">
+        {% for trade in trades %}
+            <li>
+                <div class="trade">
+                    <div class="bar"></div>
+                    <div class="items">
+                        <div class="heads">
+                            <h2>Trade Id {{ trade.ticket}}</h2>
+                            <div>
+                                <button type="button">See details</button>
+                                <button type="button">Hide</button>
+                            </div>
+                        </div>
+                        <div class="values">
+                            <h3 class="first">{{ trade.profit_usd }} <span>GU</span></h3>
+                            <h3 class="second">{{ trade.order_type}}</h3>
+                            <h3 class="third">Trade's PnL 0.00%</h3>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+    <script src="{% static 'journal.js' %}"></script>
+{% endblock content %}

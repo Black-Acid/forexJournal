@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'forexJournal/forex.css' %}">
+{% endblock  %}
+
+{% block title %}Journal{% endblock  %}
+
+{% block content %}
+    <section id="second-part">
+        <div class="overview">
+            <h1>Overview</h1>
+            <button class="btnAdd show-modal">Add a new trade</button>
+        </div>
+        <div class="modal hidden">
+            <div class="modal-header">
+                <h2>Choose files to upload</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form method="POST" enctype="multipart/form-data" action="">
+                {% csrf_token %}
+                <div class="upload-area">
+                    <label for="csvFile" class="custom-file-label">Choose Files</label>
+                    <input type="file" class="custom-file-input" id="csvFile" name="csv_file" onchange="updateLabel(this)">
+                    <p>Copy and paste or drag and drop your files here</p>
+               
+                </div>
+                <div class="import-url">
+                    <h3>Import from URL</h3>
+                    <input type="text" placeholder="Add file URL">
+                </div>
+                <div class="buttons">
+                    <button type="submit">Upload CSV</button>
+                    <button type="button">Cancel</button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-overlay hidden"></div>
+        <section id="top-widgets">
+            <div class="account">
+                <p>Gross Account balance</p>
+                <h2>${{ balance }}</h2>
+                <h3><span>+{{ percentageIncrease }}%</span> since last deposit</h3>
+            </div>
+            <div class="profit">
+                <p>PnL</p>
+                <h2>{{ profit }}</h2>
+                <h3><span>{{ profitable_trades }}</span> wining trades</h3>
+            </div>
+            <div class="factor">
+                <p>Profit factor</p>
+                {% if profit_factor > 1 %}
+                    <h2>{{ profit_factor }}</h2> 
+                    <h3><span>Great</span> system buddy</h3>
+                {% else %}
+                    <h2>{{ profit_factor }}</h2>
+                    <h3>keep <span>Improving</span> your system</h3>
+                {% endif %}
+            </div>
+            <div class="trades">
+                <p>Win Rate</p>
+                <h2>{{ win_rate }}%</h2>
+                <h3><span>{{ losing_trades }}</span> lost trades</h3>
+            </div>
+            <div class="trades">
+                <p>Total trades</p>
+                <h2>{{total_trades}}</h2>
+                <h3><span>+0.7%</span>vs last month</h3>
+            </div>
+        </section>
+        <section id="second-widgets">
+            <div class="chart">
+                <div class="header">
+                    <h1>Trades Overview</h1>
+                    <div class="heading">
+                        <img src="{% static 'forexJournal/images/money2.png' %}" alt="money">
+                        <div class="text">
+                            <p>Number of trades</p> 
+                            <h2>{{ total_trades}}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="line"></div>
+                <div class="child">
+                    <div class="charts-container">
+                        <canvas class="my-chart"></canvas>
+                    </div>
+
+                    <div class="charts-items">
+
+                        <div class="items">
+                            <div class="spec">
+                                <h3><span class="dot"></span>Healthy trades</h3>
+                                <p class="healthy">30</p>
+                            </div>
+                            <div class="spec">
+                                <h3><span class="dot2"></span>Lucky trades</h3>
+                                <p class="lucky">10</p>
+                            </div>
+                            <div class="spec">
+                                <h3><span class="dot3"></span>Good loss</h3>
+                                <p class="good_loss">8</p>
+                            </div>
+                            <div class="spec">
+                                <h3><span class="dot4"></span>bad trades</h3>
+                                <p class="bad">5</p>
+                            </div>
+                            <div class="spec">
+                                <h3><span class="dot5"></span>Missed trades</h3>
+                                <p class="missed">15</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="profitable win">
+                <div class="head">
+                    <img src="{% static 'forexJournal/images/profits.png' %}" alt="s">
+                    <p>Trade Expectancy</p>
+                </div>
+                <h2>{{ expectancy }}</h2>
+                <h3>Net Profit: <span>{{ profitable_value }}</span></h3>
+                <p><span>+0.7%</span> vrs last account</p>
+            </div>
+            <div class="profitable">
+                <div class="head">
+                    <img src="{% static 'forexJournal/images/losses.png' %}" alt="">
+                    <p>Average win/loss</p>
+                </div>
+                <h2>{{ average_win_ratio}}</h2>
+                <h3>Net Loss: <span>{{ losing_value }}</span></h3>
+                <p><span>-0.3%</span> vrs last account</p>
+            </div>
+            <div class="charts">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </section>
+        <section>
+            <h2>Recent Trades</h2>
+            <table>
+                <tr>
+                    <th>Instrument</th>
+                    <th>Date</th>
+                    <th>Entry Price</th>
+                    <th>Risk</th>
+                    <th>Potential Reward</th>
+                    <th>Strategy</th>
+                    <th>Risk to Reward Ratio</th>
+                    <th>Status</th>
+                    <th>trade Health</th> 
+                </tr>
+                <tr>
+                    <td contenteditable="true">GBPUSD</td>
+                    <td contenteditable="true">August, 28</td>
+                    <td contenteditable="true">1.32499</td>
+                    <td contenteditable="true">$50</td>
+                    <td contenteditable="true">$186</td>
+                    <td contenteditable="true">Inversed FVG</td>
+                    <td contenteditable="true">3.72</td>
+                    <td contenteditable="true">
+                        <select>
+                            <option value="Profitable">TP hit</option>
+                            <option value="Loss">Stopped Out</option>
+                            <option value="Break Even">Break Even</option>
+                        </select>
+                    </td>
+                    <th contenteditable="true">Good trade</th>
+                </tr>                
+                <tr>
+                    <td>GBPUSD</td>
+                    <td>August, 28</td>
+                    <td>1.32499</td>
+                    <td>$50</td>
+                    <td>$186</td>
+                    <td>Inversed FVG</td>
+                    <td>3.72</td>
+                    <td>TP hit</td>
+                    <th>Good trade</th>
+                </tr>                
+                <tr>
+                    <td>GBPUSD</td>
+                    <td>August, 28</td>
+                    <td>1.32499</td>
+                    <td>$50</td>
+                    <td>$186</td>
+                    <td>Inversed FVG</td>
+                    <td>3.72</td>
+                    <td>TP hit</td>
+                    <th>Good trade</th>
+                </tr>                
+            </table>
+        </section>
+    </section>
+    {% comment %} <section>
+        <div>
+            <h2>Notifications on Account</h2>
+
+        </div>
+        <div>
+            <h2>Trading Calender</h2>
+        </div>
+    </section> {% endcomment %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'script.js' %}"></script>
+
+{% endblock content %}

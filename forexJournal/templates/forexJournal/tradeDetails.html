@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'forexJournal/tradeDetails.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+{% endblock css_files %}
+
+{% block title %}Trade-details{% endblock title %}
+{% block content %} 
+    <div class="whole-body">
+        <div id="trade-details-container">
+            <div class="trade-details">
+                <h3 id="asset">{{ symbol }}</h3>
+                <h3 id="date">{{ opening_time }}</h3>
+                <h3 id="order_type">{{ order_type| title  }} at {{ lot_size }} lots </h3>
+                <div class="detail-row">
+                    <div  id="property"  class="property first">Net PnL</div>
+                    <div id="pnl"   class="value first">{{ profit_usd }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="property">Commisions and fees</div>
+                    <div class="value">${{ commission_usd}}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="property">Net ROI</div>
+                    <div class="value">{{ ROI }}%</div>
+                </div>
+                <div class="detail-row">
+                    <div class="property">Gross PnL</div>
+                    <div class="value">{{ profit_usd }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="property">Trade Duration</div>
+                    <div class="value">{{ duration_hours }}hrs {{ duration_mins}}mins {{ duration_secs}}s</div>
+                </div>
+                <div class="detail-row">
+                    <div class="property">Trade Risk</div>
+                    <div class="value">2%</div>
+                </div>
+                <div class="detail-row">
+                    <div class="property">Realized R Multiple</div>
+                    <div class="value">2.78</div>
+                </div>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div class="detail-row">
+                        <div class="property">Profit Target</div>
+                        <div class="value">
+                            $<input type="text" name="profit_target" 
+                                    value="{{ profit_target|default_if_none:'' }}" 
+                                    placeholder="100.00">
+                        </div>
+                    </div>
+        
+                    {% comment %} {% if profit_target %}
+                        <div class="detail-row">
+                            <div class="property">Profit target</div>
+                            <div class="value">${{ profit_target }}</div>
+                        </div>
+                    {% else %}
+                        <div class="detail-row">
+                            <div class="property">Profit target</div>
+                            <div class="value">$<input type="text" name="profit_target"  placeholder="100.00"></div>
+                        </div>
+                    {% endif %} {% endcomment %}
+                    
+                    <div class="detail-row">
+                        <div class="property">Stop loss</div>
+                        <div class="value">$<input type="text" name="stop_loss"  placeholder="25.00"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="property">Planned R Multiple</div>
+                        <div class="value"><input type="text" name="r_multiple"  placeholder="eg.3.2"></div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="property">Setups</div>
+                        <div class="value">
+                            <select id="strategy_choices" name="setup_choices">
+                                {% if strategy_used %}
+                                    <option value="" disabled selected>{{ strategy_used }}</option>
+                                {% else %}
+                                    <option value="" disabled selected>Please select a strategy</option>
+                                {% endif %}
+                                
+                                {% for strategy in strategies %}
+                                    {% if strategy.strategy_name != strategy_used %}
+                                        <option value="{{ strategy.strategy_name }}">{{ strategy.strategy_name }}</option>
+                                    {% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="property">Tags</div>
+                        <div class="value">
+                            <select id="choices" name="tag_choices">
+                                <option value="Healthy trade">Healthy trade</option>
+                                <option value="Bad trade">Bad trade</option>
+                                <option value="Healthy loss">healthy loss</option>
+                                <option value="Lucky trade">Lucky trade</option>
+                                <option value="Missed trade">Missed trade</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" name="other_details">Save</button>
+                </form>
+            </div>
+
+            <div class="forex-chart" id="forex-chart">
+                {% comment %}  {% endcomment %}
+            </div>
+        </div>
+        <!-- Create the editor container -->
+        <form action="" method="POST" id="quill-form">
+            {% csrf_token %}
+            <div id="editor">
+                
+            </div>
+            <input type="hidden" name="quill_content" id="quill_contents">
+            <button type="submit" name="submit_quill">Save Notes</button>
+        </form>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script  type="text/javascript" src="{% static 'tradeDetails.js' %}"></script>
+{% endblock content %}

@@ -1,0 +1,116 @@
+
+.main-content{
+    margin-left: 20rem;
+    width: 78vw;
+}
+
+#first-part{
+    width: 15rem;
+    padding: 1rem;
+    min-height: 100%;
+    border-right: 1px solid white;
+    position: fixed;
+}
+
+
+.trade{
+    /* margin-left: -1rem; */
+    height: 10rem;
+    padding: 0.8rem;
+    /* margin-top: 2rem; */
+    border: 0.5px solid greenyellow;
+    border-radius: 10px;
+    margin-right: 2rem;
+    display: flex;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.trade:hover{
+    transform: scale(1.1);
+}
+
+.heads{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.heads button{
+    padding: 0.7rem;
+    background: rgb(195, 233, 170);
+    border-radius: 5px;
+}
+
+.heads h2{
+    font-size: 1.3rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: bold;
+    font-style: normal;
+}
+
+.values{
+    margin-top: -1rem;
+}
+
+.values .first{
+    font-size: 2.5rem;
+    margin-top: -1rem;
+}
+
+.first span{
+    font-size: 1.2rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: bold;
+    font-style: normal;
+}
+
+.second{
+    margin-top: -2rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.third{
+    margin-top: -0.8rem;
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.bar{
+    height: 100%;
+    width: 0.4rem;
+    background: greenyellow;
+}
+
+.items{
+    width: 97%;
+    margin-left: 1rem;
+}
+
+.list{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-left: -2.5rem;
+    margin-top: 4rem;
+    list-style: none;
+}
+
+
+
+::-webkit-scrollbar{
+    width: 15px;
+}
+
+::-webkit-scrollbar-track{
+    background: #e7ffd1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb{
+    background: linear-gradient(#39ff2b, #ff2222);
+    border-radius: 10px;
+}
