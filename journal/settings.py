@@ -83,7 +83,7 @@ DATABASES = {
     }
 }
 
-DATABASES["default"] = dj_database_url.parse("postgresql://tradingjournal_xkkj_user:Ut8UnyDi6Cet2oiIRdROTvLKMZIxmXq4@dpg-cs4njdjtq21c73e29u7g-a.oregon-postgres.render.com/tradingjournal_xkkj")
+# DATABASES["default"] = dj_database_url.parse("postgresql://tradingjournal_xkkj_user:Ut8UnyDi6Cet2oiIRdROTvLKMZIxmXq4@dpg-cs4njdjtq21c73e29u7g-a.oregon-postgres.render.com/tradingjournal_xkkj")
 
 # postgresql://tradingjournal_xkkj_user:Ut8UnyDi6Cet2oiIRdROTvLKMZIxmXq4@dpg-cs4njdjtq21c73e29u7g-a.oregon-postgres.render.com/tradingjournal_xkkj
 

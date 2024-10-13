@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 import pandas as pd
 from .models import TradesModel, AccountBalance, ProcessedProfit, StrategyModel
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Q
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils import timezone
 from django.shortcuts import redirect
@@ -18,6 +18,23 @@ PATH = "forexJournal"
 PERCENT = 100
 ACCOUNT_BALANCE = apps.get_model("forexJournal", "AccountBalance")
 DEFAULT_BALANCE = ACCOUNT_BALANCE._meta.get_field("balance").default
+
+
+def calculateWinRate(profitableTrades, number_of_trades):
+    return (profitableTrades / number_of_trades) * PERCENT
+
+
+def calculateProfitFactor(profitable_value, losing_value):
+    if losing_value != 0:
+        return profitable_value / abs(losing_value)
+    return "N/A"
+
+
+def tradeExpectancy(win_rate, average_profit, average_loss):
+    win_rate_decimal = win_rate / 100
+    return (win_rate_decimal * average_profit) - ((1 - win_rate_decimal) * average_loss)
+    
+
 
 def forex(requests):
     account_balance, created = AccountBalance.objects.get_or_create(id=1)
@@ -105,7 +122,7 @@ def forex(requests):
                     margin_level=row['margin_level'],
                     close_reason=row['close_reason'],
                 ).save()
-        
+                
         amount = TradesModel.objects.aggregate(Sum("profit_usd"))
         total_amount_value = Decimal(amount["profit_usd__sum"] or 0.0)
         
@@ -151,7 +168,9 @@ def playBook(request):
     
     
     strategies_with_trade_count = StrategyModel.objects.annotate(trade_count=Count('tradesmodel'),
-        total_pnl=Sum('tradesmodel__profit_usd'))
+        total_pnl=Sum('tradesmodel__profit_usd'),
+        profitable_trade_count=Count('tradesmodel', filter=Q(tradesmodel__profit_usd__gt=0))
+    )
     
     
     
@@ -163,6 +182,8 @@ def playBook(request):
         # Append the trade_count to the strategy dictionary
         strategy['trade_count'] = matching_strategy.trade_count
         strategy['total_pnl'] = Money(matching_strategy.total_pnl or 0, "USD")
+        strategy["win_rate"] = calculateWinRate(matching_strategy.profitable_trade_count, matching_strategy.trade_count)
+        
         
         
     context = {
@@ -258,18 +279,18 @@ def trade_details(request, trade_id):
         trade_update = get_object_or_404(TradesModel, ticket=trade_id)
         if "submit_quill" in request.POST:
             quill_content = request.POST.get("quill_content", "nothing was passed")
-            print(quill_content)
+            trade_update.notes = quill_content
         elif "other_details" in request.POST:
             data = request.POST.dict()
             print(data)
-            
-            selected_tag = data.get("tag_choices") 
-            selected_strategy = data["setup_choices"]
-            selected_strategy_name = StrategyModel.objects.get(strategy_name=selected_strategy)
-            
-            trade_update.strategy = selected_strategy_name
-            trade_update.tags = selected_tag
-            print(selected_strategy_name)
+            if data.get("tag_choice"):
+                selected_tag = data.get("tag_choices") 
+            if data.get("setup_choices"):
+                selected_strategy = data["setup_choices"]
+                selected_strategy_name = StrategyModel.objects.get(strategy_name=selected_strategy)
+                trade_update.strategy = selected_strategy_name
+                trade_update.tags = selected_tag
+
             trade_update.save()
             print(trade_update)
             
