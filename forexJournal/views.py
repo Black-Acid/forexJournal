@@ -169,7 +169,9 @@ def playBook(request):
     
     strategies_with_trade_count = StrategyModel.objects.annotate(trade_count=Count('tradesmodel'),
         total_pnl=Sum('tradesmodel__profit_usd'),
-        profitable_trade_count=Count('tradesmodel', filter=Q(tradesmodel__profit_usd__gt=0))
+        profitable_trade_count=Count('tradesmodel', filter=Q(tradesmodel__profit_usd__gt=0)),
+        profitable_trades=Sum("tradesmodel__profit_usd", filter=Q(tradesmodel__profit_usd__gt=0)),
+        losing_trades=Sum("tradesmodel__profit_usd", filter=Q(tradesmodel__profit_usd__lt=0)),
     )
     
     
@@ -183,6 +185,8 @@ def playBook(request):
         strategy['trade_count'] = matching_strategy.trade_count
         strategy['total_pnl'] = Money(matching_strategy.total_pnl or 0, "USD")
         strategy["win_rate"] = calculateWinRate(matching_strategy.profitable_trade_count, matching_strategy.trade_count)
+        strategy["profit_factor"] = round(calculateProfitFactor(matching_strategy.profitable_trades, matching_strategy.losing_trades), 2)
+        
         
         
         
@@ -285,11 +289,12 @@ def trade_details(request, trade_id):
             print(data)
             if data.get("tag_choice"):
                 selected_tag = data.get("tag_choices") 
+                trade_update.tags = selected_tag
             if data.get("setup_choices"):
                 selected_strategy = data["setup_choices"]
                 selected_strategy_name = StrategyModel.objects.get(strategy_name=selected_strategy)
                 trade_update.strategy = selected_strategy_name
-                trade_update.tags = selected_tag
+                
 
             trade_update.save()
             print(trade_update)
