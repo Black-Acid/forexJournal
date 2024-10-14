@@ -95,11 +95,16 @@
                         <div class="property">Tags</div>
                         <div class="value">
                             <select id="choices" name="tag_choices">
-                                <option value="Healthy trade">Healthy trade</option>
-                                <option value="Bad trade">Bad trade</option>
-                                <option value="Healthy loss">healthy loss</option>
-                                <option value="Lucky trade">Lucky trade</option>
-                                <option value="Missed trade">Missed trade</option>
+                                {% if tags %}
+                                    <option value="" selected disabled>{{ tags }}</option>
+                                {% else %}
+                                    <option value="" disabled selected>Please select a tag</option>
+                                    <option value="Healthy trade">Healthy trade</option>
+                                    <option value="Bad trade">Bad trade</option>
+                                    <option value="Healthy loss">healthy loss</option>
+                                    <option value="Lucky trade">Lucky trade</option>
+                                    <option value="Missed trade">Missed trade</option>
+                                {% endif %}
                             </select>
                         </div>
                     </div>

@@ -161,12 +161,6 @@ def journal(requests):
 def playBook(request):
     
     
-    def win_rate(number_of_wining_trades, total_trade):
-        if total_trade == 0:
-            return 0
-        return number_of_wining_trades / total_trade
-    
-    
     strategies_with_trade_count = StrategyModel.objects.annotate(trade_count=Count('tradesmodel'),
         total_pnl=Sum('tradesmodel__profit_usd'),
         profitable_trade_count=Count('tradesmodel', filter=Q(tradesmodel__profit_usd__gt=0)),
@@ -275,6 +269,8 @@ def trade_details(request, trade_id):
     
     
     trade["strategy_used"] = strategy_used
+    print(trade)
+    
     
     
     
@@ -286,20 +282,15 @@ def trade_details(request, trade_id):
             trade_update.notes = quill_content
         elif "other_details" in request.POST:
             data = request.POST.dict()
-            print(data)
-            if data.get("tag_choice"):
+            if data.get("tag_choices"):
                 selected_tag = data.get("tag_choices") 
                 trade_update.tags = selected_tag
             if data.get("setup_choices"):
                 selected_strategy = data["setup_choices"]
                 selected_strategy_name = StrategyModel.objects.get(strategy_name=selected_strategy)
                 trade_update.strategy = selected_strategy_name
-                
-
-            trade_update.save()
-            print(trade_update)
-            
-            return redirect("trade-details", trade_id=trade_id)
+        trade_update.save()
+        return redirect("trade-details", trade_id=trade_id)
     return render(request, f"{PATH}/tradeDetails.html", trade)
 
 

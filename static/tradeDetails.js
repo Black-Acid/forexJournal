@@ -1,10 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
     const asset = document.getElementById("asset").textContent
+    let symbol;
+    
+    if (asset === "XAUUSD"){
+        symbol = "FX_IDC:XAUUSD";
+    }else{
+        symbol = `FX:${asset}`;
+    }
+    
     new TradingView.widget({
         "container_id": "forex-chart", // Match this ID with your div
         "width": "100%", // Full width
         "height": "50rem", // Full height
-        "symbol": `FX:${asset}`, // Example symbol
+        "symbol": symbol, // Example symbol
         "interval": "D",
         "timezone": "Etc/UTC",
         "theme": "dark",

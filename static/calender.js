@@ -36,6 +36,11 @@ document.addEventListener('DOMContentLoaded', function() {
                          const totalProfit = profitByDate[date]; // Get the profit for that date
                          const tradeCount = tradeCountByDate[date] || 0; // Get the trade count for that date
 
+                         const formatter = new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                          });
+
                          cell.innerHTML = '';
                          if (totalProfit) {
                             cell.style.backgroundColor = totalProfit > 0 ? '#2ecc71' : '#ff6b6b'; // Set background color
@@ -43,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                             // Create a span for the profit text
                             const profitSpan = document.createElement('span');
-                            profitSpan.textContent = `$${totalProfit.toFixed(2)}`;
+                            profitSpan.textContent = `${formatter.format(totalProfit)}`;
                             profitSpan.style.position = 'absolute';
                             profitSpan.style.right = '5px'; 
                             profitSpan.style.bottom = '30px'; // Position it 5px from the bottom
