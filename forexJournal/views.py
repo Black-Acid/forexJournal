@@ -26,7 +26,7 @@ def calculateWinRate(profitableTrades, number_of_trades):
 
 def calculateProfitFactor(profitable_value, losing_value):
     if losing_value != 0:
-        return profitable_value / abs(losing_value)
+        return round(profitable_value / abs(losing_value), 2)
     return "N/A"
 
 
@@ -178,8 +178,9 @@ def playBook(request):
         # Append the trade_count to the strategy dictionary
         strategy['trade_count'] = matching_strategy.trade_count
         strategy['total_pnl'] = Money(matching_strategy.total_pnl or 0, "USD")
-        strategy["win_rate"] = calculateWinRate(matching_strategy.profitable_trade_count, matching_strategy.trade_count)
-        strategy["profit_factor"] = round(calculateProfitFactor(matching_strategy.profitable_trades, matching_strategy.losing_trades), 2)
+        strategy["win_rate"] = round(calculateWinRate(matching_strategy.profitable_trade_count, matching_strategy.trade_count), 2)
+        profit_factor = round(float(calculateProfitFactor(matching_strategy.profitable_trades, matching_strategy.losing_trades)), 2)
+        strategy["profit_factor"] = f"{profit_factor:.2f}"
         
         
         
@@ -295,4 +296,6 @@ def trade_details(request, trade_id):
 
 
 
+def strategy_reports(request, strategy_id):
+    return render(request, f"{PATH}/strategyReports.html")
     

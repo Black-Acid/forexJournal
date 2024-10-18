@@ -28,7 +28,7 @@
                 </thead>
                 <tbody>
                     {% for strategy in strategies %}
-                        <tr>
+                        <tr class="strategy-row" data-strategy-id={{ strategy.id }}>
                             <td>{{ strategy.strategy_name}}</td>
                             <td>{{ strategy.trade_count}}</td>
                             <td>{{ strategy.total_pnl }}</td>

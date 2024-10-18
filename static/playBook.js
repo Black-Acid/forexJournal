@@ -64,3 +64,16 @@ prevButton.addEventListener("click", () => {
     }
     updateProgress();
 })
+
+
+document.addEventListener("DOMContentLoaded", function(){
+    const strategyRows = document.querySelectorAll(".strategy-row");
+
+
+    strategyRows.forEach(function(row){
+        row.addEventListener("click", function(){
+            const strategyId = Number(row.getAttribute("data-strategy-id"))
+            window.location.href = `strategy-reports/${strategyId}`
+        })
+    })
+})

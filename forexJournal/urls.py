@@ -11,5 +11,6 @@ urlpatterns = [
     path("All-trades", views.allTrades, name="All_trades"),
     path("rules", views.rules, name="rules"),
     path("get-data", views.get_data, name="get-data"),
-    path("journal/<int:trade_id>", views.trade_details, name="trade-details")
+    path("journal/<int:trade_id>", views.trade_details, name="trade-details"),
+    path("strategy-reports/<int:strategy_id>", views.strategy_reports, name="strategy-reports")
 ]
