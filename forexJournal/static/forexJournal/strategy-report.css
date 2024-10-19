@@ -7,9 +7,75 @@
     position: fixed;
 }
 
+body{
+    overflow: hidden;
+}
+
 main{
     margin-left: 18rem;
     width: 80vw;
-    background: red;
-    overflow: hidden;
+    background: #eaf5d9;
+    overflow: auto;
+    color: black;
+}
+
+
+
+.elements{
+    width: 35%;
+    background: rgb(227, 244, 177);
+    height: 42rem;
+    overflow-y: hidden;
+    margin-left: 1rem;
+    border-radius: 8px;
+    transition: overflow 0.2s ease-in-out;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.elements:hover{
+    overflow: auto;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.elements::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 7px;
+}
+
+.elements::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 7px;
+}
+
+.elements::-webkit-scrollbar-thumb {
+    background-color: rgb(201, 253, 124); 
+    border-radius: 10px;
+}
+
+.elements::-webkit-scrollbar-thumb:hover {
+    background-color: #bdfa5a; 
+}
+
+.elements h1{
+    text-align: center;
+    font-size: 1.7rem; 
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+    position: sticky;
+    top: 0; 
+    background-color: rgb(194, 253, 92); 
+    z-index: 1;
+    margin-top: -1rem;
+    height: 3rem;
+    padding-top: 0.5rem;
+}
+
+.property-row{
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5rem;
+    padding: 0.2rem 1rem;
+    height: 2rem;
+    
 }

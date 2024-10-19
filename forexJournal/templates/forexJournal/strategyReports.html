@@ -24,7 +24,7 @@
                 </div>
                 <div class="property-row">
                     <div class="property">Average loss</div>
-                    <div class="value">$1005.00</div>
+                    <div class="value">$1005.72</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Largest Win</div>
@@ -87,6 +87,12 @@
                     <div class="value">London Session</div>
                 </div>
             </div>
+            <div class="charts">
+                <canvas class="first-doughnut doughnut"></canvas>
+                <canvas class="second-doughnut doughnut"></canvas>
+            </div>
         </div>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'strategy-report.js' %}"></script>
 {% endblock content %}
