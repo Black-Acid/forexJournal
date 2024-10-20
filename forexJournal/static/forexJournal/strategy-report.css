@@ -19,6 +19,10 @@ main{
     color: black;
 }
 
+.container:not(h1){
+    display: flex;
+}
+
 
 
 .elements{
@@ -78,4 +82,42 @@ main{
     padding: 0.2rem 1rem;
     height: 2rem;
     
+}
+
+.charts{
+    width: 15rem;
+    height: 15rem;
+    /* background: yellow; */
+    margin-left: 3rem;
+    text-align: center;
+}
+
+
+.flex-items{
+    display: flex;
+    align-items: center;
+}
+
+
+.labels{
+    margin-left: 2rem;
+}
+
+.labels h3 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.dotwin, .dotloss {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    background-color: #6dc407;
+    margin-right: 8px;
+    vertical-align: middle; 
+}
+
+.dotloss {
+    background-color: #7f8c8d; 
 }

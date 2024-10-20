@@ -10,8 +10,8 @@
 
 {% block content %}
     <main>
+        <h1>Strategy Performance dashboard</h1>
         <div class="container">
-            <h1>Strategy Performance dashboard</h1>
             <div class="elements">
                 <h1>Strategy Name</h1>
                 <div class="property-row">
@@ -88,8 +88,27 @@
                 </div>
             </div>
             <div class="charts">
-                <canvas class="first-doughnut doughnut"></canvas>
-                <canvas class="second-doughnut doughnut"></canvas>
+                <div class="f-doughnut-container">
+                    <h2>Trade Performance</h2>
+                    <div class="flex-items">
+                        <canvas class="first-doughnut doughnut"></canvas>
+                        <div class="labels">
+                            <h3><span class="dotwin"></span>Wins</h3>
+                            <h3><span class="dotloss"></span>Losses</h3>
+                        </div>
+                    </div>
+                </div> 
+                <div class="s-doughnut-container">
+                    <h2>Long vs Short</h2>
+                    <div class="flex-items">
+                        <canvas class="second-doughnut doughnut"></canvas>
+                        <div class="labels">
+                            <h3><span class="dotwin"></span>Long</h3>
+                            <h3><span class="dotloss"></span>Short</h3>
+                        </div>
+                    </div>
+                </div> 
+                
             </div>
         </div>
     </main>
