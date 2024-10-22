@@ -99,5 +99,121 @@ new Chart(secondChart, {
             }
         }
     },
-    plugins: [centerText("only", "Winning trades")]
+    plugins: [centerText("Only", "Winning trades")]
+})
+
+
+const barChart = document.querySelector(".bar-canvas")
+
+new Chart(barChart, {
+    type: "bar",
+    data:{
+        labels: ["GBPUSD", "XAUUSD", "USDJPY"],
+        datasets: [{
+            label: "PnL",
+            data: [200, -54, 152],
+            backgroundColor: function(context){
+                const value = context.raw;
+                return value >= 0 ? "#6dc407" : "#7f8c8d"
+            },
+            borderColor: function(context){
+                const value = context.raw;
+                return value >= 0 ? "#6dc407" : "#7f8c8d"
+            },
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                barPercentage: 0.5,
+                categoryPercentage: 0.7
+            },
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+})
+
+
+const tradeData = [
+    { date: '2024-10-01', pnl: 300.13 },
+    { date: '2024-10-03', pnl: -280 },
+    { date: '2024-10-05', pnl: 600.20 },
+    { date: '2024-10-06', pnl: -157.24 },
+    { date: '2024-10-10', pnl: -100 },
+    { date: '2024-10-12', pnl: 28.30 },
+    { date: '2024-10-15', pnl: 53 },
+    { date: '2024-10-17', pnl: -10.9 },
+    { date: '2024-10-19', pnl: 215 },
+    { date: '2024-10-21', pnl: 433 },
+];
+
+
+let cumulativePnL = 0;
+const chartData = tradeData.map(trade => {
+    cumulativePnL += trade.pnl;
+    return{
+        date: trade.date,
+        cumulativePnL: cumulativePnL
+    }
+})
+
+const dates = chartData.map(item => item.date)
+const pnlValues = chartData.map(item => item.cumulativePnL)
+
+const lineChart = document.querySelector(".canvas-line-chart");
+
+new Chart(lineChart, {
+    type: "line",
+    data: {
+        labels: dates,
+        datasets: [{
+            label: "Cumulative PnL",
+            data: pnlValues,
+            borderColor: "green",
+            backgroundColor: 'rgba(0, 255, 0, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.1
+        }]
+    },
+    options:{
+        responsive: true,
+        maintainAspectRatio: false,
+        scales:{
+            x: {
+                title: {
+                    display: true,
+                    text: "trade date"
+                },
+                ticks: {
+                    autoSkip: true,
+                    maxTicksLimit: 10
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: "Cumulative PnL"
+                },
+                beginAtZero: false
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks:{
+                    label: function(context){
+                        return `PnL: $${context.raw.toFixed(2)}`
+                    }
+                }
+            }
+        }
+    }
 })

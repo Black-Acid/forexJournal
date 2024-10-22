@@ -19,6 +19,22 @@ main{
     color: black;
 }
 
+main::-webkit-scrollbar{
+    width: 6px;
+    border-radius: 7px;
+}
+
+main::-webkit-scrollbar-track{
+    background: #eaf5d9;
+    border-radius: 7px;
+}
+
+
+main::-webkit-scrollbar-thumb{
+    background: #bdfa5a;
+    border-radius: 10px;
+}
+
 .container:not(h1){
     display: flex;
 }
@@ -120,4 +136,35 @@ main{
 
 .dotloss {
     background-color: #7f8c8d; 
+}
+
+
+.bar-chart{
+    height: 42rem;
+    margin-left: 8rem;
+    /* background: blue; */
+    width: 27rem;
+}
+
+.bar-chart h2{
+    text-align: center;
+}
+
+.bar-canvas{
+    height: 85% !important; 
+}
+
+
+.line-chart{
+    /* background-color: blue; */
+    height: 25rem;
+    margin: 0 1rem;
+}
+
+.canvas-line-chart{
+    width: 100% !important;
+}
+
+.table{
+    margin-top: 3rem;
 }

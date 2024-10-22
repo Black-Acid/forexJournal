@@ -108,9 +108,77 @@
                         </div>
                     </div>
                 </div> 
-                
+            </div>
+            <div class="bar-chart">
+                <h2>Total Pnl by currency pairs </h2>
+                <canvas class="bar-canvas"></canvas>
             </div>
         </div>
+        <div class="line-chart">
+            <h2>Strategy performance overtime</h2>
+            <canvas class="canvas-line-chart"></canvas>
+        </div>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Instrument</th>
+                    <th>Date</th>
+                    <th>Order type</th>
+                    <th>Lot size</th>
+                    <th>Entry Price</th>
+                    <th>Close Price</th>
+                    <th>Stop loss</th>
+                    <th>Take Profit</th>
+                    <th>Profit/loss</th>
+                    <th>Risk Reward ratio</th>
+                    <th>Strategy</th>
+                </tr>
+                <tr>
+                    <td>GBPUSD</td>
+                    <td>20/07/2024</td>
+                    <td>Buy</td>
+                    <td>0.1</td>
+                    <td>1.23425</td>
+                    <td>1.33214</td>
+                    <td>$25.74</td>
+                    <td>102.33</td>
+                    <td>88.43</td>
+                    <td>4.2</td>
+                    <td>DUST</td>
+                </tr>
+                <tr>
+                    <td>GBPUSD</td>
+                    <td>20/07/2024</td>
+                    <td>Buy</td>
+                    <td>0.1</td>
+                    <td>1.23425</td>
+                    <td>1.33214</td>
+                    <td>$25.74</td>
+                    <td>102.33</td>
+                    <td>88.43</td>
+                    <td>4.2</td>
+                    <td>DUST</td>
+                </tr>
+                <tr>
+                    <td>GBPUSD</td>
+                    <td>20/07/2024</td>
+                    <td>Buy</td>
+                    <td>0.1</td>
+                    <td>1.23425</td>
+                    <td>1.33214</td>
+                    <td>$25.74</td>
+                    <td>102.33</td>
+                    <td>88.43</td>
+                    <td>4.2</td>
+                    <td>DUST</td>
+                </tr>
+            </table>
+        </div>
+
+
+
+
+
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'strategy-report.js' %}"></script>
