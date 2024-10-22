@@ -156,8 +156,10 @@
 
 .account{
     background: var(--divBack);
-    border-radius: 5px;
+    border-radius: 10px;
     padding-left: 1rem;
+    background: rgb(239, 253, 214);
+    color: black;
 }
 
 
@@ -173,7 +175,7 @@
 }
 
 .account span{
-    color: var(--selectedColor);
+    color: rgb(8, 247, 8);
 }
 
 .profit{
