@@ -27,3 +27,12 @@ document.addEventListener("DOMContentLoaded", function(){
     }
 
 })
+
+const sync_trades = document.querySelector(".new-trade")
+const sync_modal = document.querySelector(".sync-modal")
+
+
+
+sync_trades.addEventListener("click", function(){
+    sync_modal.classList.remove("hidden")
+})

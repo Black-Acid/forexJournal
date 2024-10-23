@@ -86,4 +86,26 @@ li .active{
     transform: scale(1.05); /* Slightly enlarge the link */
     transition: all 0.3s ease;   
 }
-  
+
+
+.hidden{
+    display: none;
+}
+
+
+.sync-modal{
+    background: red;
+    position: absolute;
+    top: 23%;
+    left: 38%;
+    width: 30%;
+    /* background: white; */
+    height: 40%;
+    padding: 1rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    color: black;
+    border-radius: 5px;
+    z-index: 20;
+    border: 3px solid var(--selectedColor);
+}

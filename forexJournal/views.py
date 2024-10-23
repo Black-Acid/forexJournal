@@ -10,7 +10,11 @@ import json
 import requests
 from django.apps import apps
 from djmoney.money import Money
-from django.core.exceptions import ObjectDoesNotExist   
+from django.core.exceptions import ObjectDoesNotExist
+import MetaTrader5 as mt5   
+from django.contrib import messages
+from django.http import HttpResponse
+from datetime import datetime
 # Create your views here.
 
 
@@ -299,3 +303,58 @@ def trade_details(request, trade_id):
 def strategy_reports(request, strategy_id):
     return render(request, f"{PATH}/strategyReports.html")
     
+    
+
+def sync_MT5(request):
+    print("MT5 sync function started", flush=True)
+    
+    if request.method == "POST":
+        mt5_login = request.POST.get("mt5_login")
+        mt5_password =  request.POST.get("mt5_password")
+        mt5_server =  request.POST.get("mt5_server")
+        
+        # Initialize MT5 connection
+        print(f"Initializing MT5 with login: {mt5_login}, server: {mt5_server}", flush=True)
+        if not mt5.initialize(login=int(mt5_login), password=str(mt5_password), server=mt5_server):
+            messages.error(request, "Failed to initialize MT5")
+            print("MT5 initialization failed", flush=True)
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+        
+        # Authorize login
+        authorised = mt5.login(login=int(mt5_login), password=mt5_password, server=mt5_server)
+        if not authorised:
+            error_code, error_description = mt5.last_error()
+            messages.error(request, f"MT5 login failed. Error: {error_code} - {error_description}")
+            print(f"MT5 login failed: {error_code} - {error_description}", flush=True)
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+        
+        # Get account info
+        account_info = mt5.account_info()
+        if account_info is None:
+            messages.error(request, "Failed to retrieve account info")
+            print("Failed to retrieve account info", flush=True)
+            return redirect(request.META.get("HTTP_REFERER", "/"))
+        
+        print(f"Logged into account #{account_info.login}", flush=True)
+        print(f"Account balance: {account_info.balance}", flush=True)
+        
+        from_date = datetime(2023, 1, 1)  # Replace with the desired start date
+        to_date = datetime.now()
+        
+        trade_history = mt5.history_deals_get(from_date, to_date)
+        if trade_history is None:
+            messages.error(request, "Unable to retrieve trade history")
+            print("Failed to retrieve trade history", flush=True)
+        else:
+            print(f" {trade_history}", flush=True)
+        
+        messages.success(request, "MT5 synced successfully")
+        print("MT5 sync function completed successfully", flush=True)
+        
+        # Shutdown MT5 connection
+        mt5.shutdown()
+        print("MT5 connection closed", flush=True)
+        
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+    
+    return HttpResponse('Invalid request', status=400)
