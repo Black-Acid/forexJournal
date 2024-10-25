@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}backtest{% endblock title %}
+{% block content %}
+    <div id="chart" style="width: 600px; height: 400px;"></div>
+
+
+
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="{% static 'backtest.js' %}"></script>
+{% endblock content %}

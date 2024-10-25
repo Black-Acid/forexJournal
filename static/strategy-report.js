@@ -44,8 +44,6 @@ function centerText(firstLine, secondLine){
 
 
 
-
-
 const charts = document.querySelectorAll(".first-doughnut")
 
 new Chart(charts, {
@@ -54,7 +52,7 @@ new Chart(charts, {
         labels: ["Wins", "losses"],
         datasets: [{
             label: "Trades",
-            data: [9, 5],
+            data: [window.profitableTrades, window.losingTrades],
             backgroundColor: [
                 "#6dc407",
                 "#7f8c8d"
@@ -70,7 +68,7 @@ new Chart(charts, {
             }
         }
     },
-    plugins: [centerText("23", "Total Trades")]
+    plugins: [centerText(`${window.totalTrades}`, "Total Trades")]
 })
 
 

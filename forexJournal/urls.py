@@ -13,5 +13,7 @@ urlpatterns = [
     path("get-data", views.get_data, name="get-data"),
     path("journal/<int:trade_id>", views.trade_details, name="trade-details"),
     path("strategy-reports/<int:strategy_id>", views.strategy_reports, name="strategy-reports"),
-    path("sync-mt5", views.sync_MT5, name="sync")
+    path("sync-mt5", views.sync_MT5, name="sync"),
+    path("backtesting", views.backtestingPage, name="backtest"),
+    path('fetch-historical-data/', views.fetch_historical_data, name='fetch_historical_data'),
 ]

@@ -14,8 +14,28 @@ from django.core.exceptions import ObjectDoesNotExist
 import MetaTrader5 as mt5   
 from django.contrib import messages
 from django.http import HttpResponse
-from datetime import datetime
+from datetime import datetime, timedelta
+
+import logging
+
+logger = logging.getLogger(__name__)
 # Create your views here.
+mt5_login = 191127350
+mt5_password =  "AceBlacK431@"
+mt5_server =  "Exness-MT5Trial"
+
+def connect_to_mt5():
+    if not mt5.initialize():
+        logger.error("Failed to initialize MT5")
+        return False
+    account_number = mt5_login  # Replace with your account number
+    password = mt5_password  # Replace with your MT5 password
+    server = mt5_server
+    if not mt5.login(account_number, password=password, server=server):
+        logger.error(f"Failed to login to MT5 with account {account_number}")
+        mt5.shutdown()
+        return False
+    return True
 
 
 PATH = "forexJournal"
@@ -301,7 +321,18 @@ def trade_details(request, trade_id):
 
 
 def strategy_reports(request, strategy_id):
-    return render(request, f"{PATH}/strategyReports.html")
+    strategy = StrategyModel.objects.get(id=strategy_id)
+    trades = TradesModel.objects.filter(strategy=strategy_id)
+    
+    context = {}
+    
+    context["name"] = strategy.strategy_name
+    context["trades_total"] = trades.count()
+    context["profitable_trades"] = trades.filter(profit_usd__gt=0).count()
+    context["losing_trades"] = trades.filter(profit_usd__lt=0).count()
+    context["pnl"] = Money(trades.aggregate(total_pnl=Sum('profit_usd'))['total_pnl'] or 0, "USD")
+    
+    return render(request, f"{PATH}/strategyReports.html", context)
     
     
 
@@ -358,3 +389,51 @@ def sync_MT5(request):
         return redirect(request.META.get('HTTP_REFERER', '/'))
     
     return HttpResponse('Invalid request', status=400)
+
+
+
+def backtestingPage(request):
+    return render(request, f"{PATH}/backtestingPage.html")
+
+
+
+def fetch_historical_data(request):
+    # Connect to MT5
+    if not connect_to_mt5():
+        print("failed to connect")
+        return JsonResponse({'error': 'Failed to connect to MT5'}, status=500)
+
+    symbol = "GBPUSDm"  # Replace with your symbol
+    timeframe = mt5.TIMEFRAME_H1  # Replace with your timeframe
+    end_time = datetime.now()
+    start_time = end_time - timedelta(days=30)  # Fetch data for the last 30 days
+
+    # Check if symbol is available
+    if not mt5.symbol_select(symbol, True):
+        logger.error(f"Symbol {symbol} is not available in Market Watch.")
+        mt5.shutdown()
+        return JsonResponse({'error': f'Symbol {symbol} not available in Market Watch'}, status=404)
+
+    # Fetch rates
+    rates = mt5.copy_rates_range(symbol, timeframe, start_time, end_time)
+    if rates is None or len(rates) == 0:
+        logger.error("No data returned from MT5")
+        mt5.shutdown()
+        return JsonResponse({'error': 'Failed to retrieve data from MT5'}, status=500)
+
+    # Convert rates to list of dictionaries for JSON response
+    historical_data = [
+        {
+            'time': int(rate['time']),
+            'open': float(Decimal(rate['open']).quantize(Decimal('0.00000'))),
+            'high': float(Decimal(rate['high']).quantize(Decimal('0.00000'))),
+            'low': float(Decimal(rate['low']).quantize(Decimal('0.00000'))),
+            'close': float(Decimal(rate['close']).quantize(Decimal('0.00000')))
+        }
+        for rate in rates
+    ]
+    
+    # Clean up MT5 session
+    mt5.shutdown()
+
+    return JsonResponse(historical_data, safe=False)
