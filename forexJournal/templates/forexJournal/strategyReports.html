@@ -19,20 +19,20 @@
                     <div class="value">{{ pnl }}</div>
                 </div>
                 <div class="property-row">
-                    <div class="property">Average Win</div>
-                    <div class="value">$3,000.00</div>
+                    <div class="property">Average Profit</div>
+                    <div class="value">{{ avg_profit }}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Average loss</div>
-                    <div class="value">$1005.72</div>
+                    <div class="value">{{ avg_loss }}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Largest Win</div>
-                    <div class="value">$8,000.00</div>
+                    <div class="value">{{ largest_profit}}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Largest loss</div>
-                    <div class="value">$800.00</div>
+                    <div class="value">{{ largest_loss }}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Maximum Consecutive Wins</div>
@@ -44,7 +44,7 @@
                 </div>
                 <div class="property-row">
                     <div class="property">Win Rate</div>
-                    <div class="value">84%</div>
+                    <div class="value">{{ win_rate}}%</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Total R Multiple</div>
@@ -56,11 +56,11 @@
                 </div>
                 <div class="property-row">
                     <div class="property">Buys</div>
-                    <div class="value">8</div>
+                    <div class="value">{{ buys }}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Sells</div>
-                    <div class="value">10</div>
+                    <div class="value">{{ sells }}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Average duration of a trade</div>

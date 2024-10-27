@@ -94,7 +94,7 @@ li .active{
 
 
 .sync-modal{
-    background: red;
+    background: rgb(232, 243, 221);
     position: absolute;
     top: 23%;
     left: 38%;
@@ -107,5 +107,44 @@ li .active{
     color: black;
     border-radius: 5px;
     z-index: 20;
-    border: 3px solid var(--selectedColor);
+}
+
+.sync-modal form{
+    display: flex;
+    flex-direction: column;
+}
+.sync-modal input{
+    margin: 1rem 0;
+    height: 2.7rem;
+    border-radius: 10px;
+    padding-left: 1rem;
+    font-size: 1.2rem;
+}
+
+.sync-modal button{
+    width: 8rem;
+    height: 3rem;
+    text-align: center;
+    margin: auto;
+    border-radius: 10px;
+    background: var(--selectedColor);
+    border: none;
+    cursor: pointer;
+}
+
+.modal-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); 
+    backdrop-filter: blur(5px); 
+    z-index: 10;
+}
+
+.close{
+    margin-left: 31rem;
+    font-size: 1.5rem;
+    cursor: pointer;
 }

@@ -30,9 +30,22 @@ document.addEventListener("DOMContentLoaded", function(){
 
 const sync_trades = document.querySelector(".new-trade")
 const sync_modal = document.querySelector(".sync-modal")
+const overlayed = document.querySelector(".modal-overlay")
+const closeModals = document.querySelector(".close")
 
 
 
 sync_trades.addEventListener("click", function(){
     sync_modal.classList.remove("hidden")
+    overlayed.classList.remove("hidden")
+})
+
+overlayed.addEventListener("click", function(){
+    sync_modal.classList.add("hidden")
+    overlayed.classList.add("hidden")
+})
+
+closeModals.addEventListener("click", function(){
+    sync_modal.classList.add("hidden")
+    overlayed.classList.add("hidden")
 })

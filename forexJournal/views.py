@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 import pandas as pd
 from .models import TradesModel, AccountBalance, ProcessedProfit, StrategyModel
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum, Count, Q, Max, Avg
 from decimal import Decimal, ROUND_HALF_UP
 from django.utils import timezone
 from django.shortcuts import redirect
@@ -45,7 +45,7 @@ DEFAULT_BALANCE = ACCOUNT_BALANCE._meta.get_field("balance").default
 
 
 def calculateWinRate(profitableTrades, number_of_trades):
-    return (profitableTrades / number_of_trades) * PERCENT
+    return round((profitableTrades / number_of_trades) * PERCENT, 2)
 
 
 def calculateProfitFactor(profitable_value, losing_value):
@@ -323,14 +323,24 @@ def trade_details(request, trade_id):
 def strategy_reports(request, strategy_id):
     strategy = StrategyModel.objects.get(id=strategy_id)
     trades = TradesModel.objects.filter(strategy=strategy_id)
+    profitable = trades.filter(profit_usd__gt=0).count()
+    total_trades = trades.count()
     
     context = {}
     
     context["name"] = strategy.strategy_name
-    context["trades_total"] = trades.count()
-    context["profitable_trades"] = trades.filter(profit_usd__gt=0).count()
+    context["trades_total"] = total_trades
+    context["profitable_trades"] = profitable
     context["losing_trades"] = trades.filter(profit_usd__lt=0).count()
     context["pnl"] = Money(trades.aggregate(total_pnl=Sum('profit_usd'))['total_pnl'] or 0, "USD")
+    context["buys"] = trades.filter(order_type="buy").count()
+    context["sells"] = trades.filter(order_type="sell").count()
+    context["win_rate"] = calculateWinRate(profitable, total_trades)
+    context["largest_profit"] = Money(trades.filter(profit_usd__gt=0).aggregate(Max("profit_usd"))["profit_usd__max"], "USD")
+    context["largest_loss"] = Money(trades.filter(profit_usd__lt=0).aggregate(Max("profit_usd"))["profit_usd__max"], "USD")
+    context["avg_profit"] = Money(trades.filter(profit_usd__gt=0).aggregate(Avg("profit_usd"))["profit_usd__avg"], "USD")
+    context["avg_loss"] = Money(trades.filter(profit_usd__lt=0).aggregate(Avg("profit_usd"))["profit_usd__avg"], "USD")
+    
     
     return render(request, f"{PATH}/strategyReports.html", context)
     
