@@ -101,6 +101,8 @@ thead th{
     font-weight: 500;
     font-style: normal;
     color: black;
+    border-collapse: collapse;
+    border: none;
 }
 
 

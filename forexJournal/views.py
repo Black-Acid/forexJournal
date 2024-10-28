@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 import pandas as pd
 from .models import TradesModel, AccountBalance, ProcessedProfit, StrategyModel
 from django.db.models import Sum, Count, Q, Max, Avg
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from django.utils import timezone
 from django.shortcuts import redirect
 from django.http import JsonResponse
@@ -61,6 +61,7 @@ def tradeExpectancy(win_rate, average_profit, average_loss):
 
 
 def forex(requests):
+    trades = TradesModel.objects.all()
     account_balance, created = AccountBalance.objects.get_or_create(id=1)
     processed_profit, created = ProcessedProfit.objects.get_or_create(id=1)
     number_of_trades = TradesModel.objects.count()
@@ -82,6 +83,31 @@ def forex(requests):
     
 
     percentageIncrease = ((float(current_balance) - DEFAULT_BALANCE) / DEFAULT_BALANCE) * PERCENT
+    
+    if TradesModel.objects.exists():
+        for trade in trades:
+            
+            try:
+                # Ensure all values are valid Decimals or default to 0 if not available
+                open_price = Decimal(trade.opening_price) if trade.opening_price else Decimal('0')
+                stop_loss = Decimal(trade.stop_loss) if trade.stop_loss else Decimal('0')
+                take_profit = Decimal(trade.take_profit) if trade.take_profit else Decimal('0')
+                
+                # Calculate risk and reward
+                risk = abs(open_price - stop_loss)
+                reward = abs(take_profit - open_price)
+                
+                # Calculate the R multiple, ensuring no division by zero
+                trade.planned_R_Multiple = reward / risk if risk != 0 else Decimal('0')
+                trade.save()
+
+            except (InvalidOperation, TypeError, ValueError) as e:
+                # Log details of the trade causing the issue for debugging
+                print(f"Error calculating RR for trade {trade.id}: {e}")
+                print(f"Values - open_price: {trade.opening_price}, stop_loss: {trade.stop_loss}, take_profit: {trade.take_profit}")
+                        
+    
+    
     
     
     
@@ -146,6 +172,8 @@ def forex(requests):
                     margin_level=row['margin_level'],
                     close_reason=row['close_reason'],
                 ).save()
+                
+
                 
         amount = TradesModel.objects.aggregate(Sum("profit_usd"))
         total_amount_value = Decimal(amount["profit_usd__sum"] or 0.0)
@@ -285,6 +313,7 @@ def trade_details(request, trade_id):
     trade["duration_mins"] = int(minutes)
     trade["duration_secs"] = int(seconds)
     trade["strategies"] = strategies
+    print(trade)
     
     # strategy_used = StrategyModel.objects.get(id=trade["strategy_id"])
     try:
@@ -294,7 +323,7 @@ def trade_details(request, trade_id):
     
     
     trade["strategy_used"] = strategy_used
-    print(trade)
+    
     
     
     
@@ -326,6 +355,35 @@ def strategy_reports(request, strategy_id):
     profitable = trades.filter(profit_usd__gt=0).count()
     total_trades = trades.count()
     
+    def calculateRR():
+        pass
+    
+    
+    def consecutiveWins():
+        max_consecutive_wins = 0
+        current_streak = 0
+        new_form = trades.order_by("opening_time")
+        
+        for trade in new_form:
+            if trade.profit_usd > 0:
+                current_streak += 1
+                max_consecutive_wins = max(current_streak, max_consecutive_wins)
+        
+        return max_consecutive_wins
+    
+    def consecutiveLoss():
+        max_consecutive_loss = 0
+        current_streak = 0
+        new_form = trades.order_by("opening_time")
+        
+        for trade in new_form:
+            if trade.profit_usd < 0:
+                current_streak += 1
+                max_consecutive_loss = max(current_streak, max_consecutive_loss)
+        
+        return max_consecutive_loss
+        
+    
     context = {}
     
     context["name"] = strategy.strategy_name
@@ -340,6 +398,8 @@ def strategy_reports(request, strategy_id):
     context["largest_loss"] = Money(trades.filter(profit_usd__lt=0).aggregate(Max("profit_usd"))["profit_usd__max"], "USD")
     context["avg_profit"] = Money(trades.filter(profit_usd__gt=0).aggregate(Avg("profit_usd"))["profit_usd__avg"], "USD")
     context["avg_loss"] = Money(trades.filter(profit_usd__lt=0).aggregate(Avg("profit_usd"))["profit_usd__avg"], "USD")
+    context["max_con_wins"] = consecutiveWins()
+    context["max_con_loss"] = consecutiveLoss()
     
     
     return render(request, f"{PATH}/strategyReports.html", context)
