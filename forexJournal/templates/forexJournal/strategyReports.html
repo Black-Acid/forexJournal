@@ -48,11 +48,11 @@
                 </div>
                 <div class="property-row">
                     <div class="property">Total R Multiple</div>
-                    <div class="value">15.7</div>
+                    <div class="value">{{ total_rr }}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Expectancy per rade</div>
-                    <div class="value">$5.32</div>
+                    <div class="value">{{ trade_expectancy }}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Buys</div>
@@ -63,24 +63,24 @@
                     <div class="value">{{ sells }}</div>
                 </div>
                 <div class="property-row">
-                    <div class="property">Average duration of a trade</div>
-                    <div class="value">2 hours 15 mins</div>
+                    <div class="property">Average trade Duration</div>
+                    <div class="value">{{ average_duration }}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Most traded pair</div>
-                    <div class="value">GBPUSD</div>
+                    <div class="value">{{ most_traded }} ({{ pair_count }})</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Most Profitable pair</div>
-                    <div class="value">XAUUSD</div>
+                    <div class="value">{{ most_profitable }}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Most profitable day</div>
-                    <div class="value">Wednesdays</div>
+                    <div class="value">{{ most_profitable_day}}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Most losing day</div>
-                    <div class="value">Friday</div>
+                    <div class="value">{{ most_losing_day}}</div>
                 </div>
                 <div class="property-row">
                     <div class="property">Most Profitable session</div>

@@ -39,40 +39,24 @@
                     <div class="value">2%</div>
                 </div>
                 <div class="detail-row">
+                    <div class="property">Planned R Multiple</div>
+                    <div class="value">{{ planned_R_Multiple }}</div>
+                </div>
+                <div class="detail-row">
                     <div class="property">Realized R Multiple</div>
-                    <div class="value">2.78</div>
+                    <div class="value">{{ realisedRR}}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="property">Profit Target</div>
+                    <div class="value">{{ dollar_value_profit }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="property">Stop loss</div>
+                    <div class="value">{{ dollar_value_loss }}</div>
                 </div>
                 <form action="" method="POST">
                     {% csrf_token %}
-                    <div class="detail-row">
-                        <div class="property">Profit Target</div>
-                        <div class="value">
-                            $<input type="text" name="profit_target" 
-                                    value="{{ profit_target|default_if_none:'' }}" 
-                                    placeholder="100.00">
-                        </div>
-                    </div>
-        
-                    {% comment %} {% if profit_target %}
-                        <div class="detail-row">
-                            <div class="property">Profit target</div>
-                            <div class="value">${{ profit_target }}</div>
-                        </div>
-                    {% else %}
-                        <div class="detail-row">
-                            <div class="property">Profit target</div>
-                            <div class="value">$<input type="text" name="profit_target"  placeholder="100.00"></div>
-                        </div>
-                    {% endif %} {% endcomment %}
                     
-                    <div class="detail-row">
-                        <div class="property">Stop loss</div>
-                        <div class="value">$<input type="text" name="stop_loss"  placeholder="25.00"></div>
-                    </div>
-                    <div class="detail-row">
-                        <div class="property">Planned R Multiple</div>
-                        <div class="value">{{ planned_R_Multiple }}</div>
-                    </div>
                     <div class="detail-row">
                         <div class="property">Setups</div>
                         <div class="value">

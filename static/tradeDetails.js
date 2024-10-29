@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (asset === "XAUUSD"){
         symbol = "FX_IDC:XAUUSD";
     }else{
-        symbol = `FX:${asset}`;
+        symbol = `FX:${asset.slice(0, -1)}`;
     }
     
     new TradingView.widget({
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         "calendar": true,
         "studies": [],
         "container": "forex-chart"
-    });
+    }); 
 });
 
 

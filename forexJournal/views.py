@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 import pandas as pd
 from .models import TradesModel, AccountBalance, ProcessedProfit, StrategyModel
-from django.db.models import Sum, Count, Q, Max, Avg
+from django.db.models import Sum, Count, Q, Max, Avg, F, Case, When, IntegerField
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from django.utils import timezone
 from django.shortcuts import redirect
@@ -15,6 +15,10 @@ import MetaTrader5 as mt5
 from django.contrib import messages
 from django.http import HttpResponse
 from datetime import datetime, timedelta
+import numpy as np
+import calendar
+
+
 
 import logging
 
@@ -57,6 +61,50 @@ def calculateProfitFactor(profitable_value, losing_value):
 def tradeExpectancy(win_rate, average_profit, average_loss):
     win_rate_decimal = win_rate / 100
     return (win_rate_decimal * average_profit) - ((1 - win_rate_decimal) * average_loss)
+
+def calculateRealisedRR(open_price, close_price, stop_loss):
+    stop_loss_value = Decimal(stop_loss) if stop_loss else Decimal("0")
+    risk = abs(open_price - stop_loss_value)
+    reward = abs(close_price - open_price)
+    
+    return round(reward / risk if risk != 0 else Decimal("0"), 2)
+    
+    
+def calculateTakeProfitValue(symbol, entry_price, stop_loss, take_profit, lot_size):
+    # Initialize the MT5 connection
+    if not mt5.initialize():
+        print("Failed to initialize MT5")
+        quit()
+
+    # Ensure the symbol is available in MT5
+    if not mt5.symbol_select(symbol, True):
+        print(f"Failed to select symbol {symbol}")
+        mt5.shutdown()
+        quit()
+
+    # Get the symbol information
+    symbol_info = mt5.symbol_info(symbol)
+
+    if symbol_info is None:
+        print(f"Symbol information for {symbol} not found")
+        mt5.shutdown()
+        quit()
+
+    # Calculate the distance in points
+    sl_points = float(abs(entry_price - stop_loss)) / symbol_info.point
+    tp_points = float(abs(take_profit - entry_price)) / symbol_info.point
+    print(f"tp - ep is {take_profit} - {entry_price}")
+
+    # Calculate the dollar value for SL and TP
+    sl_dollar_value = sl_points * symbol_info.trade_tick_value * float(lot_size)
+    tp_dollar_value = tp_points * symbol_info.trade_tick_value * float(lot_size)
+
+
+    # Shutdown the MT5 connection
+    mt5.shutdown()
+    return {"stop_loss_value": sl_dollar_value, "take_profit_value": tp_dollar_value}
+    
+    
     
 
 
@@ -122,9 +170,9 @@ def forex(requests):
         return 0
     
     average_loss = float(averageLoss())
-    win_rate_in_decimal = float(winRate / 100)
+
     
-    trade_expectancy = (win_rate_in_decimal * average_profit) - ((1 - win_rate_in_decimal) * average_loss)
+    trade_expectancy = tradeExpectancy(winRate, average_profit, average_loss)
     factor = Profitfactor()
     format_factor = "{:.2f}".format(factor)
     
@@ -296,8 +344,15 @@ def trade_details(request, trade_id):
     strategies = StrategyModel.objects.all().values()
     trade = TradesModel.objects.filter(ticket=trade_id).values().first()
 
+    dollar_values = calculateTakeProfitValue(
+        trade["symbol"], 
+        trade["opening_price"], 
+        trade["stop_loss"], 
+        trade["take_profit"], 
+        trade["lot_size"]
+    )  
     profit_before_change = float(trade["profit_usd"])
-    trade["symbol"] = trade["symbol"][:-1]
+    trade["symbol"] = trade["symbol"] #[:-1]
     before_change = trade["opening_time"]
     trade["opening_time"] = trade["opening_time"].strftime('%a, %b %d, %Y')
     trade["profit_usd"] =  Money(round(trade["profit_usd"], 2), "USD")             
@@ -313,7 +368,12 @@ def trade_details(request, trade_id):
     trade["duration_mins"] = int(minutes)
     trade["duration_secs"] = int(seconds)
     trade["strategies"] = strategies
+    trade["realisedRR"] = calculateRealisedRR(trade["opening_price"], trade["closing_price"], trade["stop_loss"])
+    trade["dollar_value_profit"] = Money(dollar_values["take_profit_value"], "USD")
+    trade["dollar_value_loss"] = Money(dollar_values["stop_loss_value"], "USD")
     print(trade)
+    
+    
     
     # strategy_used = StrategyModel.objects.get(id=trade["strategy_id"])
     try:
@@ -355,8 +415,133 @@ def strategy_reports(request, strategy_id):
     profitable = trades.filter(profit_usd__gt=0).count()
     total_trades = trades.count()
     
-    def calculateRR():
-        pass
+    average_profit = trades.filter(profit_usd__gt=0).aggregate(Avg("profit_usd"))["profit_usd__avg"]
+    average_loss = trades.filter(profit_usd__lt=0).aggregate(Avg("profit_usd"))["profit_usd__avg"]
+    
+    def most_profitable_pair():
+        # Assuming profit is a field in your Trade model
+        pairs = trades.values('symbol').annotate(total_profit=Sum('profit_usd')).order_by('-total_profit')
+        return pairs.first() if pairs.exists() else (None, 0)
+
+    # def most_profitable_day():
+    #     # Assuming trade_date is a DateField in your Trade model
+    #     days = trades.extra(select={'day': 'DATE(opening_time)'}).values('day').annotate(total_profit=Sum('profit_usd')).order_by('-total_profit')
+    #     return days.first() if days.exists() else (None, 0)
+
+    def most_profitable_day():
+        # Sum profits for each day of the week
+        profits_by_day = (
+            trades
+            .annotate(day_of_week=Case(
+                When(opening_time__week_day=2, then=0),  # Monday
+                When(opening_time__week_day=3, then=1),  # Tuesday
+                When(opening_time__week_day=4, then=2),  # Wednesday
+                When(opening_time__week_day=5, then=3),  # Thursday
+                When(opening_time__week_day=6, then=4),  # Friday
+                When(opening_time__week_day=7, then=5),  # Saturday
+                When(opening_time__week_day=1, then=6),  # Sunday
+                output_field=IntegerField(),
+            ))
+            .values('day_of_week')
+            .annotate(total_profit=Sum('profit_usd'))  # Sum of profits per day
+            .order_by('-total_profit')  # Sort by highest profit
+        )
+
+        # Find the most profitable day
+        if profits_by_day:
+            most_profitable = profits_by_day[0]  # Get the top entry with highest profit
+            most_profitable_day_name = calendar.day_name[most_profitable['day_of_week']]
+            return most_profitable_day_name, most_profitable['total_profit']
+        else:
+            return None, 0
+
+    def most_losing_day():
+        # Sum losses for each day of the week
+        losses_by_day = (
+            trades
+            .annotate(day_of_week=Case(
+                When(opening_time__week_day=2, then=0),  # Monday
+                When(opening_time__week_day=3, then=1),  # Tuesday
+                When(opening_time__week_day=4, then=2),  # Wednesday
+                When(opening_time__week_day=5, then=3),  # Thursday
+                When(opening_time__week_day=6, then=4),  # Friday
+                When(opening_time__week_day=7, then=5),  # Saturday
+                When(opening_time__week_day=1, then=6),  # Sunday
+                output_field=IntegerField(),
+            ))
+            .values('day_of_week')
+            .annotate(total_loss=Sum('profit_usd'))  # Sum of losses per day
+            .filter(total_loss__lt=0)  # Filter only negative totals
+            .order_by('total_loss')  # Sort by highest loss (most negative)
+        )
+
+        # Find the most losing day
+        if losses_by_day:
+            most_losing = losses_by_day[0]  # Get the top entry with highest loss
+            most_losing_day_name = calendar.day_name[most_losing['day_of_week']]
+            return most_losing_day_name, most_losing['total_loss']
+        else:
+            return None, 0
+
+    
+    def most_traded_pair():
+        counter = (
+            trades.values("symbol")
+            .annotate(pair_count=Count("symbol"))
+            .order_by("-pair_count")
+        )
+        
+        if counter.exists():
+            most_traded = counter.first()
+            return most_traded["symbol"], most_traded["pair_count"]
+        else:
+            return None, 0
+    
+    
+    def calculate_average_trade_duration_excluding_weekends():
+        # Get trades for the strategy
+        
+        total_duration = timedelta(0)
+        count = 0
+
+        # Loop through each trade and calculate weekday duration
+        for trade in trades:
+            entry_date = trade.opening_time.date()
+            exit_date = trade.closing_time.date()
+            
+            # Calculate business days between entry and exit
+            business_days = np.busday_count(entry_date, exit_date)
+            
+            # Estimate daily duration as trade's total duration divided by business days
+            total_trade_duration = (trade.closing_time - trade.opening_time)
+            
+            # Scale total duration to weekdays
+            weekday_duration = total_trade_duration * (business_days / ((exit_date - entry_date).days or 1))
+            
+            total_duration += weekday_duration
+            count += 1
+
+        # Calculate average duration if there are any trades
+        avg_duration = total_duration / count if count else timedelta(0)
+        
+        # Convert to hours, minutes, and seconds
+        total_seconds = int(avg_duration.total_seconds())
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        # Format the output string
+        return f"{hours}hrs {minutes}min {seconds}secs"
+        
+    
+    
+    
+    def calculate_total_RR():
+        total_rr = Decimal(0)
+        
+        for trade in trades:
+            total_rr += trade.planned_R_Multiple
+            
+        return total_rr
     
     
     def consecutiveWins():
@@ -396,10 +581,17 @@ def strategy_reports(request, strategy_id):
     context["win_rate"] = calculateWinRate(profitable, total_trades)
     context["largest_profit"] = Money(trades.filter(profit_usd__gt=0).aggregate(Max("profit_usd"))["profit_usd__max"], "USD")
     context["largest_loss"] = Money(trades.filter(profit_usd__lt=0).aggregate(Max("profit_usd"))["profit_usd__max"], "USD")
-    context["avg_profit"] = Money(trades.filter(profit_usd__gt=0).aggregate(Avg("profit_usd"))["profit_usd__avg"], "USD")
-    context["avg_loss"] = Money(trades.filter(profit_usd__lt=0).aggregate(Avg("profit_usd"))["profit_usd__avg"], "USD")
+    context["avg_profit"] = Money(average_profit, "USD")
+    context["avg_loss"] = Money(average_loss, "USD")
     context["max_con_wins"] = consecutiveWins()
     context["max_con_loss"] = consecutiveLoss()
+    context["trade_expectancy"] = Money(tradeExpectancy(context["win_rate"], float(average_profit),  abs(float(average_loss))), "USD")
+    context["total_rr"] = calculate_total_RR()
+    context["average_duration"] = calculate_average_trade_duration_excluding_weekends()
+    context["most_traded"], context["pair_count"] = most_traded_pair()
+    context['most_profitable'] = most_profitable_pair()["symbol"]
+    context['most_profitable_day'], context["profit"] = most_profitable_day()
+    context['most_losing_day'], context["loss"] = most_losing_day()
     
     
     return render(request, f"{PATH}/strategyReports.html", context)
