@@ -137,22 +137,22 @@ new Chart(barChart, {
 })
 
 
-const tradeData = [
-    { date: '2024-10-01', pnl: 300.13 },
-    { date: '2024-10-03', pnl: -280 },
-    { date: '2024-10-05', pnl: 600.20 },
-    { date: '2024-10-06', pnl: -157.24 },
-    { date: '2024-10-10', pnl: -100 },
-    { date: '2024-10-12', pnl: 28.30 },
-    { date: '2024-10-15', pnl: 53 },
-    { date: '2024-10-17', pnl: -10.9 },
-    { date: '2024-10-19', pnl: 215 },
-    { date: '2024-10-21', pnl: 433 },
-];
+// const tradeData = [
+//     { date: '2024-10-01', pnl: 300.13 },
+//     { date: '2024-10-03', pnl: -280 },
+//     { date: '2024-10-05', pnl: 600.20 },
+//     { date: '2024-10-06', pnl: -157.24 },
+//     { date: '2024-10-10', pnl: -100 },
+//     { date: '2024-10-12', pnl: 28.30 },
+//     { date: '2024-10-15', pnl: 53 },
+//     { date: '2024-10-17', pnl: -10.9 },
+//     { date: '2024-10-19', pnl: 215 },
+//     { date: '2024-10-21', pnl: 433 },
+// ];
 
 
 let cumulativePnL = 0;
-const chartData = tradeData.map(trade => {
+const chartData = window.TradeData.map(trade => {
     cumulativePnL += trade.pnl;
     return{
         date: trade.date,

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 import pandas as pd
 from .models import TradesModel, AccountBalance, ProcessedProfit, StrategyModel
-from django.db.models import Sum, Count, Q, Max, Avg, F, Case, When, IntegerField
+from django.db.models import Sum, Count, Q, Max, Avg, F, Case, When, Value, CharField
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from django.utils import timezone
 from django.shortcuts import redirect
@@ -428,61 +428,70 @@ def strategy_reports(request, strategy_id):
     #     days = trades.extra(select={'day': 'DATE(opening_time)'}).values('day').annotate(total_profit=Sum('profit_usd')).order_by('-total_profit')
     #     return days.first() if days.exists() else (None, 0)
 
-    def most_profitable_day():
-        # Sum profits for each day of the week
-        profits_by_day = (
+    def get_most_profitable_day():
+        profit_by_day = (
             trades
             .annotate(day_of_week=Case(
-                When(opening_time__week_day=2, then=0),  # Monday
-                When(opening_time__week_day=3, then=1),  # Tuesday
-                When(opening_time__week_day=4, then=2),  # Wednesday
-                When(opening_time__week_day=5, then=3),  # Thursday
-                When(opening_time__week_day=6, then=4),  # Friday
-                When(opening_time__week_day=7, then=5),  # Saturday
-                When(opening_time__week_day=1, then=6),  # Sunday
-                output_field=IntegerField(),
+                When(opening_time__week_day=2, then=Value('Monday')),
+                When(opening_time__week_day=3, then=Value('Tuesday')),
+                When(opening_time__week_day=4, then=Value('Wednesday')),
+                When(opening_time__week_day=5, then=Value('Thursday')),
+                When(opening_time__week_day=6, then=Value('Friday')),
+                When(opening_time__week_day=7, then=Value('Saturday')),
+                When(opening_time__week_day=1, then=Value('Sunday')),
+                output_field=CharField()
             ))
             .values('day_of_week')
-            .annotate(total_profit=Sum('profit_usd'))  # Sum of profits per day
-            .order_by('-total_profit')  # Sort by highest profit
+            .annotate(total_profit=Sum('profit_usd'))
         )
 
-        # Find the most profitable day
-        if profits_by_day:
-            most_profitable = profits_by_day[0]  # Get the top entry with highest profit
-            most_profitable_day_name = calendar.day_name[most_profitable['day_of_week']]
-            return most_profitable_day_name, most_profitable['total_profit']
-        else:
-            return None, 0
+        profit_list = list(profit_by_day)
 
-    def most_losing_day():
-        # Sum losses for each day of the week
-        losses_by_day = (
+        most_profitable_day = max(profit_list, key=lambda x: x['total_profit'], default=None)
+
+        return most_profitable_day['day_of_week'] if most_profitable_day["day_of_week"] else None
+
+    def get_most_losing_day():
+        profit_by_day = (
             trades
             .annotate(day_of_week=Case(
-                When(opening_time__week_day=2, then=0),  # Monday
-                When(opening_time__week_day=3, then=1),  # Tuesday
-                When(opening_time__week_day=4, then=2),  # Wednesday
-                When(opening_time__week_day=5, then=3),  # Thursday
-                When(opening_time__week_day=6, then=4),  # Friday
-                When(opening_time__week_day=7, then=5),  # Saturday
-                When(opening_time__week_day=1, then=6),  # Sunday
-                output_field=IntegerField(),
+                When(opening_time__week_day=2, then=Value('Monday')),
+                When(opening_time__week_day=3, then=Value('Tuesday')),
+                When(opening_time__week_day=4, then=Value('Wednesday')),
+                When(opening_time__week_day=5, then=Value('Thursday')),
+                When(opening_time__week_day=6, then=Value('Friday')),
+                When(opening_time__week_day=7, then=Value('Saturday')),
+                When(opening_time__week_day=1, then=Value('Sunday')),
+                output_field=CharField()
             ))
             .values('day_of_week')
-            .annotate(total_loss=Sum('profit_usd'))  # Sum of losses per day
-            .filter(total_loss__lt=0)  # Filter only negative totals
-            .order_by('total_loss')  # Sort by highest loss (most negative)
+            .annotate(total_profit=Sum('profit_usd'))
         )
 
-        # Find the most losing day
-        if losses_by_day:
-            most_losing = losses_by_day[0]  # Get the top entry with highest loss
-            most_losing_day_name = calendar.day_name[most_losing['day_of_week']]
-            return most_losing_day_name, most_losing['total_loss']
-        else:
-            return None, 0
+        
 
+        most_losing_day = min(profit_by_day, key=lambda x: x['total_profit'], default=None)
+        return most_losing_day['day_of_week'] if most_losing_day else None
+
+    def get_trade_data():
+        # Query to retrieve trades with opening date and profit
+        new_form_trade = (
+            trades.values(
+                date=F('opening_time__date'),  # Extract the date part only
+                pnl=F('profit_usd')
+            )
+        )
+
+        # Format the trade data into the required structure
+        trade_data = [
+            {'date': trade['date'].strftime('%Y-%m-%d'), 'pnl': float(trade['pnl'])}
+            for trade in new_form_trade
+        ]
+        
+        return trade_data    
+    
+    
+    
     
     def most_traded_pair():
         counter = (
@@ -568,6 +577,10 @@ def strategy_reports(request, strategy_id):
         
         return max_consecutive_loss
         
+    most_profitable_day = get_most_profitable_day()
+    most_losing_day = get_most_losing_day()
+    data = get_trade_data()
+
     
     context = {}
     
@@ -590,8 +603,9 @@ def strategy_reports(request, strategy_id):
     context["average_duration"] = calculate_average_trade_duration_excluding_weekends()
     context["most_traded"], context["pair_count"] = most_traded_pair()
     context['most_profitable'] = most_profitable_pair()["symbol"]
-    context['most_profitable_day'], context["profit"] = most_profitable_day()
-    context['most_losing_day'], context["loss"] = most_losing_day()
+    context['most_profitable_day'] = most_profitable_day
+    context['most_losing_day'] = most_losing_day 
+    context["trade_data"] = data                
     
     
     return render(request, f"{PATH}/strategyReports.html", context)

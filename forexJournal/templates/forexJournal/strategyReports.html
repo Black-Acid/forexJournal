@@ -185,6 +185,7 @@
         window.totalTrades = {{ trades_total|safe}};
         window.profitableTrades = {{ profitable_trades|safe}}
         window.losingTrades = {{ losing_trades|safe}}
+        window.TradeData = {{ trade_data|safe }}
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'strategy-report.js' %}"></script>
