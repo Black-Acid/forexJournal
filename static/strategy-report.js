@@ -106,10 +106,10 @@ const barChart = document.querySelector(".bar-canvas")
 new Chart(barChart, {
     type: "bar",
     data:{
-        labels: ["GBPUSD", "XAUUSD", "USDJPY"],
+        labels: window.symbolData,
         datasets: [{
             label: "PnL",
-            data: [200, -54, 152],
+            data: window.symbolValues,
             backgroundColor: function(context){
                 const value = context.raw;
                 return value >= 0 ? "#6dc407" : "#7f8c8d"

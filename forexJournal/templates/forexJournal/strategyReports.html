@@ -133,51 +133,23 @@
                     <th>Risk Reward ratio</th>
                     <th>Strategy</th>
                 </tr>
-                <tr>
-                    <td>GBPUSD</td>
-                    <td>20/07/2024</td>
-                    <td>Buy</td>
-                    <td>0.1</td>
-                    <td>1.23425</td>
-                    <td>1.33214</td>
-                    <td>$25.74</td>
-                    <td>102.33</td>
-                    <td>88.43</td>
-                    <td>4.2</td>
-                    <td>DUST</td>
-                </tr>
-                <tr>
-                    <td>GBPUSD</td>
-                    <td>20/07/2024</td>
-                    <td>Buy</td>
-                    <td>0.1</td>
-                    <td>1.23425</td>
-                    <td>1.33214</td>
-                    <td>$25.74</td>
-                    <td>102.33</td>
-                    <td>88.43</td>
-                    <td>4.2</td>
-                    <td>DUST</td>
-                </tr>
-                <tr>
-                    <td>GBPUSD</td>
-                    <td>20/07/2024</td>
-                    <td>Buy</td>
-                    <td>0.1</td>
-                    <td>1.23425</td>
-                    <td>1.33214</td>
-                    <td>$25.74</td>
-                    <td>102.33</td>
-                    <td>88.43</td>
-                    <td>4.2</td>
-                    <td>DUST</td>
-                </tr>
+                {% for trade in all_trades%}
+                    <tr>
+                        <td>{{ trade.symbol }}</td>
+                        <td>{{ trade.opening_time|date:"Y-m-d" }}</td>
+                        <td>{{ trade.order_type}}</td>
+                        <td>{{ trade.lot_size}}</td>
+                        <td>{{ trade.opening_price}}</td>
+                        <td>{{ trade.closing_price}}</td>
+                        <td>{{ trade.stop_loss_value }}</td>
+                        <td>{{ trade.profit_target }}</td>
+                        <td>{{ trade.profit_usd }}</td>
+                        <td>{{ trade.planned_R_Multiple}}</td>
+                        <td>{{ trade.strategy.strategy_name}}</td>
+                    </tr>
+                {% endfor %}
             </table>
         </div>
-
-
-
-
 
     </main>
     
@@ -186,6 +158,8 @@
         window.profitableTrades = {{ profitable_trades|safe}}
         window.losingTrades = {{ losing_trades|safe}}
         window.TradeData = {{ trade_data|safe }}
+        window.symbolData = {{ bar_chart_symbols|safe }}
+        window.symbolValues = {{ bar_chart_values|safe }}
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'strategy-report.js' %}"></script>

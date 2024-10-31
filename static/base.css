@@ -95,7 +95,7 @@ li .active{
 
 .sync-modal{
     background: rgb(232, 243, 221);
-    position: absolute;
+    position: fixed;
     top: 23%;
     left: 38%;
     width: 30%;

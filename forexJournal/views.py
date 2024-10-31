@@ -93,7 +93,7 @@ def calculateTakeProfitValue(symbol, entry_price, stop_loss, take_profit, lot_si
     # Calculate the distance in points
     sl_points = float(abs(entry_price - stop_loss)) / symbol_info.point
     tp_points = float(abs(take_profit - entry_price)) / symbol_info.point
-    print(f"tp - ep is {take_profit} - {entry_price}")
+    
 
     # Calculate the dollar value for SL and TP
     sl_dollar_value = sl_points * symbol_info.trade_tick_value * float(lot_size)
@@ -109,7 +109,7 @@ def calculateTakeProfitValue(symbol, entry_price, stop_loss, take_profit, lot_si
 
 
 def forex(requests):
-    trades = TradesModel.objects.all()
+    trades_instance = TradesModel.objects.all()
     account_balance, created = AccountBalance.objects.get_or_create(id=1)
     processed_profit, created = ProcessedProfit.objects.get_or_create(id=1)
     number_of_trades = TradesModel.objects.count()
@@ -122,6 +122,21 @@ def forex(requests):
     rounded_losing = total_losing_value.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
     
     
+    if trades_instance:
+        for value in trades_instance.iterator():
+            symbol = value.symbol
+            entry_price = value.opening_price
+            take_profit_price = value.take_profit or 0
+            stop_loss_value = value.stop_loss or 0
+            size = value.lot_size
+            value.stop_loss_value = calculateTakeProfitValue(symbol, entry_price, stop_loss_value, take_profit_price, size)["stop_loss_value"]
+            value.profit_target = calculateTakeProfitValue(symbol, entry_price, stop_loss_value, take_profit_price, size)["take_profit_value"]
+            value.save(update_fields=["stop_loss_value", "profit_target"])
+            value.refresh_from_db()
+                      
+        
+    
+        
     winRate = (profitable_trades / number_of_trades) * PERCENT
     
     average_profit = float(rounded_total_profitable_value / profitable_trades)
@@ -133,13 +148,13 @@ def forex(requests):
     percentageIncrease = ((float(current_balance) - DEFAULT_BALANCE) / DEFAULT_BALANCE) * PERCENT
     
     if TradesModel.objects.exists():
-        for trade in trades:
+        for trade in trades_instance:
             
             try:
                 # Ensure all values are valid Decimals or default to 0 if not available
                 open_price = Decimal(trade.opening_price) if trade.opening_price else Decimal('0')
                 stop_loss = Decimal(trade.stop_loss) if trade.stop_loss else Decimal('0')
-                take_profit = Decimal(trade.take_profit) if trade.take_profit else Decimal('0')
+                take_profit = Decimal(trade.take_profit) if trade.take_profit else Decimal(1)
                 
                 # Calculate risk and reward
                 risk = abs(open_price - stop_loss)
@@ -582,6 +597,24 @@ def strategy_reports(request, strategy_id):
     data = get_trade_data()
 
     
+    symbol_data = list(set((obj.symbol for obj in trades.iterator())))
+    
+    symbol_data_values = []
+    
+    def sum_of_symbol(symbol):
+        total = 0
+        for values in trades.filter(symbol=symbol).iterator():
+            total += values.profit_usd
+            
+        return total
+    
+    for symbol in symbol_data:
+        value = sum_of_symbol(symbol)
+        symbol_data_values.append(float(value))
+    
+    
+    
+    
     context = {}
     
     context["name"] = strategy.strategy_name
@@ -606,7 +639,12 @@ def strategy_reports(request, strategy_id):
     context['most_profitable_day'] = most_profitable_day
     context['most_losing_day'] = most_losing_day 
     context["trade_data"] = data                
+    context["bar_chart_symbols"] = symbol_data
+    context["bar_chart_values"] = symbol_data_values if symbol_data_values else 0
+    context["all_trades"] = trades
     
+   
+        
     
     return render(request, f"{PATH}/strategyReports.html", context)
     
