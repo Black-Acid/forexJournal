@@ -35,6 +35,10 @@ main::-webkit-scrollbar-thumb{
     border-radius: 10px;
 }
 
+main h1{
+    text-align: center;
+}
+
 .container:not(h1){
     display: flex;
 }
@@ -159,6 +163,10 @@ main::-webkit-scrollbar-thumb{
     /* background-color: blue; */
     height: 25rem;
     margin: 0 1rem;
+}
+
+.line-chart h2{
+    text-align: center;
 }
 
 .canvas-line-chart{

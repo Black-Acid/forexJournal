@@ -24,11 +24,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 # Create your views here.
-mt5_login = 191127350
-mt5_password =  "AceBlacK431@"
-mt5_server =  "Exness-MT5Trial"
+
 
 def connect_to_mt5():
+    mt5_login = 191127350
+    mt5_password =  "AceBlacK431@"
+    mt5_server =  "Exness-MT5Trial"
     if not mt5.initialize():
         logger.error("Failed to initialize MT5")
         return False
@@ -642,7 +643,8 @@ def strategy_reports(request, strategy_id):
     context["bar_chart_symbols"] = symbol_data
     context["bar_chart_values"] = symbol_data_values if symbol_data_values else 0
     context["all_trades"] = trades
-    
+    context["winning_buys"] = trades.filter(order_type="buy", profit_usd__gt=0).count()
+    context["winning_sells"] = trades.filter(order_type="sell", profit_usd__gt=0).count()
    
         
     

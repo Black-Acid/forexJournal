@@ -115,7 +115,7 @@
             </div>
         </div>
         <div class="line-chart">
-            <h2>Strategy performance overtime</h2>
+            <h2>Strategy Performance Overtime</h2>
             <canvas class="canvas-line-chart"></canvas>
         </div>
         <div class="table">
@@ -160,6 +160,8 @@
         window.TradeData = {{ trade_data|safe }}
         window.symbolData = {{ bar_chart_symbols|safe }}
         window.symbolValues = {{ bar_chart_values|safe }}
+        window.winBuys = {{ winning_buys|safe}}
+        window.winSells = {{ winning_sells|safe}}
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'strategy-report.js' %}"></script>

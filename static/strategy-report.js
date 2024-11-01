@@ -81,7 +81,7 @@ new Chart(secondChart, {
         labels: ["long", "short"],
         datasets: [{
             label: "trades",
-            data: [7, 9],
+            data: [window.winBuys, window.winSells],
             backgroundColor: [
                 "#6dc407",
                 "#7f8c8d"
