@@ -1,3 +1,7 @@
+body{
+    background: black;
+}
+
 main{
     width: 80%;
     height: 85vh;
@@ -5,7 +9,7 @@ main{
     margin: auto;
     display: flex;
     margin-top: 3.5rem;
-    border-radius: 10px;
+    border-radius: 25.5px;
     background: rgb(176, 248, 151) 
 }
 
@@ -20,8 +24,27 @@ main{
 }
 
 .left-part h1{
-    font-size: 3.5rem;
+    font-size: 3rem;
 }
+
+.typewriter{
+    width: fit-content;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 3px solid black;
+    animation: cursor-blink 0.7s step-end infinite;
+}
+
+@keyframes cursor-blink{
+    50% {border-color: transparent;}
+}
+
+
+
+.highlight{
+    color: rgb(3, 226, 3); /* rgb(3, 226, 3) */
+}
+
 
 .left-part h2{
     margin-top: -1.8rem;
@@ -29,12 +52,17 @@ main{
 }
 
 .form-control{
-    width: 30rem;
+    width: 31rem;
     height: 2.5rem;
     margin: 10px 0;
     border: none;
     background: transparent;
     border-bottom: 2px solid rgb(187, 192, 183);
+}
+
+.form-control:focus{
+    outline: none;
+    border-bottom: 2px solid black;
 }
 
 .right-part{
@@ -48,4 +76,32 @@ main{
     object-fit: cover;
     border-radius: 25px;
     /* clip-path: polygon(0% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 0% 100%, 0% 70%, 40% 50%); */
+}
+
+.form-check{
+    margin-top: 1rem;
+}
+
+.form-group a{
+    text-decoration: none;
+    color: rgb(3, 226, 3);
+    margin-left: 15.5rem;
+}
+
+.login-btn{
+    margin-top: 1.5rem;
+    height: 3rem;
+    width: 20rem;
+    border-radius: 15px;
+    border: none;
+    background: rgb(21, 230, 21);
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+form h3 a{
+    text-decoration: none;
+    color: rgb(21, 230, 21);
 }

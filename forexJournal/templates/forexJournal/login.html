@@ -11,7 +11,7 @@
 <body>
     <main>
         <div class="left-part">
-            <h1>Welcome</h1>
+            <h1 class="typewriter">Welcome To <span class="highlight">TradeSync</span>.</h1>
             <h2>Sign in to continue</h2>
             {% if form.errors %}
                 <p style="color: red;">Please correct the error(s) below:</p>
@@ -34,13 +34,14 @@
                     <label class="form-check-label" for="remember_me">Remember Me</label>
                     <a href="">Forgot Password</a>
                 </div>
-                <button type="submit">Sign in</button>
-                <h3>Don't have an account yet?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="">Sign up</a></h3>
+                <button class="login-btn" type="submit">SIGN IN</button>
+                <h3>Don't have an account yet?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url "signup" %}">Sign up</a></h3>
             </form>
         </div>
         <div class="right-part">
             <img src="{% static 'forexJournal/images/UsableFinalLogin.jpg' %}" alt="">
         </div>
     </main>
+    <script src="{% static 'login.js' %}"></script>
 </body>
 </html>
