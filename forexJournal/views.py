@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 import pandas as pd
-from .models import TradesModel, AccountBalance, ProcessedProfit, StrategyModel
+from .models import TradesModel, AccountBalance, ProcessedProfit, StrategyModel, Profile, mt5login
 from django.db.models import Sum, Count, Q, Max, Avg, F, Case, When, Value, CharField
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from django.utils import timezone
@@ -17,6 +17,12 @@ from django.http import HttpResponse
 from datetime import datetime, timedelta
 import numpy as np
 import calendar
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
+from .forms import SignUpForm
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.views import LoginView
+from .forms import CustomLoginForm 
 
 
 
@@ -104,11 +110,45 @@ def calculateTakeProfitValue(symbol, entry_price, stop_loss, take_profit, lot_si
     # Shutdown the MT5 connection
     mt5.shutdown()
     return {"stop_loss_value": sl_dollar_value, "take_profit_value": tp_dollar_value}
-    
-    
-    
 
 
+class CustomLoginView(LoginView):
+    authentication_form = CustomLoginForm  # Use the custom form you created
+    template_name = 'forexJournal/login.html'  # Replace with your actual template file name
+    
+    
+    
+    
+    
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            Profile.objects.create(
+                user=user,
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+            )
+            # Create and save MT5Login
+            mt5_login = mt5login(
+                user=user,
+                login=form.cleaned_data['mt5_login'],
+                password=make_password(form.cleaned_data['mt5_password']),  # Hash the password
+                server=form.cleaned_data['mt5_server'],
+            )
+            mt5_login.save()
+
+            login(request, user)  # Automatically log in the new user
+            return redirect('first-page')  # Redirect to the first page after signup
+    else:
+        form = SignUpForm()
+    return render(request, 'forexJournal/signup.html', {'form': form})
+
+
+
+
+@login_required
 def forex(requests):
     trades_instance = TradesModel.objects.all()
     account_balance, created = AccountBalance.objects.get_or_create(id=1)

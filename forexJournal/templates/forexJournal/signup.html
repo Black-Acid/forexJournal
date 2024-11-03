@@ -1,0 +1,25 @@
+<!-- signup.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+</head>
+<body>
+    <h2>Sign Up</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.first_name.label_tag }} {{ form.first_name }}<br>
+        {{ form.last_name.label_tag }} {{ form.last_name }}<br>
+        {{ form.username.label_tag }} {{ form.username }}<br>
+        {{ form.email.label_tag }} {{ form.email }}<br>
+        {{ form.password1.label_tag }} {{ form.password1 }}<br>
+        {{ form.password2.label_tag }} {{ form.password2 }}<br>
+        {{ form.mt5_login.label_tag }} {{ form.mt5_login }}<br>
+        {{ form.mt5_password.label_tag }} {{ form.mt5_password }}<br>
+        {{ form.mt5_server.label_tag }} {{ form.mt5_server }}<br>
+        <button type="submit">Sign Up</button>
+    </form>
+</body>
+</html>
