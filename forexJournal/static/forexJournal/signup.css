@@ -1,0 +1,226 @@
+body{
+    background-image: url('/static/forexJournal/images/darkbg3.avif');
+    /* Additional styling */
+    background-size: contain; /* Adjusts the background size */
+    background-position: center; 
+    image-rendering: crisp-edges;
+    color: white;
+    font-family: "Roboto", sans-serif;
+}
+
+/* .container{
+    
+} */
+
+.form-box{
+    max-width: 70vw;
+    height: 68vh;
+    margin: auto;
+    /* padding: 1rem; */
+    /* background: red; */
+    margin-top: 8rem;
+    color: black;
+    display: flex;
+    /* flex-direction: column; */
+    border-radius: 15px;
+    background-color: #d4fdad;
+    overflow: hidden;
+
+}
+
+
+.form-box .progress{
+    background: rgb(125, 240, 72);
+    padding: 1rem;
+    width: 35%;
+    padding-top: 4rem;
+    border-radius: 15px;
+    /* margin-top: 3rem; */
+}
+
+.progress .header{
+    font-size: 1.6rem;
+    /* color: #e4fecb; */
+    text-align: center;
+    font-family: "Roboto", sans-serif;
+    font-weight: bold;
+    font-style: normal;
+    white-space: nowrap;
+
+}
+
+.progress .header span{
+    color: white;
+}
+
+.progress .header span .span2{
+   color: rgb(9, 97, 9);  /* rgb(9, 97, 9) */
+}
+
+.progress ul{
+    list-style: none;
+}
+
+
+.progress .progress-steps li{
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2em;
+}
+
+.step-form > span{
+    position: relative;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* margin-right: 1em; */
+    border-radius: 50%;
+    background-color: #cfcfca;
+    z-index: 1;
+}
+
+.progress-steps{
+    margin-top: 2.5rem;
+}
+
+
+.progress-steps li.active > span{
+    color: white;
+    background-color: rgb(1, 44, 1);
+    border: 1px solid white;
+    z-index: 1;
+}
+
+.progress .progress-steps li p span{
+    font-size: 1rem;
+    color: #91918e;
+    font-family: "Roboto", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+
+}
+
+.step-form p{
+    margin-top: 0.7rem;
+    margin-left: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    font-style: normal;
+}
+
+form{
+    width: 100%;
+    margin: 3rem;
+    margin-left: 4rem;
+}
+
+form :where(input){
+    height: 40px;
+    width: 400px;
+    padding: 0 1em;
+    border-radius: 7px;
+    outline-color: yellowgreen;
+    border: 1px solid #91918e;
+    background-color: transparent;
+}
+
+
+form .active h2{
+    margin-left: 10rem;
+}
+
+form > div:not(.btns) {
+    display: none;
+    -webkit-animation: fadeIn .6s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+    animation: fadeIn .6s cubic-bezier(0.39, 0.575, 0.565, 1) both;
+}
+
+@keyframes fadeIn{
+    0%{
+        opacity: 0;
+        -webkit-transform: translateY(10%);
+        transform: translateY(10%);
+    }
+    100%{
+        opacity: 1;
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+
+form > div.active{
+    display: block;
+    
+}
+
+.first-form div{
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+}
+.first-form .grid input{
+    width: 18rem;
+}
+
+form .btns{
+    display: flex;
+    /* width: 95%; */
+    flex-wrap: wrap;
+    gap: 1em;
+    margin-top: 4rem;
+    justify-content: center;
+    margin-left: -4rem;
+    /* justify-content: space-between; */
+}
+
+
+.btns [class *="-btn"]{
+    background-color: rgb(24, 32, 22);
+    color: white;
+    padding: 1em 2.5em;
+    border: 2px solid white;
+    border-radius: 15px;
+    cursor: pointer;
+    -webkit-transition: background-color .3s, border-color .3s ease-out;
+    transition: background-color .3s, border-color .3s ease-out;
+}
+
+.btns [class *="-btn"]:disabled{
+    background-color: #91918e;
+    border-color: #c5c5c1;
+    cursor: text;
+}
+
+.btns [class *="-btn"]:hover:not(:disabled){
+    background-color: #2c4125;
+    border-color: #2c4125;
+}
+
+
+.btns .submit-btn,
+.second-form.active ~ .btns .next-btn{
+    display: none;
+}
+
+.second-form.active ~ .btns .submit-btn {
+    display: block;
+}
+
+::placeholder{
+    color: #91918e;
+}
+
+.second-form.active ~ .btn-group{
+    justify-content: space-between;
+}
+
+
+.second-form input{
+    margin-left: 6rem;
+    margin-bottom: 2rem;
+}

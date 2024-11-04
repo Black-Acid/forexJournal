@@ -10,11 +10,41 @@ class CSVfileForm(forms.Form):
     
     
 class SignUpForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30, required=True)
-    last_name = forms.CharField(max_length=30, required=True)
-    mt5_login = forms.CharField(max_length=50, required=True)
-    mt5_password = forms.CharField(max_length=50, widget=forms.PasswordInput, required=True)
-    mt5_server = forms.CharField(max_length=30)
+    first_name = forms.CharField(
+        max_length=30, 
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'First Name'})
+    )
+    last_name = forms.CharField(
+        max_length=30, 
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'Last Name'})
+    )
+    mt5_login = forms.CharField(
+        max_length=50, 
+        required=True,
+        widget=forms.TextInput(attrs={'placeholder': 'MT5 Login'})
+    )
+    mt5_password = forms.CharField(
+        max_length=50, 
+        required=True,
+        widget=forms.PasswordInput(attrs={'placeholder': 'MT5 Password'})
+    )
+    mt5_server = forms.CharField(
+        max_length=30, 
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'MT5 Server'})
+    )
+    password1 = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(attrs={'placeholder': 'Password'}),
+        strip=False,
+    )
+    password2 = forms.CharField(
+        label="Confirm Password",
+        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm Password'}),
+        strip=False,
+    )
     
     class Meta:
         model = User
@@ -29,6 +59,10 @@ class SignUpForm(UserCreationForm):
             'mt5_password', 
             'mt5_server'
         ]
+        widgets = {
+            'username': forms.TextInput(attrs={'placeholder': 'Username'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Email'}),
+        }
         
         
 

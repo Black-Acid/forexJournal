@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from cryptography.fernet import Fernet
+import os
 # Create your models here.
 
 class mt5login(models.Model):
@@ -8,6 +9,27 @@ class mt5login(models.Model):
     login = models.IntegerField()
     password = models.CharField(max_length=50)
     server = models.CharField(max_length=30)
+    
+    
+    def save(self, *args, **kwargs):
+        # Encrypt credentials before saving
+        fernet = Fernet(os.getenv('FERNET_KEY'))
+        if isinstance(self.login, str):
+            self.mt5_login = fernet.encrypt(self.mt5_login.encode())
+        if isinstance(self.password, str):
+            self.mt5_password = fernet.encrypt(self.mt5_password.encode())
+        if isinstance(self.mt5_server, str):
+            self.mt5_server = fernet.encrypt(self.server.encode())
+        
+        # Call the parent class's save method
+        super().save(*args, **kwargs)
+
+    def decrypt_credentials(self):
+        fernet = Fernet(os.getenv('FERNET_KEY'))
+        login = fernet.decrypt(self.login).decode()
+        password = fernet.decrypt(self.password).decode()
+        server = fernet.decrypt(self.server).decode()
+        return login, password, server
     
     
     def __str__(self) -> str:

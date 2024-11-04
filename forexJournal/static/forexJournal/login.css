@@ -1,10 +1,15 @@
 body{
-    background: black;
+    background-image: url('/static/forexJournal/images/darkbg3.avif');
+    /* Additional styling */
+    background-size: contain; /* Adjusts the background size */
+    background-position: center; 
+    image-rendering: crisp-edges;
+    font-family: "Roboto", sans-serif;
 }
 
 main{
     width: 80%;
-    height: 85vh;
+    height: 80vh;
     /* background: red; */
     margin: auto;
     display: flex;

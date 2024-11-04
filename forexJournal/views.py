@@ -134,7 +134,7 @@ def signup(request):
             mt5_login = mt5login(
                 user=user,
                 login=form.cleaned_data['mt5_login'],
-                password=make_password(form.cleaned_data['mt5_password']),  # Hash the password
+                password=form.cleaned_data['mt5_password'],
                 server=form.cleaned_data['mt5_server'],
             )
             mt5_login.save()
@@ -150,6 +150,7 @@ def signup(request):
 
 @login_required
 def forex(requests):
+    print(requests.user)
     trades_instance = TradesModel.objects.all()
     account_balance, created = AccountBalance.objects.get_or_create(id=1)
     processed_profit, created = ProcessedProfit.objects.get_or_create(id=1)
