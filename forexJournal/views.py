@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 import numpy as np
 import calendar
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from .forms import SignUpForm
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.views import LoginView
@@ -116,9 +116,70 @@ class CustomLoginView(LoginView):
     authentication_form = CustomLoginForm  # Use the custom form you created
     template_name = 'forexJournal/login.html'  # Replace with your actual template file name
     
-    
-    
-    
+    def form_valid(self, form):
+        user = form.get_user()
+        login(self.request, user)
+
+        # Fetch user's MT5 credentials
+        try:
+            user_credentials = mt5login.objects.get(user=user)
+        except mt5login.DoesNotExist:
+            print("User does not have MT5 credentials.")
+            return self.form_invalid(form)
+
+        # Initialize MT5
+        if not mt5.initialize():
+            print("MT5 initialization failed")
+            return self.form_invalid(form)
+
+        # Attempt to log in to MT5
+        authorized = mt5.login(
+            login=user_credentials.login,
+            password=user_credentials.password,
+            server=user_credentials.server
+        )
+        
+        if not authorized:
+            print(f"Failed to authorize with login: {user_credentials.login}, error: {mt5.last_error()}")
+            mt5.shutdown()
+            return self.form_invalid(form)
+
+        # Fetch and save trades after successful login
+        self.fetch_and_save_trades(user, user_credentials)
+
+        return super().form_valid(form)
+
+    def fetch_and_save_trades(self, user, user_credentials):
+        # Define a very early date as the default from_date
+        from_date = datetime(2022, 1, 1)  # Adjust as necessary
+        to_date = datetime.now()  # Current date and time
+
+        # Convert datetime to timestamp (seconds since epoch)
+        
+        # Fetch historical orders
+        orders = mt5.history_orders_get(from_date, to_date)
+        deals = mt5.history_deals_get(from_date, to_date)
+        
+        if orders is None:
+            print(f"Failed to get orders, error: {mt5.last_error()}")
+            return
+        
+        print(orders)
+        print(deals)
+        # for order in orders:
+        #     position_id = order.position_id
+            
+            # if not TradesModel.objects.filter(ticket=position_id).exists():
+            #     if position_id == 0:
+            #         continue
+            #     else:
+            #         processing = TradesModel(
+            #             user=user,
+            #             ticket=order.position_id,
+            #             opening_time=3
+            #         )
+
+
     
 def signup(request):
     if request.method == 'POST':
@@ -145,7 +206,9 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'forexJournal/signup.html', {'form': form})
 
-
+def custom_logout_view(request):
+    logout(request)
+    return redirect('login')
 
 
 @login_required

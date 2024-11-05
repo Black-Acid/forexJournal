@@ -2,10 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from cryptography.fernet import Fernet
 import os
+from django.conf import settings
 # Create your models here.
 
 class mt5login(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="mt5_logins")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="mt5_logins", default=1)
     login = models.IntegerField()
     password = models.CharField(max_length=50)
     server = models.CharField(max_length=30)
@@ -46,6 +47,7 @@ class Profile(models.Model):
         return f"{self.first_name} {self.last_name} with {self.user.username}"
 
 class StrategyModel(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="strategies", default=1)
     strategy_name = models.CharField(max_length=100)
     description = models.TextField()
     risk_reward_ratio = models.DecimalField(max_digits=5, decimal_places=2)
@@ -71,6 +73,7 @@ class StrategyModel(models.Model):
 
 
 class TradesModel(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="trades", default=1)
     ticket = models.IntegerField(null=False, unique=True)
     opening_time = models.DateTimeField()
     closing_time = models.DateTimeField()
@@ -100,11 +103,13 @@ class TradesModel(models.Model):
     
     
 class AccountBalance(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="account_balance", default=1)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=500.00)
     profits = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
     last_update = models.DateTimeField(auto_now_add=True)  # Tracks the last update
 
 class ProcessedProfit(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)  # Replace '1' with a valid user ID
     last_processed_profit = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
     
