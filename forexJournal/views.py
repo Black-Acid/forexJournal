@@ -23,6 +23,7 @@ from .forms import SignUpForm
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.views import LoginView
 from .forms import CustomLoginForm 
+from django.db import transaction
 
 
 
@@ -30,6 +31,19 @@ import logging
 
 logger = logging.getLogger(__name__)
 # Create your views here.
+
+def get_order_type_name(order_type):
+    order_type_mapping = {
+        0: "Buy",
+        1: "Sell",
+        2: "Buy Limit",
+        3: "Sell Limit",
+        4: "Buy Stop",
+        5: "Sell Stop",
+        6: "Buy Stop Limit",
+        7: "Sell Stop Limit"
+    }
+    return order_type_mapping.get(order_type, "Unknown")
 
 
 def connect_to_mt5():
@@ -154,7 +168,6 @@ class CustomLoginView(LoginView):
         from_date = datetime(2022, 1, 1)  # Adjust as necessary
         to_date = datetime.now()  # Current date and time
 
-        # Convert datetime to timestamp (seconds since epoch)
         
         # Fetch historical orders
         orders = mt5.history_orders_get(from_date, to_date)
@@ -164,21 +177,45 @@ class CustomLoginView(LoginView):
             print(f"Failed to get orders, error: {mt5.last_error()}")
             return
         
-        print(orders)
-        print(deals)
-        # for order in orders:
-        #     position_id = order.position_id
+        
+        trades_dict = {}
+        for order in orders:
+            position_id = order.position_id
             
-            # if not TradesModel.objects.filter(ticket=position_id).exists():
-            #     if position_id == 0:
-            #         continue
-            #     else:
-            #         processing = TradesModel(
-            #             user=user,
-            #             ticket=order.position_id,
-            #             opening_time=3
-            #         )
+            if position_id not in trades_dict:
+                # Initialize the dictionary for a new trade position
+                trades_dict[position_id] = {
+                    "initial_trade": order,  # Store initial trade details
+                    "modifications": []  # List to hold modifications
+                }
+            else:
+                # If this is a modification, add it to the modifications list
+                trades_dict[position_id]["modifications"].append(order)
 
+        trade_deals_dict = {}
+        for deal in deals:
+            position_id_deal = deal.position_id
+            
+            if position_id_deal not in trade_deals_dict:
+                trade_deals_dict[position_id_deal] = {
+                    "initial_deal": deal,
+                    "modification_deal":[]
+                }
+            else:
+                trade_deals_dict[position_id_deal]["modification_deal"].append(deal)
+        
+        print(trades_dict)
+        
+        # findings
+        # the deals happen to be bringing in the opening price and closing price
+        # that is if there are any modified trades
+        # so we will fetch the opening price from either the initial deals or initial trades
+        # then we will now come and fetch the closing prices at the deals 
+        # we will be left with the stop_loss and the take_profit 
+        # also I have found out that in the comment session the trade status is written there with the
+        # price so It's either I will manipulate it over there and use it for the findings
+        
+        
 
     
 def signup(request):
