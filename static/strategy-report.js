@@ -215,3 +215,79 @@ new Chart(lineChart, {
         }
     }
 })
+
+
+document.getElementById('apply-filter').addEventListener('click', function() {
+    // Get filter values
+    const filterWin = document.getElementById('filter_win').checked;
+    const filterLoss = document.getElementById('filter_loss').checked;
+    const minProfit = parseFloat(document.getElementById('min_profit').value) || -Infinity;
+    const maxProfit = parseFloat(document.getElementById('max_profit').value) || Infinity;
+    const startDate = new Date(document.getElementById('start_date').value);
+    const endDate = new Date(document.getElementById('end_date').value);
+    const searchQuery = document.getElementById('search_pair').value.toLowerCase();
+
+    // Get all rows in the table
+    const rows = document.querySelectorAll('#trade-table tr'); // Adjusted to select all rows
+
+    rows.forEach(row => {
+        // Skip the header row
+        if (row.querySelector('th')) return;
+
+        const profitCell = row.cells[8];  // Profit/Loss column
+        const profitValue = parseFloat(profitCell.textContent.trim());
+        
+        const dateCell = row.cells[1];  // Date column
+        const tradeDate = new Date(dateCell.textContent.trim());
+        
+        const instrumentCell = row.cells[0];  // Instrument column
+        const instrument = instrumentCell.textContent.toLowerCase();
+
+        let showRow = true;
+
+        // Win/Loss filters
+        if (filterWin && profitValue <= 0) {
+            showRow = false;
+        }
+        if (filterLoss && profitValue >= 0) {
+            showRow = false;
+        }
+
+        // Profit range filter
+        if (profitValue < minProfit || profitValue > maxProfit) {
+            showRow = false;
+        }
+
+        // Date range filter
+        if (startDate && tradeDate < startDate) {
+            showRow = false;
+        }
+        if (endDate && tradeDate > endDate) {
+            showRow = false;
+        }
+
+        // Instrument search filter
+        if (searchQuery && !instrument.includes(searchQuery)) {
+            showRow = false;
+        }
+
+        row.style.display = showRow ? '' : 'none';
+    });
+});
+
+// Real-time search for instrument
+document.getElementById('search_pair').addEventListener('input', function() {
+    const searchQuery = this.value.toLowerCase();
+
+    const rows = document.querySelectorAll('#trade-table tr');
+
+    rows.forEach(row => {
+        // Skip the header row
+        if (row.querySelector('th')) return;
+
+        const instrumentCell = row.cells[0];  // Instrument column
+        const instrument = instrumentCell.textContent.toLowerCase();
+
+        row.style.display = instrument.includes(searchQuery) ? '' : 'none';
+    });
+});

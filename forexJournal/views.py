@@ -18,11 +18,11 @@ from datetime import datetime, timedelta
 import numpy as np
 import calendar
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from .forms import SignUpForm
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.views import LoginView
-from .forms import CustomLoginForm 
+from .forms import CustomLoginForm, LoginForm, NewSignUpForm
 from django.db import transaction
 
 
@@ -70,6 +70,8 @@ DEFAULT_BALANCE = ACCOUNT_BALANCE._meta.get_field("balance").default
 
 
 def calculateWinRate(profitableTrades, number_of_trades):
+    if number_of_trades == 0:
+        return "N/A"
     return round((profitableTrades / number_of_trades) * PERCENT, 2)
 
 
@@ -80,6 +82,8 @@ def calculateProfitFactor(profitable_value, losing_value):
 
 
 def tradeExpectancy(win_rate, average_profit, average_loss):
+    if win_rate == "N/A" or average_profit == "N/A" or average_loss == "N/A":
+        return 0
     win_rate_decimal = win_rate / 100
     return (win_rate_decimal * average_profit) - ((1 - win_rate_decimal) * average_loss)
 
@@ -125,86 +129,111 @@ def calculateTakeProfitValue(symbol, entry_price, stop_loss, take_profit, lot_si
     mt5.shutdown()
     return {"stop_loss_value": sl_dollar_value, "take_profit_value": tp_dollar_value}
 
+def auth_view(request):
+    signup_form = NewSignUpForm()
+    login_form = LoginForm()
 
-class CustomLoginView(LoginView):
-    authentication_form = CustomLoginForm  # Use the custom form you created
-    template_name = 'forexJournal/login.html'  # Replace with your actual template file name
+    if request.method == 'POST':
+        if 'signup' in request.POST:  # Sign-up form submitted
+            signup_form = SignUpForm(request.POST)
+            if signup_form.is_valid():
+                user = signup_form.save()
+                login(request, user)  # Log the user in after signing up
+                return redirect('first-page')  # Redirect to the dashboard after signup
+        elif 'login' in request.POST:  # Login form submitted
+            print("I got in")
+            login_form = LoginForm(request, data=request.POST)
+            if login_form.is_valid():
+                user = authenticate(
+                    username=login_form.cleaned_data['username'],
+                    password=login_form.cleaned_data['password']
+                )
+                if user is not None:
+                    login(request, user)
+                    return redirect('first-page')  # Redirect to the dashboard after login
+
+    return render(request, f'{PATH}/login2.html', {'signup_form': signup_form, 'login_form': login_form})
+
+
+# class CustomLoginView(LoginView):
+#     authentication_form = LoginForm # CustomLoginForm  
+#     template_name = 'forexJournal/login2.html'  
     
-    def form_valid(self, form):
-        user = form.get_user()
-        login(self.request, user)
+    # def form_valid(self, form):
+    #     user = form.get_user()
+    #     login(self.request, user)
 
-        # Fetch user's MT5 credentials
-        try:
-            user_credentials = mt5login.objects.get(user=user)
-        except mt5login.DoesNotExist:
-            print("User does not have MT5 credentials.")
-            return self.form_invalid(form)
+    #     # Fetch user's MT5 credentials
+    #     try:
+    #         user_credentials = mt5login.objects.get(user=user)
+    #     except mt5login.DoesNotExist:
+    #         print("User does not have MT5 credentials.")
+    #         return self.form_invalid(form)
 
-        # Initialize MT5
-        if not mt5.initialize():
-            print("MT5 initialization failed")
-            return self.form_invalid(form)
+    #     # Initialize MT5
+    #     if not mt5.initialize():
+    #         print("MT5 initialization failed")
+    #         return self.form_invalid(form)
 
-        # Attempt to log in to MT5
-        authorized = mt5.login(
-            login=user_credentials.login,
-            password=user_credentials.password,
-            server=user_credentials.server
-        )
+    #     # Attempt to log in to MT5
+    #     authorized = mt5.login(
+    #         login=user_credentials.login,
+    #         password=user_credentials.password,
+    #         server=user_credentials.server
+    #     )
         
-        if not authorized:
-            print(f"Failed to authorize with login: {user_credentials.login}, error: {mt5.last_error()}")
-            mt5.shutdown()
-            return self.form_invalid(form)
+    #     if not authorized:
+    #         print(f"Failed to authorize with login: {user_credentials.login}, error: {mt5.last_error()}")
+    #         mt5.shutdown()
+    #         return self.form_invalid(form)
 
-        # Fetch and save trades after successful login
-        self.fetch_and_save_trades(user, user_credentials)
+    #     # Fetch and save trades after successful login
+    #     self.fetch_and_save_trades(user, user_credentials)
 
-        return super().form_valid(form)
+    #     return super().form_valid(form)
 
-    def fetch_and_save_trades(self, user, user_credentials):
-        # Define a very early date as the default from_date
-        from_date = datetime(2022, 1, 1)  # Adjust as necessary
-        to_date = datetime.now()  # Current date and time
+    # def fetch_and_save_trades(self, user, user_credentials):
+    #     # Define a very early date as the default from_date
+    #     from_date = datetime(2022, 1, 1)  # Adjust as necessary
+    #     to_date = datetime.now()  # Current date and time
 
         
-        # Fetch historical orders
-        orders = mt5.history_orders_get(from_date, to_date)
-        deals = mt5.history_deals_get(from_date, to_date)
+    #     # Fetch historical orders
+    #     orders = mt5.history_orders_get(from_date, to_date)
+    #     deals = mt5.history_deals_get(from_date, to_date)
         
-        if orders is None:
-            print(f"Failed to get orders, error: {mt5.last_error()}")
-            return
+    #     if orders is None:
+    #         print(f"Failed to get orders, error: {mt5.last_error()}")
+    #         return
         
         
-        trades_dict = {}
-        for order in orders:
-            position_id = order.position_id
+    #     trades_dict = {}
+    #     for order in orders:
+    #         position_id = order.position_id
             
-            if position_id not in trades_dict:
-                # Initialize the dictionary for a new trade position
-                trades_dict[position_id] = {
-                    "initial_trade": order,  # Store initial trade details
-                    "modifications": []  # List to hold modifications
-                }
-            else:
-                # If this is a modification, add it to the modifications list
-                trades_dict[position_id]["modifications"].append(order)
+    #         if position_id not in trades_dict:
+    #             # Initialize the dictionary for a new trade position
+    #             trades_dict[position_id] = {
+    #                 "initial_trade": order,  # Store initial trade details
+    #                 "modifications": []  # List to hold modifications
+    #             }
+    #         else:
+    #             # If this is a modification, add it to the modifications list
+    #             trades_dict[position_id]["modifications"].append(order)
 
-        trade_deals_dict = {}
-        for deal in deals:
-            position_id_deal = deal.position_id
+    #     trade_deals_dict = {}
+    #     for deal in deals:
+    #         position_id_deal = deal.position_id
             
-            if position_id_deal not in trade_deals_dict:
-                trade_deals_dict[position_id_deal] = {
-                    "initial_deal": deal,
-                    "modification_deal":[]
-                }
-            else:
-                trade_deals_dict[position_id_deal]["modification_deal"].append(deal)
+    #         if position_id_deal not in trade_deals_dict:
+    #             trade_deals_dict[position_id_deal] = {
+    #                 "initial_deal": deal,
+    #                 "modification_deal":[]
+    #             }
+    #         else:
+    #             trade_deals_dict[position_id_deal]["modification_deal"].append(deal)
         
-        print(trades_dict)
+    #     print(trades_dict)
         
         # findings
         # the deals happen to be bringing in the opening price and closing price
@@ -228,6 +257,7 @@ def signup(request):
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name'],
             )
+            print("I'm here")
             # Create and save MT5Login
             mt5_login = mt5login(
                 user=user,
@@ -236,10 +266,14 @@ def signup(request):
                 server=form.cleaned_data['mt5_server'],
             )
             mt5_login.save()
+            print("I'm done")
 
             login(request, user)  # Automatically log in the new user
             return redirect('first-page')  # Redirect to the first page after signup
+        else:
+            print(form.errors)
     else:
+        print("Unsuccessful")
         form = SignUpForm()
     return render(request, 'forexJournal/signup.html', {'form': form})
 
@@ -249,18 +283,21 @@ def custom_logout_view(request):
 
 
 @login_required
-def forex(requests):
-    print(requests.user)
-    trades_instance = TradesModel.objects.all()
-    account_balance, created = AccountBalance.objects.get_or_create(id=1)
-    processed_profit, created = ProcessedProfit.objects.get_or_create(id=1)
-    number_of_trades = TradesModel.objects.count()
-    profitable_trades = TradesModel.objects.filter(profit_usd__gt=0).count()
-    losing_trades = TradesModel.objects.filter(profit_usd__lt=0).count()
-    total_profitable_value = TradesModel.objects.filter(profit_usd__gt=0).aggregate(Sum("profit_usd"))["profit_usd__sum"]
-    rounded_total_profitable_value = round(total_profitable_value, 2)
+def forex(request):
+    logged_in_user = request.user
+    trades_instance = TradesModel.objects.filter(user=logged_in_user)
+    acc_bal = AccountBalance.objects.filter(user=logged_in_user)
+    account_balance, created = AccountBalance.objects.get_or_create(user=logged_in_user)
+    processed_profit, created = ProcessedProfit.objects.get_or_create(user=logged_in_user)
+    number_of_trades = trades_instance.count()
+    profit = trades_instance.filter(profit_usd__gt=0)
+    loss = trades_instance.filter(profit_usd__lt=0)
+    profitable_trades = profit.count()
+    losing_trades = loss.count()
+    total_profitable_value = profit.aggregate(Sum("profit_usd"))["profit_usd__sum"]
+    rounded_total_profitable_value = round(total_profitable_value, 2) if total_profitable_value else 0
     
-    total_losing_value = TradesModel.objects.filter(profit_usd__lt=0).aggregate(Sum("profit_usd"))["profit_usd__sum"] or Decimal(0)
+    total_losing_value = loss.aggregate(Sum("profit_usd"))["profit_usd__sum"] or Decimal(0)
     rounded_losing = total_losing_value.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
     
     
@@ -278,20 +315,20 @@ def forex(requests):
                       
         
     
-        
-    winRate = (profitable_trades / number_of_trades) * PERCENT
+    winRate = calculateWinRate(profitable_trades, number_of_trades)
+    # winRate = (profitable_trades / number_of_trades) * PERCENT
     
-    average_profit = float(rounded_total_profitable_value / profitable_trades)
+    average_profit = float(rounded_total_profitable_value / profitable_trades) if profitable_trades != 0 else 0
     
-    acc_bal = AccountBalance.objects.latest("last_update")
-    current_balance = acc_bal.balance
+    
+    acc_balance = acc_bal.latest("last_update")
+    current_balance = acc_balance.balance
     
 
     percentageIncrease = ((float(current_balance) - DEFAULT_BALANCE) / DEFAULT_BALANCE) * PERCENT
     
-    if TradesModel.objects.exists():
+    if trades_instance.exists():
         for trade in trades_instance:
-            
             try:
                 # Ensure all values are valid Decimals or default to 0 if not available
                 open_price = Decimal(trade.opening_price) if trade.opening_price else Decimal('0')
@@ -333,7 +370,7 @@ def forex(requests):
     factor = Profitfactor()
     format_factor = "{:.2f}".format(factor)
     
-    average_win_loss = "{:.2f}".format(average_profit / average_loss)
+    average_win_loss = "{:.2f}".format(average_profit / (average_loss or 1))
     
     
     
@@ -346,19 +383,21 @@ def forex(requests):
     context["losing_trades"] = losing_trades
     context["profitable_value"] = rounded_total_profitable_value
     context["losing_value"] = rounded_losing
-    context["win_rate"] = round(winRate, 2)
+    context["win_rate"] = round(winRate, 2) if winRate != "N/A" else 0.00
     context["expectancy"] = Money(round(trade_expectancy, 2), "USD")
     context["profit_factor"] = float(format_factor)
     context["average_win_ratio"] = average_win_loss
     context["percentageIncrease"] = round(percentageIncrease, 2)
+    context["user"] = logged_in_user
     
-    if requests.method == "POST":
-        csv_file = requests.FILES.get("csv_file")
+    if request.method == "POST":
+        csv_file = request.FILES.get("csv_file")
         data = pd.read_csv(csv_file)
         
         for index, row in data.iterrows():
-            if not TradesModel.objects.filter(ticket=row['ticket']).exists():
+            if not trades_instance.filter(ticket=row['ticket']).exists():
                 TradesModel.objects.create(
+                    user=logged_in_user,
                     ticket=row['ticket'],
                     opening_time=row['opening_time_utc'],
                     closing_time=row['closing_time_utc'],
@@ -380,7 +419,7 @@ def forex(requests):
                 
 
                 
-        amount = TradesModel.objects.aggregate(Sum("profit_usd"))
+        amount = trades_instance.aggregate(Sum("profit_usd"))
         total_amount_value = Decimal(amount["profit_usd__sum"] or 0.0)
         
         new_profit = total_amount_value - processed_profit.last_processed_profit
@@ -397,12 +436,13 @@ def forex(requests):
 
         
     
-    return render(requests, "forexJournal/forex.html", context)
+    return render(request, "forexJournal/forex.html", context)
 
-
+@login_required
 def reports(requests):
     return render(requests, "forexJournal/reports.html")
 
+@login_required
 def journal(requests):
     context = {}
     trades = TradesModel.objects.all().order_by("-id")
@@ -415,6 +455,7 @@ def journal(requests):
     
     return render(requests, "forexJournal/journal.html", context)
 
+@login_required
 def playBook(request):
     
     
@@ -468,7 +509,7 @@ def playBook(request):
         return redirect("playBook")
     return render(request, f"{PATH}/playBook.html", context)
 
-
+@login_required
 def allTrades(request):
     context = {}
     if request.method == "POST":
@@ -486,16 +527,17 @@ def allTrades(request):
         })
     return render(request, f"{PATH}/alltrades.html", context)
 
+@login_required
 def rules(requests):
     return render(requests, f"{PATH}/rules.html")
 
-
+@login_required
 def get_data(requests):
     data = list(TradesModel.objects.values())
     return JsonResponse(data, safe=False)
 
 
-
+@login_required
 def trade_details(request, trade_id):
     # trade = get_object_or_404(TradesModel, ticket=trade_id)
     strategies = StrategyModel.objects.all().values()
@@ -565,7 +607,7 @@ def trade_details(request, trade_id):
     return render(request, f"{PATH}/tradeDetails.html", trade)
 
 
-
+@login_required
 def strategy_reports(request, strategy_id):
     strategy = StrategyModel.objects.get(id=strategy_id)
     trades = TradesModel.objects.filter(strategy=strategy_id)
@@ -792,7 +834,7 @@ def strategy_reports(request, strategy_id):
     return render(request, f"{PATH}/strategyReports.html", context)
     
     
-
+@login_required
 def sync_MT5(request):
     print("MT5 sync function started", flush=True)
     
@@ -848,12 +890,12 @@ def sync_MT5(request):
     return HttpResponse('Invalid request', status=400)
 
 
-
+@login_required
 def backtestingPage(request):
     return render(request, f"{PATH}/backtestingPage.html")
 
 
-
+@login_required
 def fetch_historical_data(request):
     # Connect to MT5
     if not connect_to_mt5():

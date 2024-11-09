@@ -118,8 +118,37 @@
             <h2>Strategy Performance Overtime</h2>
             <canvas class="canvas-line-chart"></canvas>
         </div>
+        <form id="trade-filter-form">
+            <!-- Win/Loss Filter Options -->
+            <label>
+                <input type="checkbox" name="filter_win" id="filter_win"> Winning Trades
+            </label>
+            <label>
+                <input type="checkbox" name="filter_loss" id="filter_loss"> Losing Trades
+            </label>
+            
+            
+            <label for="min_profit">Min Profit:</label>
+            <input type="number" name="min_profit" id="min_profit" placeholder="Min Profit">
+        
+            <label for="max_profit">Max Profit:</label>
+            <input type="number" name="max_profit" id="max_profit" placeholder="Max Profit">
+        
+            <!-- Asset Pair Search -->
+            <label for="search_pair">Search Asset Pair:</label>
+            <input type="text" name="search_pair" id="search_pair" placeholder="e.g., GBPUSD">
+            
+
+            <label for="start_date">Start Date:</label>
+            <input type="date" id="start_date">
+        
+            <label for="end_date">End Date:</label>
+            <input type="date" id="end_date">
+
+            <button type="button" id="apply-filter">Apply Filters</button>
+        </form>
         <div class="table">
-            <table>
+            <table id="trade-table">
                 <tr>
                     <th>Instrument</th>
                     <th>Date</th>

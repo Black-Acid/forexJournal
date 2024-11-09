@@ -7,7 +7,7 @@ from django.conf import settings
 
 class mt5login(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="mt5_logins", default=1)
-    login = models.IntegerField()
+    login = models.CharField(max_length=100)
     password = models.CharField(max_length=50)
     server = models.CharField(max_length=30)
     
@@ -16,11 +16,11 @@ class mt5login(models.Model):
         # Encrypt credentials before saving
         fernet = Fernet(os.getenv('FERNET_KEY'))
         if isinstance(self.login, str):
-            self.mt5_login = fernet.encrypt(self.mt5_login.encode())
+            self.login = fernet.encrypt(self.login.encode())
         if isinstance(self.password, str):
-            self.mt5_password = fernet.encrypt(self.mt5_password.encode())
-        if isinstance(self.mt5_server, str):
-            self.mt5_server = fernet.encrypt(self.server.encode())
+            self.password = fernet.encrypt(self.password.encode())
+        if isinstance(self.server, str):
+            self.server = fernet.encrypt(self.server.encode())
         
         # Call the parent class's save method
         super().save(*args, **kwargs)

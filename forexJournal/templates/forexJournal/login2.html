@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+    <link rel="stylesheet" href="{% static 'forexJournal/login2.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"  crossorigin="anonymous">
+
+
+</head>
+<body>
+    <main>
+        <div class="wrapper">
+            <span class="bg1"></span>
+            <div class="form-wrapper login">
+                <h1 class="title">Login</h1>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div class="input-box">
+                        {{ login_form.username }}
+                        <label for="">Username</label>
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="input-box">
+                        {{ login_form.password }}
+                        <label for="">Password</label>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <button class="btn" type="submit" name="login">Login</button>
+                    <div class="link">
+                        <p>Don't have an account? <a href="#" class="signup-link">SignUp</a></p>
+                    </div>
+                </form>
+
+            </div>
+            <div class="info-wrapper login">
+                <h2>Welcome Back</h2>
+                <p>Login into your account to access our services</p>
+            </div>
+
+            <span class="bg2"></span>
+            <div class="form-wrapper register">
+                <h1 class="title">Register</h1>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div class="step" id="step-1">
+                        <div class="input-box">
+                            {{ signup_form.first_name }}
+                            <label>First Name</label>
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="input-box">
+                            {{ signup_form.last_name }}
+                            <label>Last Name</label>
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="input-box">
+                            {{ signup_form.email }}
+                            <label>Email</label>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <button type="button" class="btn" onclick="nextStep()">Next</button>
+                    </div>
+                    
+                    <!-- Step 2: Account Information -->
+                    <div class="step" id="step-2" style="display: none;">
+                        <div class="input-box">
+                            {{ signup_form.username }}
+                            <label>Username</label>
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="input-box">
+                            {{ signup_form.password }}
+                            <label>Password</label>
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="input-box">
+                            {{ signup_form.confirm_password }} 
+                            <label>Confirm Password</label>
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="btns-move">
+                            <button type="button" class="btn" onclick="previousStep()">Previous</button>
+                            <button type="submit" class="btn">Submit</button>
+                        </div>
+                    </div>
+                    <div class="link">
+                        <p>Already have an account? <a href="#" class="login-link">LogIn</a></p>
+                    </div>
+                </form>
+
+            </div>
+            <div class="info-wrapper register">
+                <h2>Welcome!</h2>
+                <p>Create your account to access our services</p>
+            </div>
+        </div>
+    </main>
+    <script src="{% static 'login2.js' %}"></script>
+</body>
+</html>
