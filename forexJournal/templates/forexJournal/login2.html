@@ -75,18 +75,18 @@
                             <i class="fas fa-user"></i>
                         </div>
                         <div class="input-box">
-                            {{ signup_form.password }}
+                            {{ signup_form.password1 }}
                             <label>Password</label>
                             <i class="fas fa-lock"></i>
                         </div>
                         <div class="input-box">
-                            {{ signup_form.confirm_password }} 
+                            {{ signup_form.password2 }} 
                             <label>Confirm Password</label>
                             <i class="fas fa-lock"></i>
                         </div>
                         <div class="btns-move">
                             <button type="button" class="btn" onclick="previousStep()">Previous</button>
-                            <button type="submit" class="btn">Submit</button>
+                            <button type="submit" class="btn" name="signup">Submit</button>
                         </div>
                     </div>
                     <div class="link">

@@ -41,7 +41,17 @@
             <div class="account">
                 <p>Gross Account balance</p>
                 <h2>${{ balance }}</h2>
-                <h3><span>{{ percentageIncrease }}%</span> since last deposit</h3>
+                <h3>
+                    <span>
+                        {% if percentageIncrease > 0 %}
+                            {{ percentageIncrease }}%
+                        {% else %}
+                            {{ percentageIncrease }}%
+                        {% endif %}
+                        
+                    </span> 
+                    since last deposit
+                </h3>
             </div>
             <div class="profit">
                 <p>PnL</p>

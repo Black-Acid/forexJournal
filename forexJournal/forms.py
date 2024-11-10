@@ -102,17 +102,17 @@ class NewSignUpForm(UserCreationForm):
     last_name = forms.CharField(max_length=30, required=True, help_text="Enter your last name")
     email = forms.EmailField(max_length=254, required=True, help_text="Enter a valid email address")
     
-    password = forms.CharField()
-    confirm_password = forms.CharField()
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput)
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'username']
+        fields = ['first_name', 'last_name', 'email', 'username', 'password1', 'password2']
 
     def clean(self):
         cleaned_data = super().clean()
-        password = cleaned_data.get("password")
-        confirm_password = cleaned_data.get("confirm_password")
+        password = cleaned_data.get("password1")
+        confirm_password = cleaned_data.get("password2")
 
         if password and confirm_password and password != confirm_password:
             self.add_error("confirm_password", "Passwords do not match")

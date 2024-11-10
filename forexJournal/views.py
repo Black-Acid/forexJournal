@@ -134,16 +134,22 @@ def auth_view(request):
     login_form = LoginForm()
 
     if request.method == 'POST':
+          # Sign-up form submitted
         if 'signup' in request.POST:  # Sign-up form submitted
-            signup_form = SignUpForm(request.POST)
+            signup_form = NewSignUpForm(request.POST)
             if signup_form.is_valid():
-                user = signup_form.save()
-                login(request, user)  # Log the user in after signing up
-                return redirect('first-page')  # Redirect to the dashboard after signup
-        elif 'login' in request.POST:  # Login form submitted
+                user = signup_form.save()  
+                login(request, user)  
+                return redirect('first-page')  
+            else:
+                # Log the form errors for debugging
+                print("Signup form invalid:", signup_form.errors)
+        elif 'login' in request.POST:  
             print("I got in")
             login_form = LoginForm(request, data=request.POST)
+            print("i don't know what happened")
             if login_form.is_valid():
+                print("I'm here")
                 user = authenticate(
                     username=login_form.cleaned_data['username'],
                     password=login_form.cleaned_data['password']
@@ -151,6 +157,10 @@ def auth_view(request):
                 if user is not None:
                     login(request, user)
                     return redirect('first-page')  # Redirect to the dashboard after login
+                else:
+                    print("We don't know you")
+            else:
+                print("Login form errors:", login_form.errors)
 
     return render(request, f'{PATH}/login2.html', {'signup_form': signup_form, 'login_form': login_form})
 
@@ -247,35 +257,35 @@ def auth_view(request):
         
 
     
-def signup(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            Profile.objects.create(
-                user=user,
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
-            )
-            print("I'm here")
-            # Create and save MT5Login
-            mt5_login = mt5login(
-                user=user,
-                login=form.cleaned_data['mt5_login'],
-                password=form.cleaned_data['mt5_password'],
-                server=form.cleaned_data['mt5_server'],
-            )
-            mt5_login.save()
-            print("I'm done")
+# def signup(request):
+#     if request.method == 'POST':
+#         form = SignUpForm(request.POST)
+#         if form.is_valid():
+#             user = form.save()
+#             Profile.objects.create(
+#                 user=user,
+#                 first_name=form.cleaned_data['first_name'],
+#                 last_name=form.cleaned_data['last_name'],
+#             )
+#             print("I'm here")
+#             # Create and save MT5Login
+#             mt5_login = mt5login(
+#                 user=user,
+#                 login=form.cleaned_data['mt5_login'],
+#                 password=form.cleaned_data['mt5_password'],
+#                 server=form.cleaned_data['mt5_server'],
+#             )
+#             mt5_login.save()
+#             print("I'm done")
 
-            login(request, user)  # Automatically log in the new user
-            return redirect('first-page')  # Redirect to the first page after signup
-        else:
-            print(form.errors)
-    else:
-        print("Unsuccessful")
-        form = SignUpForm()
-    return render(request, 'forexJournal/signup.html', {'form': form})
+#             login(request, user)  # Automatically log in the new user
+#             return redirect('first-page')  # Redirect to the first page after signup
+#         else:
+#             print(form.errors)
+#     else:
+#         print("Unsuccessful")
+#         form = SignUpForm()
+#     return render(request, 'forexJournal/signup.html', {'form': form})
 
 def custom_logout_view(request):
     logout(request)
@@ -443,9 +453,10 @@ def reports(requests):
     return render(requests, "forexJournal/reports.html")
 
 @login_required
-def journal(requests):
+def journal(request):
+    logged_in_user = request.user
     context = {}
-    trades = TradesModel.objects.all().order_by("-id")
+    trades = TradesModel.objects.filter(user=logged_in_user).order_by("-id")
     for trade in trades:
         trade.profit_usd = Money(trade.profit_usd, "USD")
         
@@ -453,13 +464,15 @@ def journal(requests):
     context["trades"] = trades
     
     
-    return render(requests, "forexJournal/journal.html", context)
+    return render(request, "forexJournal/journal.html", context)
 
 @login_required
 def playBook(request):
+    logged_in_user = request.user
+    all_strategies = StrategyModel.objects.filter(user=logged_in_user)
     
     
-    strategies_with_trade_count = StrategyModel.objects.annotate(trade_count=Count('tradesmodel'),
+    strategies_with_trade_count = all_strategies.annotate(trade_count=Count('tradesmodel'),
         total_pnl=Sum('tradesmodel__profit_usd'),
         profitable_trade_count=Count('tradesmodel', filter=Q(tradesmodel__profit_usd__gt=0)),
         profitable_trades=Sum("tradesmodel__profit_usd", filter=Q(tradesmodel__profit_usd__gt=0)),
@@ -468,7 +481,7 @@ def playBook(request):
     
     
     
-    strategies = list(StrategyModel.objects.all().values())
+    strategies = list(strategies_with_trade_count.values())
     
     for strategy in strategies:
         # Find the matching strategy from the annotated queryset
@@ -532,16 +545,19 @@ def rules(requests):
     return render(requests, f"{PATH}/rules.html")
 
 @login_required
-def get_data(requests):
-    data = list(TradesModel.objects.values())
+def get_data(request):
+    # sends data to the frontend 
+    logged_in_user = request.user
+    data = list(TradesModel.objects.filter(user=logged_in_user).values())
     return JsonResponse(data, safe=False)
 
 
 @login_required
 def trade_details(request, trade_id):
-    # trade = get_object_or_404(TradesModel, ticket=trade_id)
-    strategies = StrategyModel.objects.all().values()
-    trade = TradesModel.objects.filter(ticket=trade_id).values().first()
+    logged_in_user = request.user
+    strategy_object = StrategyModel.objects.filter(user=logged_in_user)
+    strategies = strategy_object.values()
+    trade = TradesModel.objects.filter(ticket=trade_id, user=logged_in_user).values().first()
 
     dollar_values = calculateTakeProfitValue(
         trade["symbol"], 
@@ -576,7 +592,7 @@ def trade_details(request, trade_id):
     
     # strategy_used = StrategyModel.objects.get(id=trade["strategy_id"])
     try:
-        strategy_used = StrategyModel.objects.get(id=trade["strategy_id"])
+        strategy_used = strategy_object.get(id=trade["strategy_id"])
     except ObjectDoesNotExist:
         strategy_used = None
     
@@ -589,7 +605,7 @@ def trade_details(request, trade_id):
     
     
     if request.method == "POST":
-        trade_update = get_object_or_404(TradesModel, ticket=trade_id)
+        trade_update = get_object_or_404(TradesModel, ticket=trade_id, user=logged_in_user)
         if "submit_quill" in request.POST:
             quill_content = request.POST.get("quill_content", "nothing was passed")
             trade_update.notes = quill_content
@@ -609,8 +625,11 @@ def trade_details(request, trade_id):
 
 @login_required
 def strategy_reports(request, strategy_id):
-    strategy = StrategyModel.objects.get(id=strategy_id)
-    trades = TradesModel.objects.filter(strategy=strategy_id)
+    logged_in_user = request.user
+    all_strategies = StrategyModel.objects.filter(user=logged_in_user)
+    all_trades = TradesModel.objects.filter(user=logged_in_user)
+    strategy = all_strategies.get(id=strategy_id)
+    trades = all_trades.filter(strategy=strategy_id)
     profitable = trades.filter(profit_usd__gt=0).count()
     total_trades = trades.count()
     
