@@ -8,6 +8,7 @@
     {% block css_files %}{% endblock  %}
     <title>{% block title%}{% endblock %}</title>
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    
     <link rel="stylesheet" href="{% static 'base.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,7 +39,7 @@
             <li><a href="{% url "journal" %}" id="journalss" class="active">All trades</a></li>
             <li><a href="{% url "playBook" %}" id="Play_book" class="active">Play-book</a></li>
             <li><a href="{% url "reports" %}" id="reports" class="active">Reports</a></li>
-            <li><a href="{% url "rules" %}" id="rules" class="active">Daily Journal</a></li>
+            <li><a href="{% url "daily-journal" %}" id="rules" class="active">Daily Journal</a></li>
             <li><a href="{% url "backtest" %}" id="backtest" class="active">Backtest strategy</a></li>
             <li class="logout"><a href="{% url 'logout' %}">Logout</a></li>
         </ul>

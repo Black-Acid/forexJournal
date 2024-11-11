@@ -541,8 +541,15 @@ def allTrades(request):
     return render(request, f"{PATH}/alltrades.html", context)
 
 @login_required
-def rules(requests):
-    return render(requests, f"{PATH}/rules.html")
+def dailyJournal(request):
+    logged_in_user = request.user
+    trades = TradesModel.objects.filter(user=logged_in_user)
+    trades_dict = trades.values()
+    context = {
+        "trades": trades_dict
+    }
+    print(trades_dict)
+    return render(request, f"{PATH}/dailyJournal.html", context)
 
 @login_required
 def get_data(request):

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'forexJournal/dailyJournal.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+{% endblock css_files %}
+
+{% block title %}Daily-Journal{% endblock title %}
+
+{% block content %}
+    <main>
+        
+        <div class="container">
+            <h2 class="head-text">Trades</h2>
+            <ul class="list-items">
+                {% for trade in trades %}
+                    <li class="trade-card" data-trade-id="{{ trade.ticket }}">
+                        {% if trade.notes %}
+                            <div class="verified-badge">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="12" fill="#5af32c" /> <!-- Blue background -->
+                                    <path d="M10 15l-3-3 1.41-1.41L10 12.17l5.59-5.59L17 8l-7 7z" fill="#000" /> <!-- White tick -->
+                                </svg>
+                            </div>
+                        {% else %}
+                            <div class="verified-badge">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="12" fill="#b7b9b7" /> <!-- Blue background -->
+                                    <path d="M10 15l-3-3 1.41-1.41L10 12.17l5.59-5.59L17 8l-7 7z" fill="#000" /> <!-- White tick -->
+                                </svg>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="head-items">
+                            <h3>{{ trade.ticket}}</h3>
+                            <h3 class="date">{{ trade.opening_time|date:"D d M, Y"}}</h3>
+                        </div>
+                        <h2>{{ trade.symbol }}</h2>
+                        <p>{{ trade.order_type|title }}</p>
+                        <div class="ending">
+                            <p>ROI: +3%</p>
+                            <button>Strategy-stats</button>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="journal-area">
+            <div id="rich-text-container">
+                <div id="editor-container">
+                  <div id="journal-text"></div>
+                  <button id="save-journal">Save Journal</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+    <script src="{% static 'dailyJournal.js' %}"></script>
+{% endblock content %}
