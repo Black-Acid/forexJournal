@@ -5,6 +5,8 @@ from . import views
 
 urlpatterns = [
     # path("signup/", views.signup, name="signup"),
+    path('get-journal-note/<int:trade_id>', views.get_journal_note, name='get_journal_entry'),
+    path("save-journal", views.save_journal_entry, name="save-journal"),
     path('login/', views.auth_view, name='login'),
     path('logout/', views.custom_logout_view, name='logout'),
     path("", views.forex, name="first-page"),

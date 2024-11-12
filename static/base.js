@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function(){
         "All-trades": "all_trades",
         "playBook": "Play_book",
         "reports": "reports",
-        "rules": "rules"
+        "daily-journal": "daily-journal"
     }
 
     const pageName = currentPageUrl.split("/").pop();

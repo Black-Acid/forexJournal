@@ -543,13 +543,42 @@ def allTrades(request):
 @login_required
 def dailyJournal(request):
     logged_in_user = request.user
-    trades = TradesModel.objects.filter(user=logged_in_user)
+    trades = TradesModel.objects.filter(user=logged_in_user).order_by("-id")
     trades_dict = trades.values()
     context = {
         "trades": trades_dict
     }
-    print(trades_dict)
     return render(request, f"{PATH}/dailyJournal.html", context)
+
+def get_journal_note(request, trade_id):
+    try:
+        logged_in_user = request.user
+        note = TradesModel.objects.filter(user=logged_in_user, ticket=trade_id).first()
+        return JsonResponse({"journal_content": note.notes})
+    except TradesModel.DoesNotExist:
+        return JsonResponse({"journal_content": ""})
+
+
+def save_journal_entry(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            trade_id = data['trade_id']
+            journal_content = data['journal_content']
+            print(journal_content)
+            
+            # Update if exists, or create a new entry if not
+            # entry, created = JournalEntry.objects.update_or_create(
+            #     trade_id=trade_id,
+            #     defaults={'content': journal_content}
+            # )
+            
+            return JsonResponse({'success': True, 'message': 'Journal entry saved!'})
+        
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
 
 @login_required
 def get_data(request):

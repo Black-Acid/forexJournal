@@ -15,7 +15,7 @@
             <h2 class="head-text">Trades</h2>
             <ul class="list-items">
                 {% for trade in trades %}
-                    <li class="trade-card" data-trade-id="{{ trade.ticket }}">
+                    <li class="trade-card" data-trade-id="{{ trade.ticket }}" data-trade-profit="{{ trade.profit_usd}}" data-trade-symbol="{{ trade.symbol }}">
                         {% if trade.notes %}
                             <div class="verified-badge">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -47,14 +47,24 @@
             </ul>
         </div>
         <div class="journal-area">
-            <div id="rich-text-container">
+
+            <div id="rich-text-container" style="display: none;">
+                <div id="journal-head" class="journal-header-items">
+                    <h3 id="symbol">Symbol: GBPUSDm</h3>
+                    <h3 id="ticket">Ticket: 123123341</h3>
+                    <h3 id="profit">Profit: $23,432.00</h3>
+                </div>
                 <div id="editor-container">
                   <div id="journal-text"></div>
-                  <button id="save-journal">Save Journal</button>
+                  <button id="save-journal" style="display: none;">Save Journal</button>
                 </div>
             </div>
         </div>
     </main>
+    <script>
+        // Get CSRF token from the page
+        const csrfToken = '{{ csrf_token }}';
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
     <script src="{% static 'dailyJournal.js' %}"></script>
 {% endblock content %}
