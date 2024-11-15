@@ -46,21 +46,7 @@ def get_order_type_name(order_type):
     return order_type_mapping.get(order_type, "Unknown")
 
 
-def connect_to_mt5():
-    mt5_login = 191127350
-    mt5_password =  "AceBlacK431@"
-    mt5_server =  "Exness-MT5Trial"
-    if not mt5.initialize():
-        logger.error("Failed to initialize MT5")
-        return False
-    account_number = mt5_login  # Replace with your account number
-    password = mt5_password  # Replace with your MT5 password
-    server = mt5_server
-    if not mt5.login(account_number, password=password, server=server):
-        logger.error(f"Failed to login to MT5 with account {account_number}")
-        mt5.shutdown()
-        return False
-    return True
+
 
 
 PATH = "forexJournal"
@@ -560,13 +546,16 @@ def get_journal_note(request, trade_id):
 
 
 def save_journal_entry(request):
+    logged_in_user = request.user
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             trade_id = data['trade_id']
             journal_content = data['journal_content']
-            print(journal_content)
-            
+            trade = TradesModel.objects.get(user=logged_in_user, ticket=trade_id)
+            trade.notes = journal_content
+            trade.save()
+
             # Update if exists, or create a new entry if not
             # entry, created = JournalEntry.objects.update_or_create(
             #     trade_id=trade_id,
@@ -950,44 +939,44 @@ def backtestingPage(request):
     return render(request, f"{PATH}/backtestingPage.html")
 
 
-@login_required
-def fetch_historical_data(request):
-    # Connect to MT5
-    if not connect_to_mt5():
-        print("failed to connect")
-        return JsonResponse({'error': 'Failed to connect to MT5'}, status=500)
+# @login_required
+# def fetch_historical_data(request):
+#     # Connect to MT5
+#     if not connect_to_mt5():
+#         print("failed to connect")
+#         return JsonResponse({'error': 'Failed to connect to MT5'}, status=500)
 
-    symbol = "GBPUSDm"  # Replace with your symbol
-    timeframe = mt5.TIMEFRAME_H1  # Replace with your timeframe
-    end_time = datetime.now()
-    start_time = end_time - timedelta(days=30)  # Fetch data for the last 30 days
+#     symbol = "GBPUSDm"  # Replace with your symbol
+#     timeframe = mt5.TIMEFRAME_H1  # Replace with your timeframe
+#     end_time = datetime.now()
+#     start_time = end_time - timedelta(days=30)  # Fetch data for the last 30 days
 
-    # Check if symbol is available
-    if not mt5.symbol_select(symbol, True):
-        logger.error(f"Symbol {symbol} is not available in Market Watch.")
-        mt5.shutdown()
-        return JsonResponse({'error': f'Symbol {symbol} not available in Market Watch'}, status=404)
+#     # Check if symbol is available
+#     if not mt5.symbol_select(symbol, True):
+#         logger.error(f"Symbol {symbol} is not available in Market Watch.")
+#         mt5.shutdown()
+#         return JsonResponse({'error': f'Symbol {symbol} not available in Market Watch'}, status=404)
 
-    # Fetch rates
-    rates = mt5.copy_rates_range(symbol, timeframe, start_time, end_time)
-    if rates is None or len(rates) == 0:
-        logger.error("No data returned from MT5")
-        mt5.shutdown()
-        return JsonResponse({'error': 'Failed to retrieve data from MT5'}, status=500)
+#     # Fetch rates
+#     rates = mt5.copy_rates_range(symbol, timeframe, start_time, end_time)
+#     if rates is None or len(rates) == 0:
+#         logger.error("No data returned from MT5")
+#         mt5.shutdown()
+#         return JsonResponse({'error': 'Failed to retrieve data from MT5'}, status=500)
 
-    # Convert rates to list of dictionaries for JSON response
-    historical_data = [
-        {
-            'time': int(rate['time']),
-            'open': float(Decimal(rate['open']).quantize(Decimal('0.00000'))),
-            'high': float(Decimal(rate['high']).quantize(Decimal('0.00000'))),
-            'low': float(Decimal(rate['low']).quantize(Decimal('0.00000'))),
-            'close': float(Decimal(rate['close']).quantize(Decimal('0.00000')))
-        }
-        for rate in rates
-    ]
+#     # Convert rates to list of dictionaries for JSON response
+#     historical_data = [
+#         {
+#             'time': int(rate['time']),
+#             'open': float(Decimal(rate['open']).quantize(Decimal('0.00000'))),
+#             'high': float(Decimal(rate['high']).quantize(Decimal('0.00000'))),
+#             'low': float(Decimal(rate['low']).quantize(Decimal('0.00000'))),
+#             'close': float(Decimal(rate['close']).quantize(Decimal('0.00000')))
+#         }
+#         for rate in rates
+#     ]
     
-    # Clean up MT5 session
-    mt5.shutdown()
+#     # Clean up MT5 session
+#     mt5.shutdown()
 
-    return JsonResponse(historical_data, safe=False)
+#     return JsonResponse(historical_data, safe=False)

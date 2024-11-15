@@ -21,5 +21,5 @@ urlpatterns = [
     path("strategy-reports/<int:strategy_id>", views.strategy_reports, name="strategy-reports"),
     path("sync-mt5", views.sync_MT5, name="sync"),
     path("backtesting", views.backtestingPage, name="backtest"),
-    path('fetch-historical-data/', views.fetch_historical_data, name='fetch_historical_data'),
+    # path('fetch-historical-data/', views.fetch_historical_data, name='fetch_historical_data'),
 ]

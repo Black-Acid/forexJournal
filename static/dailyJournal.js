@@ -79,6 +79,7 @@
 // //     }
 // // });
 
+
 // Initialize Quill once
 let quill;
 
@@ -101,12 +102,14 @@ function initializeEditor() {
 
         // Add save functionality
         document.getElementById('save-journal').addEventListener('click', () => {
-            const journalContent = quill.root.innerHTML;
+            const journalContent = quill.getText();
             const tradeId = document.getElementById("ticket").dataset.tradeId; // Use data attribute for trade ID
             saveJournalEntry(tradeId, journalContent);
         });
     }
 }
+
+
 
 // Function to display trade details in the editor
 function displayTradeDetails(tradeId, tradeProfit, tradeSymbol) {
@@ -162,10 +165,12 @@ function saveJournalEntry(tradeId, journalContent) {
     .then(response => response.json())
     .then(data => {
         alert('Journal saved!');
+        
         // Optionally update the UI with a saved confirmation
     })
     .catch(error => console.error('Error saving journal:', error));
 }
+
 let lastClickedCard = null; 
 // Event listener for each trade card
 document.querySelectorAll(".trade-card").forEach(card => {
@@ -178,7 +183,7 @@ document.querySelectorAll(".trade-card").forEach(card => {
         }
 
         // Highlight the clicked card
-        card.style.backgroundColor = "lightblue";  // Or any color you'd like for the highlight
+        card.style.backgroundColor = "#79fd55";  // Or any color you'd like for the highlight
 
         // Update the last clicked card to the current one
         lastClickedCard = card;
