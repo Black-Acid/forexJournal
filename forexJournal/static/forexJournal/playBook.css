@@ -61,13 +61,11 @@ tbody td{
 
 
 main.table{
-    /* background: red; */
-    background-color: #eaf5d9;
+    background-color: #e0fab9;
     height: 90vh;
-    width: 100%;
-    margin-left: -2rem;
+    width: 95%;
+    margin: 1.5rem auto;
     border-radius: 10px;
-    margin-top: 1.5rem;
 }
 
 #first-part{

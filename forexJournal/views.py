@@ -555,7 +555,6 @@ def save_journal_entry(request):
             trade = TradesModel.objects.get(user=logged_in_user, ticket=trade_id)
             trade.notes = journal_content
             trade.save()
-
             # Update if exists, or create a new entry if not
             # entry, created = JournalEntry.objects.update_or_create(
             #     trade_id=trade_id,
@@ -937,6 +936,12 @@ def sync_MT5(request):
 @login_required
 def backtestingPage(request):
     return render(request, f"{PATH}/backtestingPage.html")
+
+
+@login_required
+def settingsPage(request):
+    logged_in_user = request.user
+    return render(request, f'{PATH}/settings.html')
 
 
 # @login_required

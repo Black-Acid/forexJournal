@@ -3,12 +3,14 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
     const pagesMapping = {
+        // path_url: id in the base.html
         "forex.html": "dashboard",
         "journal": "journalss",
         "All-trades": "all_trades",
         "playBook": "Play_book",
         "reports": "reports",
-        "daily-journal": "daily-journal"
+        "daily-journal": "daily-journal",
+        "settings": "settings",
     }
 
     const pageName = currentPageUrl.split("/").pop();
