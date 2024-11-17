@@ -90,15 +90,6 @@
     font-style: normal;
 }
 
-
-.import-url input{
-    width: 100%;
-    height: 2.7rem;
-    border-radius: 5px;
-    border: 1px solid rgb(219, 213, 213);
-    padding-left: 1rem;
-}
-
 .import-url h3{
     font-family: "Roboto", sans-serif;
     font-weight: 500;
@@ -541,3 +532,78 @@ select option {
     }
 }
 
+
+.broker-label{
+    font-size: 1.3rem;
+}
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 40%;
+    margin-bottom: 3rem;
+  }
+  
+  #broker {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    background-color: #f9f9f9;
+    height: 1.6rem;
+    margin-left: 1rem;
+  }
+  
+  #broker:focus {
+    outline: none;
+  }
+  
+  .dropdown-button {
+    position: absolute;
+    right: 2px;
+    width: 18%;
+    left: 19.5rem;
+    height: 2.5rem;
+    top: 5px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--selectedColor);
+  }
+  
+  .dropdown-content {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-left: 1rem;
+    background-color: #f5fdeb;
+    border: 1px solid #ccc;
+    z-index: 10;
+  }
+  
+  .dropdown-content .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    font-family: "Roboto", sans-serif;
+}
+  
+  .dropdown-content .dropdown-item img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+  }
+  
+  .dropdown-content .dropdown-item:hover {
+    background-color: #dbfdb6;
+  }
+  
+  /* Show dropdown on button click */
+  .custom-dropdown.open .dropdown-content {
+    display: block;
+  }
+  

@@ -15,20 +15,47 @@
         </div>
         <div class="modal hidden">
             <div class="modal-header">
-                <h2>Choose files to upload</h2>
+                <h2>UPLOAD YOUR TRADES</h2>
                 <button class="close-modal">&times;</button>
             </div>
             <form method="POST" enctype="multipart/form-data" action="">
                 {% csrf_token %}
+                <label for="broker" class="broker-label">Choose your broker:</label>
+                <div class="custom-dropdown">
+                    <!-- Visible input to show the selected broker -->
+                    <input 
+                      type="text" 
+                      id="broker" 
+                      name="broker" 
+                      placeholder="Select a broker" 
+                      readonly 
+                      required
+                    />
+                    <button type="button" class="dropdown-button">▼</button>
+                    
+                    <div class="dropdown-content">
+                      <div class="dropdown-item" data-value="acg_markets">
+                        <img src="{% static 'forexJournal/images/alpha.jpg' %}" alt="ACG Markets Logo">
+                        ACG Markets
+                      </div>
+                      <div class="dropdown-item" data-value="exness">
+                        <img src="{% static 'forexJournal/images/exness-logo.png' %}" alt="Exness Logo">
+                        Exness
+                      </div>
+                      <div class="dropdown-item" data-value="mt5">
+                        <img src="{% static 'forexJournal/images/mt5-logo.jpeg' %}" alt="MetaTrader 5 Logo">
+                        MetaTrader 5
+                      </div>
+                      <div class="dropdown-item" data-value="mt5">
+                        <img src="{% static 'forexJournal/images/ftmo2.png' %}" alt="FTMO Logo">
+                        FTMO
+                      </div>
+                    </div>
+                </div>
                 <div class="upload-area">
                     <label for="csvFile" class="custom-file-label">Choose Files</label>
                     <input type="file" class="custom-file-input" id="csvFile" name="csv_file" onchange="updateLabel(this)">
                     <p>Copy and paste or drag and drop your files here</p>
-               
-                </div>
-                <div class="import-url">
-                    <h3>Import from URL</h3>
-                    <input type="text" placeholder="Add file URL">
                 </div>
                 <div class="buttons">
                     <button type="submit">Upload CSV</button>

@@ -181,3 +181,24 @@ closes.addEventListener("click", closeModal)
 overlay.addEventListener("click", closeModal)
 
 
+// Toggle dropdown visibility
+document.querySelector('.dropdown-button').addEventListener('click', function () {
+    const dropdown = document.querySelector('.custom-dropdown');
+    dropdown.classList.toggle('open');
+  });
+  
+  // Handle item selection
+  document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', function () {
+      const value = this.getAttribute('data-value');
+      const text = this.textContent.trim();
+      
+      // Update the input field with the selected item
+      const input = document.querySelector('#broker');
+      input.value = text;
+  
+      // Close the dropdown
+      document.querySelector('.custom-dropdown').classList.remove('open');
+    });
+  });
+  

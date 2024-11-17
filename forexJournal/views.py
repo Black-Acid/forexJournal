@@ -54,6 +54,60 @@ PERCENT = 100
 ACCOUNT_BALANCE = apps.get_model("forexJournal", "AccountBalance")
 DEFAULT_BALANCE = ACCOUNT_BALANCE._meta.get_field("balance").default
 
+def convertXLSXFILE(file_path):
+    xls = pd.ExcelFile(file_path)
+
+    print(xls.sheet_names)
+
+    df = pd.read_excel(xls, sheet_name=0)
+
+    data = df.values.tolist()
+
+    start_pos = None
+    end_pos = None
+
+    for row in data:
+        if "Positions" in str(row):
+            start_pos = data.index(row)
+        if "Orders" in str(row):
+            end_pos = data.index(row)
+            break
+
+    extracted_data = ""
+    if start_pos is not None and end_pos is not None:
+        extracted_data = data[start_pos + 1:end_pos]
+
+    # Create DataFrame from extracted data
+    extracted_df = pd.DataFrame(extracted_data)
+
+    # Return DataFrame
+    return extracted_df
+
+
+    
+
+def extract_positons(csv_data):
+    lines = csv_data.splitlines()
+
+    # Find the position of "Positions" and "Orders"
+    start_pos = None
+    end_pos = None
+
+    for i, line in enumerate(lines):
+        if "Positions" in line:
+            start_pos = i
+        if "Orders" in line:
+            end_pos = i
+            break
+
+    # Extract everything under "Positions" and stop at "Orders"
+    positions_data = lines[start_pos + 1:end_pos]
+
+    # Join the extracted lines to form the result
+    positions_text = "\n".join(positions_data)
+
+    print(positions_text)
+
 
 def calculateWinRate(profitableTrades, number_of_trades):
     if number_of_trades == 0:
@@ -151,127 +205,6 @@ def auth_view(request):
     return render(request, f'{PATH}/login2.html', {'signup_form': signup_form, 'login_form': login_form})
 
 
-# class CustomLoginView(LoginView):
-#     authentication_form = LoginForm # CustomLoginForm  
-#     template_name = 'forexJournal/login2.html'  
-    
-    # def form_valid(self, form):
-    #     user = form.get_user()
-    #     login(self.request, user)
-
-    #     # Fetch user's MT5 credentials
-    #     try:
-    #         user_credentials = mt5login.objects.get(user=user)
-    #     except mt5login.DoesNotExist:
-    #         print("User does not have MT5 credentials.")
-    #         return self.form_invalid(form)
-
-    #     # Initialize MT5
-    #     if not mt5.initialize():
-    #         print("MT5 initialization failed")
-    #         return self.form_invalid(form)
-
-    #     # Attempt to log in to MT5
-    #     authorized = mt5.login(
-    #         login=user_credentials.login,
-    #         password=user_credentials.password,
-    #         server=user_credentials.server
-    #     )
-        
-    #     if not authorized:
-    #         print(f"Failed to authorize with login: {user_credentials.login}, error: {mt5.last_error()}")
-    #         mt5.shutdown()
-    #         return self.form_invalid(form)
-
-    #     # Fetch and save trades after successful login
-    #     self.fetch_and_save_trades(user, user_credentials)
-
-    #     return super().form_valid(form)
-
-    # def fetch_and_save_trades(self, user, user_credentials):
-    #     # Define a very early date as the default from_date
-    #     from_date = datetime(2022, 1, 1)  # Adjust as necessary
-    #     to_date = datetime.now()  # Current date and time
-
-        
-    #     # Fetch historical orders
-    #     orders = mt5.history_orders_get(from_date, to_date)
-    #     deals = mt5.history_deals_get(from_date, to_date)
-        
-    #     if orders is None:
-    #         print(f"Failed to get orders, error: {mt5.last_error()}")
-    #         return
-        
-        
-    #     trades_dict = {}
-    #     for order in orders:
-    #         position_id = order.position_id
-            
-    #         if position_id not in trades_dict:
-    #             # Initialize the dictionary for a new trade position
-    #             trades_dict[position_id] = {
-    #                 "initial_trade": order,  # Store initial trade details
-    #                 "modifications": []  # List to hold modifications
-    #             }
-    #         else:
-    #             # If this is a modification, add it to the modifications list
-    #             trades_dict[position_id]["modifications"].append(order)
-
-    #     trade_deals_dict = {}
-    #     for deal in deals:
-    #         position_id_deal = deal.position_id
-            
-    #         if position_id_deal not in trade_deals_dict:
-    #             trade_deals_dict[position_id_deal] = {
-    #                 "initial_deal": deal,
-    #                 "modification_deal":[]
-    #             }
-    #         else:
-    #             trade_deals_dict[position_id_deal]["modification_deal"].append(deal)
-        
-    #     print(trades_dict)
-        
-        # findings
-        # the deals happen to be bringing in the opening price and closing price
-        # that is if there are any modified trades
-        # so we will fetch the opening price from either the initial deals or initial trades
-        # then we will now come and fetch the closing prices at the deals 
-        # we will be left with the stop_loss and the take_profit 
-        # also I have found out that in the comment session the trade status is written there with the
-        # price so It's either I will manipulate it over there and use it for the findings
-        
-        
-
-    
-# def signup(request):
-#     if request.method == 'POST':
-#         form = SignUpForm(request.POST)
-#         if form.is_valid():
-#             user = form.save()
-#             Profile.objects.create(
-#                 user=user,
-#                 first_name=form.cleaned_data['first_name'],
-#                 last_name=form.cleaned_data['last_name'],
-#             )
-#             print("I'm here")
-#             # Create and save MT5Login
-#             mt5_login = mt5login(
-#                 user=user,
-#                 login=form.cleaned_data['mt5_login'],
-#                 password=form.cleaned_data['mt5_password'],
-#                 server=form.cleaned_data['mt5_server'],
-#             )
-#             mt5_login.save()
-#             print("I'm done")
-
-#             login(request, user)  # Automatically log in the new user
-#             return redirect('first-page')  # Redirect to the first page after signup
-#         else:
-#             print(form.errors)
-#     else:
-#         print("Unsuccessful")
-#         form = SignUpForm()
-#     return render(request, 'forexJournal/signup.html', {'form': form})
 
 def custom_logout_view(request):
     logout(request)
@@ -387,6 +320,10 @@ def forex(request):
     context["user"] = logged_in_user
     
     if request.method == "POST":
+        # first check the broker from which the csv data is coming from
+        # Now the available brokers of platforms we will accept data from is 
+        # Exness, MT5.......
+        
         csv_file = request.FILES.get("csv_file")
         data = pd.read_csv(csv_file)
         
