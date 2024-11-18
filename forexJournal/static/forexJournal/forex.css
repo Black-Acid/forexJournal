@@ -1,3 +1,7 @@
+body{
+    font-family: "Roboto", sans-serif;
+}
+
 
 .overview{
     display: flex;
@@ -155,7 +159,8 @@
 
 
 .account h2{
-    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
     font-size: 2rem;
     margin-top: -0.2rem;
 }
@@ -171,12 +176,13 @@
 
 .profit{
     background: var(--divBack);
-    border-radius: 5px;
+    border-radius: 10px;
     padding-left: 1rem;
 }
 
 .profit h2{
-    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
     font-size: 2rem;
     margin-top: -0.2rem;
 }
@@ -192,12 +198,13 @@
 
 .factor{
     background: var(--divBack);
-    border-radius: 5px;
+    border-radius: 10px;
     padding-left: 1rem;
 }
 
 .factor h2{
-    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
     font-size: 2rem;
     margin-top: -0.2rem;
 }
@@ -212,12 +219,13 @@
 }
 .trades{
     background: var(--divBack);
-    border-radius: 5px;
+    border-radius: 10px;
     padding-left: 1rem;
 }
 
 .trades h2{
-    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
     font-size: 2rem;
     margin-top: -0.2rem;
 }
@@ -261,7 +269,7 @@
 .profitable{
     background: var(--divBack);
     padding-left: 1rem;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 
@@ -275,7 +283,8 @@
 }
 
 .profitable h2{
-    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
     font-size: 2rem;
     margin-top: 0.2rem;
 }
@@ -485,7 +494,7 @@ select option {
   
 
 ::-webkit-scrollbar{
-    width: 15px;
+    width: 5px;
 }
 
 ::-webkit-scrollbar-track{

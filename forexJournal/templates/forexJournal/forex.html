@@ -239,6 +239,9 @@
             <h2>Trading Calender</h2>
         </div>
     </section> {% endcomment %}
+    <script>
+        window.trades = {{ cumulative_data|safe }}
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'script.js' %}"></script>
 

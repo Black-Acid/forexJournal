@@ -95,18 +95,33 @@ const gradient = some.createLinearGradient(0, 0, 0, 400);  // Adjust the gradien
 gradient.addColorStop(0, '#004d00');  // Dark green at the bottom
 gradient.addColorStop(1, '#00FF00');
 
+let cumulativePnL = 0;
+const NewchartData = window.trades.map(trade => {
+    cumulativePnL += trade.pnl;
+    return{
+        date: trade.date,
+        cumulativePnL: cumulativePnL
+    }
+})
+
+const Newdates = NewchartData.map(item => item.date)
+const NewpnlValues = NewchartData.map(item => item.cumulativePnL)
+
+
+
+
 new Chart(some, {
     type: 'line',
     data: {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'oct', 'Nov', 'Dec'],
+    labels: Newdates,
     datasets: [{
-        label: 'Profits',
-        data: [20, 35, 42, 100, 127, 400, 323, 178, 583, 442, 478, 300],
+        label: 'Cumulative Profits',
+        data: NewpnlValues,
         borderWidth: 1,
         tension: 0.4,
-        borderColor: '#00FF00',
+        borderColor: "green",
         fill: true,
-        backgroundColor: gradient,
+        backgroundColor: 'rgba(0, 255, 0, 0.1)',
         //pointRadius: 0,
     }]
     },
@@ -142,7 +157,7 @@ new Chart(some, {
             grid: {
                 display: true,  // Optionally hide x-axis grid lines
                 color: 'rgba(255, 255, 255, 0.5)',  // Set grid line color to white with 50% opacity
-                lineWidth: 0.5  // Set grid line width
+                lineWidth: 0.2  // Set grid line width
             }
         },
         y: {
@@ -152,7 +167,7 @@ new Chart(some, {
             grid: {
                 display: true,  // Optionally hide y-axis grid lines
                 color: 'rgba(255, 255, 255, 0.5)',  // Set grid line color to white with 50% opacity
-                lineWidth: 0.5  // Set grid line width
+                lineWidth: 0.2  // Set grid line width
             },
         beginAtZero: true
         }

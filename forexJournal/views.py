@@ -301,8 +301,24 @@ def forex(request):
     
     average_win_loss = "{:.2f}".format(average_profit / (average_loss or 1))
     
+    def get_trade_data():
+        # Query to retrieve trades with opening date and profit
+        new_form_trade = (
+            trades_instance.values(
+                date=F('opening_time__date'),  # Extract the date part only
+                pnl=F('profit_usd')
+            )
+        )
+
+        # Format the trade data into the required structure
+        trade_data = [
+            {'date': trade['date'].strftime('%Y-%m-%d'), 'pnl': float(trade['pnl'])}
+            for trade in new_form_trade
+        ]
+        
+        return trade_data
     
-    
+    t_data = get_trade_data()
     context = {}
 
     context["balance"] = Money(account_balance.balance, "USD")
@@ -317,6 +333,7 @@ def forex(request):
     context["profit_factor"] = float(format_factor)
     context["average_win_ratio"] = average_win_loss
     context["percentageIncrease"] = round(percentageIncrease, 2)
+    context["cumulative_data"] = t_data
     context["user"] = logged_in_user
     
     
