@@ -24,7 +24,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.views import LoginView
 from .forms import CustomLoginForm, LoginForm, NewSignUpForm
 from django.db import transaction
-
+from django.core.exceptions import ValidationError
 
 
 import logging
@@ -305,7 +305,7 @@ def forex(request):
     
     context = {}
 
-    context["balance"] = account_balance.balance
+    context["balance"] = Money(account_balance.balance, "USD")
     context["profit"] = Money(account_balance.profits, "USD")
     context["total_trades"] = number_of_trades
     context["profitable_trades"] = profitable_trades
@@ -319,36 +319,83 @@ def forex(request):
     context["percentageIncrease"] = round(percentageIncrease, 2)
     context["user"] = logged_in_user
     
+    
+    
     if request.method == "POST":
-        # first check the broker from which the csv data is coming from
-        # Now the available brokers of platforms we will accept data from is 
-        # Exness, MT5.......
-        
+        # first get the broker from which the csv data is coming from
+        broker_name = request.POST.get("broker")
         csv_file = request.FILES.get("csv_file")
-        data = pd.read_csv(csv_file)
+        if broker_name.lower() == "exness":
+            data = pd.read_csv(csv_file)
+            for index, row in data.iterrows():
+                if not trades_instance.filter(ticket=row['ticket']).exists():
+                    TradesModel.objects.create(
+                        user=logged_in_user,
+                        ticket=row['ticket'],
+                        opening_time=row['opening_time_utc'],
+                        closing_time=row['closing_time_utc'],
+                        order_type=row['type'],
+                        lot_size=row['lots'],
+                        original_position_size=row['original_position_size'],
+                        symbol=row['symbol'],
+                        opening_price=row['opening_price'],
+                        closing_price=row['closing_price'],
+                        stop_loss=row['stop_loss'],
+                        take_profit=row['take_profit'],
+                        commission_usd=row['commission_usd'],
+                        swap_usd=row['swap_usd'],
+                        profit_usd=row['profit_usd'],
+                        equity_usd=row['equity_usd'],
+                        margin_level=row['margin_level'],
+                        close_reason=row['close_reason'],
+                    ).save()
+        elif broker_name.lower() == "mt5":
+            pass
+        elif broker_name.lower() == "ftmo":
+            data = pd.read_csv(csv_file, delimiter=';')
+            print(data.columns)
+            for index, row in data.iterrows():
+                value = Decimal(str(row["Price"]))
+                
+                print(type(value), value)
+                
+                if not trades_instance.filter(ticket=row["Ticket"]):
+                    trade = TradesModel(
+                        user=logged_in_user,
+                        ticket=row["Ticket"],
+                        opening_time=row['Open'],
+                        closing_time=row['Close'],
+                        order_type=row['Type'],
+                        lot_size=row['Volume'],
+                        original_position_size=row['Volume'],
+                        symbol=row['Symbol'],
+                        opening_price=Decimal(row['Price']).quantize(Decimal('0.000001')),  # Round to 6 decimal places
+                        closing_price=Decimal(row['Price.1']).quantize(Decimal('0.000001')),
+                        stop_loss=Decimal(row['SL']).quantize(Decimal('0.000001')),
+                        take_profit=Decimal(row['TP']).quantize(Decimal('0.000001')),
+                        commission_usd=Decimal(row['Commissions']).quantize(Decimal('0.01')),  # 2 decimal places
+                        swap_usd=Decimal(row['Swap']).quantize(Decimal('0.01')),  
+                        profit_usd=Decimal(row['Profit']).quantize(Decimal('0.01')),
+                        equity_usd= 0,
+                        margin_level= 0,
+                        close_reason= "nothing",
+                    )
+                    
+                    try:
+                        trade.save()
+                        print("Trade saved successfully.")
+                    except Exception as e:
+                        print(f"Error while saving trade: {e}")
+                    try:
+                        # Validate the instance without saving
+                        trade.full_clean()  # Will raise ValidationError if something's wrong
+                        # Proceed with further logic after validation, e.g., saving if needed
+                    except ValidationError as e:
+                        # Handle validation errors here
+                        print(f"Validation error: {e}")
+                    
         
-        for index, row in data.iterrows():
-            if not trades_instance.filter(ticket=row['ticket']).exists():
-                TradesModel.objects.create(
-                    user=logged_in_user,
-                    ticket=row['ticket'],
-                    opening_time=row['opening_time_utc'],
-                    closing_time=row['closing_time_utc'],
-                    order_type=row['type'],
-                    lot_size=row['lots'],
-                    original_position_size=row['original_position_size'],
-                    symbol=row['symbol'],
-                    opening_price=row['opening_price'],
-                    closing_price=row['closing_price'],
-                    stop_loss=row['stop_loss'],
-                    take_profit=row['take_profit'],
-                    commission_usd=row['commission_usd'],
-                    swap_usd=row['swap_usd'],
-                    profit_usd=row['profit_usd'],
-                    equity_usd=row['equity_usd'],
-                    margin_level=row['margin_level'],
-                    close_reason=row['close_reason'],
-                ).save()
+        
                 
 
                 
