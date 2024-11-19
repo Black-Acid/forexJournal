@@ -319,6 +319,64 @@ def forex(request):
         return trade_data
     
     t_data = get_trade_data()
+    # Get the trade with the highest profit
+    
+    def highestWinProfit():
+        highest_profit = trades_instance.order_by("-profit_usd").first()
+        
+        if highest_profit:
+            return {
+                "symbol": highest_profit.symbol,
+                "profit": highest_profit.profit_usd
+            }
+        else:
+            return {
+                "symbol": None,
+                "profit": None
+            }
+    
+    highest_win = highestWinProfit()
+    # max winning streak and max losing streak
+    
+    # When refining define this one outside to be used by multiple views
+    def consecutiveWins():
+        max_consecutive_wins = 0
+        current_streak = 0
+        new_form = trades_instance.order_by("opening_time")
+        
+        for trade in new_form:
+            if trade.profit_usd > 0:
+                current_streak += 1
+                max_consecutive_wins = max(current_streak, max_consecutive_wins)
+            else:
+                current_streak = 0
+                
+        return max_consecutive_wins
+    
+    # When refining define this one outside to be used by multiple views
+    def consecutiveLoss():
+        max_consecutive_loss = 0
+        current_streak = 0
+        new_form = trades_instance.order_by("opening_time")
+        
+        for trade in new_form:
+            if trade.profit_usd < 0:
+                current_streak += 1
+                max_consecutive_loss = max(current_streak, max_consecutive_loss)
+            else:
+                current_streak = 0
+        
+        return max_consecutive_loss
+    
+    
+    healthy_trades = trades_instance.filter(tags="Healthy trade").count()
+    lucky_trades = trades_instance.filter(tags="Lucky trade").count()
+    healthy_loss = trades_instance.filter(tags="Healthy loss").count()
+    bad_trades = trades_instance.filter(tags="Bad trade").count()
+    missed_trades = trades_instance.filter(tags="Missed trade").count()
+    untagged_trades = trades_instance.filter(tags__isnull=True).count() | trades_instance.filter(tags="").count()
+    
+    
     context = {}
 
     context["balance"] = Money(account_balance.balance, "USD")
@@ -326,15 +384,26 @@ def forex(request):
     context["total_trades"] = number_of_trades
     context["profitable_trades"] = profitable_trades
     context["losing_trades"] = losing_trades
-    context["profitable_value"] = rounded_total_profitable_value
-    context["losing_value"] = rounded_losing
+    context["profitable_value"] = Money(rounded_total_profitable_value, "USD")
+    context["losing_value"] = Money(rounded_losing, "USD")
     context["win_rate"] = round(winRate, 2) if winRate != "N/A" else 0.00
     context["expectancy"] = Money(round(trade_expectancy, 2), "USD")
     context["profit_factor"] = float(format_factor)
     context["average_win_ratio"] = average_win_loss
     context["percentageIncrease"] = round(percentageIncrease, 2)
     context["cumulative_data"] = t_data
+    context["max_winning_streak"] = consecutiveWins()
+    context["max_losing_streak"] = consecutiveLoss()
+    context["highest_profit_symbol"] = highest_win["symbol"]
+    context["highest_profit_value"] = Money(highest_win["profit"], "USD")
+    context["healthy_trade"] = healthy_trades
+    context["lucky_trade"] = lucky_trades
+    context["healthy_loss"] = healthy_loss
+    context["bad_trade"] = bad_trades
+    context["Missed_trade"] = missed_trades
+    context["untagged_trades"] = untagged_trades
     context["user"] = logged_in_user
+    
     
     
     
@@ -805,7 +874,8 @@ def strategy_reports(request, strategy_id):
             if trade.profit_usd > 0:
                 current_streak += 1
                 max_consecutive_wins = max(current_streak, max_consecutive_wins)
-        
+            else:
+                current_streak = 0
         return max_consecutive_wins
     
     def consecutiveLoss():
@@ -817,7 +887,8 @@ def strategy_reports(request, strategy_id):
             if trade.profit_usd < 0:
                 current_streak += 1
                 max_consecutive_loss = max(current_streak, max_consecutive_loss)
-        
+            else:
+                current_streak = 0
         return max_consecutive_loss
         
     most_profitable_day = get_most_profitable_day()

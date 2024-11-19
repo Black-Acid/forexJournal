@@ -1,5 +1,6 @@
 body{
     font-family: "Roboto", sans-serif;
+    overflow: hidden;
 }
 
 
@@ -166,12 +167,15 @@ body{
 }
 
 .account h3{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 200;
     font-size: 1.1rem;
     margin-top: -1rem;
 }
 
 .account span{
     color: rgb(8, 247, 8);
+    font-weight: Bold;
 }
 
 .profit{
@@ -188,11 +192,14 @@ body{
 }
 
 .profit h3{
+    /* font-family: 'Poppins', sans-serif; */
+    font-weight: 400;
     font-size: 1.1rem;
     margin-top: -1rem;
 }
 
 .profit span{
+    font-weight: bold;
     color: var(--selectedColor);
 }
 
@@ -210,11 +217,14 @@ body{
 }
 
 .factor h3{
+    /* font-family: 'Poppins', sans-serif; */
+    font-weight: 400;
     font-size: 1.1rem;
     margin-top: -1rem;
 }
 
 .factor span{
+    font-weight: 400;
     color: var(--selectedColor);
 }
 .trades{
@@ -231,11 +241,18 @@ body{
 }
 
 .trades h3{
-    font-size: 1.1rem;
+    font-weight: 400;
+    font-size: 1rem;
     margin-top: -1rem;
 }
 
+.winRate h3{
+    font-weight: 400;
+    font-size: 1.1rem;
+}
+
 .trades span{
+    font-weight: 400;
     color: var(--selectedColor);
 }
 
@@ -383,6 +400,16 @@ body{
     width: 10px; 
     height: 10px; 
     background-color: #eaf1d8; 
+    border-radius: 50%; 
+    display: inline-block;
+    margin-right: 8px; 
+}
+
+.dot6{
+    content: '';
+    width: 10px; 
+    height: 10px; 
+    background-color: #dafc85; 
     border-radius: 50%; 
     display: inline-block;
     margin-right: 8px; 

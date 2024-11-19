@@ -15,10 +15,13 @@ let badTradesNumericContent = parseInt(badTrades);
 let missedTrades = document.querySelector(".missed").textContent;
 let missedTradesNumericContent = parseInt(missedTrades);
 
+let untaggedTrades = document.querySelector(".untagged").textContent;
+let untaggedTradesNumericContent = parseInt(untaggedTrades);
+
 
 const chartData = {
-    labels: ["healthy Trades", "Lucky trades", "Good lost Trades", "Bad lost trades", "Missed trades", ],
-    data: [healthyNumericContent, luckyNumericContent, goodLossNumericContent, badTradesNumericContent, missedTradesNumericContent,]
+    labels: ["healthy Trades", "Lucky trades", "Good lost Trades", "Bad lost trades", "Missed trades", "Untagged Trades"],
+    data: [healthyNumericContent, luckyNumericContent, goodLossNumericContent, badTradesNumericContent, missedTradesNumericContent, untaggedTradesNumericContent]
 }
 
 const centerTextPlugin = {
@@ -73,6 +76,7 @@ new Chart(myChart, {
                     "#519008", 
                     "#1F3504",
                     "#eaf1d8", 
+                    "#dafc85",
                 ],
                 borderWidth: 0,
             }
@@ -121,7 +125,7 @@ new Chart(some, {
         tension: 0.4,
         borderColor: "green",
         fill: true,
-        backgroundColor: 'rgba(0, 255, 0, 0.1)',
+        backgroundColor: 'rgba(0, 255, 0, 0.3)',
         //pointRadius: 0,
     }]
     },

@@ -95,7 +95,7 @@
                     <h3>keep <span>Improving</span> your system</h3>
                 {% endif %}
             </div>
-            <div class="trades">
+            <div class="trades winRate">
                 <p>Win Rate</p>
                 <h2>{{ win_rate }}%</h2>
                 <h3><span>{{ losing_trades }}</span> lost trades</h3>
@@ -103,7 +103,7 @@
             <div class="trades">
                 <p>Total trades</p>
                 <h2>{{total_trades}}</h2>
-                <h3><span>+0.7%</span>vs last month</h3>
+                <h3>Best Trade: <span>{{ highest_profit_value}}</span> ({{highest_profit_symbol}})</h3>
             </div>
         </section>
         <section id="second-widgets">
@@ -129,23 +129,27 @@
                         <div class="items">
                             <div class="spec">
                                 <h3><span class="dot"></span>Healthy trades</h3>
-                                <p class="healthy">30</p>
+                                <p class="healthy">{{healthy_trade}}</p>
                             </div>
                             <div class="spec">
                                 <h3><span class="dot2"></span>Lucky trades</h3>
-                                <p class="lucky">10</p>
+                                <p class="lucky">{{lucky_trade}}</p>
                             </div>
                             <div class="spec">
                                 <h3><span class="dot3"></span>Good loss</h3>
-                                <p class="good_loss">8</p>
+                                <p class="good_loss">{{healthy_loss}}</p>
                             </div>
                             <div class="spec">
                                 <h3><span class="dot4"></span>bad trades</h3>
-                                <p class="bad">5</p>
+                                <p class="bad">{{ bad_trade }}</p>
                             </div>
                             <div class="spec">
                                 <h3><span class="dot5"></span>Missed trades</h3>
-                                <p class="missed">15</p>
+                                <p class="missed">{{ Missed_trade }}</p>
+                            </div>
+                            <div class="spec">
+                                <h3><span class="dot6"></span>Untagged trades</h3>
+                                <p class="untagged">{{untagged_trades}}</p>
                             </div>
                         </div>
                         
@@ -159,7 +163,7 @@
                 </div>
                 <h2>{{ expectancy }}</h2>
                 <h3>Net Profit: <span>{{ profitable_value }}</span></h3>
-                <p><span>+0.7%</span> vrs last account</p>
+                <p>Current Streak : <span>{{ max_winning_streak }}</span> wins</p>
             </div>
             <div class="profitable">
                 <div class="head">
@@ -168,13 +172,13 @@
                 </div>
                 <h2>{{ average_win_ratio}}</h2>
                 <h3>Net Loss: <span>{{ losing_value }}</span></h3>
-                <p><span>-0.3%</span> vrs last account</p>
+                <p>Current Streak : <span>{{ max_losing_streak }}</span> losses</p>
             </div>
             <div class="charts">
                 <canvas id="lineChart"></canvas>
             </div>
         </section>
-        <section>
+        {% comment %} <section>
             <h2>Recent Trades</h2>
             <table>
                 <tr>
@@ -228,7 +232,7 @@
                     <th>Good trade</th>
                 </tr>                
             </table>
-        </section>
+        </section> {% endcomment %}
     </section>
     {% comment %} <section>
         <div>
