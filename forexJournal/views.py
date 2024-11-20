@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 import pandas as pd
 from .models import TradesModel, AccountBalance, ProcessedProfit, StrategyModel, Profile, mt5login
 from django.db.models import Sum, Count, Q, Max, Avg, F, Case, When, Value, CharField
@@ -52,7 +53,7 @@ def get_order_type_name(order_type):
 PATH = "forexJournal"
 PERCENT = 100
 ACCOUNT_BALANCE = apps.get_model("forexJournal", "AccountBalance")
-DEFAULT_BALANCE = ACCOUNT_BALANCE._meta.get_field("balance").default
+# DEFAULT_BALANCE =     # ACCOUNT_BALANCE._meta.get_field("balance").default
 
 def convertXLSXFILE(file_path):
     xls = pd.ExcelFile(file_path)
@@ -169,6 +170,25 @@ def calculateTakeProfitValue(symbol, entry_price, stop_loss, take_profit, lot_si
     mt5.shutdown()
     return {"stop_loss_value": sl_dollar_value, "take_profit_value": tp_dollar_value}
 
+
+@csrf_exempt
+def set_Initial_balance(request):
+    
+    logged_in_user = request.user
+    if request.method == "POST":
+        user_account = get_object_or_404(AccountBalance, user=logged_in_user)
+        if "deposit" in request.POST:
+            amount = request.POST.get("Deposit", 0)
+            user_account.deposit(Decimal(amount))
+            print(request.POST)
+            return redirect("first-page")
+        elif "withdraw" in request.POST:
+            amount2 = request.POST.get("Withdraw", 0)
+            user_account.withdraw(Decimal(amount2))
+            print(request.POST)
+            return redirect("first-page")
+    return JsonResponse({"success": False, "error": "Invalid Request"})
+
 def auth_view(request):
     signup_form = NewSignUpForm()
     login_form = LoginForm()
@@ -252,9 +272,11 @@ def forex(request):
     
     acc_balance = acc_bal.latest("last_update")
     current_balance = acc_balance.balance
-    
 
-    percentageIncrease = ((float(current_balance) - DEFAULT_BALANCE) / DEFAULT_BALANCE) * PERCENT
+    default_balance = acc_balance.deposited_value()
+    print(default_balance)
+
+    percentageIncrease = ((float(current_balance) - float(default_balance)) / float(default_balance)) * PERCENT  if default_balance else 0
     
     if trades_instance.exists():
         for trade in trades_instance:
@@ -395,7 +417,7 @@ def forex(request):
     context["max_winning_streak"] = consecutiveWins()
     context["max_losing_streak"] = consecutiveLoss()
     context["highest_profit_symbol"] = highest_win["symbol"]
-    context["highest_profit_value"] = Money(highest_win["profit"], "USD")
+    context["highest_profit_value"] = Money(highest_win["profit"] or 0, "USD") 
     context["healthy_trade"] = healthy_trades
     context["lucky_trade"] = lucky_trades
     context["healthy_loss"] = healthy_loss
@@ -649,6 +671,7 @@ def get_data(request):
 @login_required
 def trade_details(request, trade_id):
     logged_in_user = request.user
+    account = AccountBalance.objects.filter(user=logged_in_user)
     strategy_object = StrategyModel.objects.filter(user=logged_in_user)
     strategies = strategy_object.values()
     trade = TradesModel.objects.filter(ticket=trade_id, user=logged_in_user).values().first()
@@ -666,7 +689,9 @@ def trade_details(request, trade_id):
     trade["opening_time"] = trade["opening_time"].strftime('%a, %b %d, %Y')
     trade["profit_usd"] =  Money(round(trade["profit_usd"], 2), "USD")             
     
-    return_on_investment = (profit_before_change - float(trade["commission_usd"])) / DEFAULT_BALANCE
+    acc_balance = account.latest("last_update")
+    default = acc_balance.deposited_value()
+    return_on_investment = (profit_before_change - float(trade["commission_usd"])) / default
     return_on_investment *= PERCENT
     trade["ROI"] = round(return_on_investment, 2)
     trade["commission_usd"] = format(float(trade["commission_usd"]), ".2f")

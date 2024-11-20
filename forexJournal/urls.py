@@ -22,5 +22,6 @@ urlpatterns = [
     path("sync-mt5", views.sync_MT5, name="sync"),
     path("backtesting", views.backtestingPage, name="backtest"),
     path("settings", views.settingsPage, name="settings"),
+    path("set-balance", views.set_Initial_balance, name="set-balance"),
     # path('fetch-historical-data/', views.fetch_historical_data, name='fetch_historical_data'),
 ]

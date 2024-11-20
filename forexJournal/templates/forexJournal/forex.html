@@ -13,6 +13,20 @@
             <h1>Overview</h1>
             <button class="btnAdd show-modal">Add a new trade</button>
         </div>
+        <div class="balance-modal hidden" id="Transfer">
+            <h2>Please enter the amount to deposit</h2>
+            <form action="set-balance" method="POST">
+                <input type="number" placeholder="500.00" name="Deposit">
+                <button type="submit" name="deposit">Add Funds</button>
+            </form>
+        </div>
+        <div class="balance-modal hidden" id="Transfer2">
+            <h2>Please enter the amount to Withdraw</h2>
+            <form action="set-balance" method="POST">
+                <input type="number" placeholder="500.00" name="Withdraw">
+                <button type="submit" name="withdraw">Withdraw</button>
+            </form>
+        </div>
         <div class="modal hidden">
             <div class="modal-header">
                 <h2>UPLOAD YOUR TRADES</h2>
@@ -34,17 +48,13 @@
                     <button type="button" class="dropdown-button">▼</button>
                     
                     <div class="dropdown-content">
-                      <div class="dropdown-item" data-value="acg_markets">
-                        <img src="{% static 'forexJournal/images/alpha.jpg' %}" alt="ACG Markets Logo">
-                        ACG Markets
-                      </div>
                       <div class="dropdown-item" data-value="exness">
                         <img src="{% static 'forexJournal/images/exness-logo.png' %}" alt="Exness Logo">
                         Exness
                       </div>
                       <div class="dropdown-item" data-value="mt5">
                         <img src="{% static 'forexJournal/images/mt5-logo.jpeg' %}" alt="MetaTrader 5 Logo">
-                        MetaTrader 5
+                        MetaTrader 5 (ACG Markets)
                       </div>
                       <div class="dropdown-item" data-value="mt5">
                         <img src="{% static 'forexJournal/images/ftmo2.png' %}" alt="FTMO Logo">
@@ -66,7 +76,16 @@
         <div class="modal-overlay hidden"></div>
         <section id="top-widgets">
             <div class="account">
-                <p>Gross Account balance</p>
+                <div class="account-top-items">
+                    <p>Gross Account balance</p>
+                    <div class="initial-setter">
+                        <button class="vertical-dots">...</button>
+                        <div class="dropdown-menu" id="dropdownMenu">
+                            <button class="menu-item" id="depositBtn">Deposit</button>
+                            <button class="menu-item" id="withdrawBtn">Withdraw</button>
+                        </div>
+                    </div>
+                </div>
                 <h2>{{ balance }}</h2>
                 <h3>
                     <span>
@@ -178,71 +197,7 @@
                 <canvas id="lineChart"></canvas>
             </div>
         </section>
-        {% comment %} <section>
-            <h2>Recent Trades</h2>
-            <table>
-                <tr>
-                    <th>Instrument</th>
-                    <th>Date</th>
-                    <th>Entry Price</th>
-                    <th>Risk</th>
-                    <th>Potential Reward</th>
-                    <th>Strategy</th>
-                    <th>Risk to Reward Ratio</th>
-                    <th>Status</th>
-                    <th>trade Health</th> 
-                </tr>
-                <tr>
-                    <td contenteditable="true">GBPUSD</td>
-                    <td contenteditable="true">August, 28</td>
-                    <td contenteditable="true">1.32499</td>
-                    <td contenteditable="true">$50</td>
-                    <td contenteditable="true">$186</td>
-                    <td contenteditable="true">Inversed FVG</td>
-                    <td contenteditable="true">3.72</td>
-                    <td contenteditable="true">
-                        <select>
-                            <option value="Profitable">TP hit</option>
-                            <option value="Loss">Stopped Out</option>
-                            <option value="Break Even">Break Even</option>
-                        </select>
-                    </td>
-                    <th contenteditable="true">Good trade</th>
-                </tr>                
-                <tr>
-                    <td>GBPUSD</td>
-                    <td>August, 28</td>
-                    <td>1.32499</td>
-                    <td>$50</td>
-                    <td>$186</td>
-                    <td>Inversed FVG</td>
-                    <td>3.72</td>
-                    <td>TP hit</td>
-                    <th>Good trade</th>
-                </tr>                
-                <tr>
-                    <td>GBPUSD</td>
-                    <td>August, 28</td>
-                    <td>1.32499</td>
-                    <td>$50</td>
-                    <td>$186</td>
-                    <td>Inversed FVG</td>
-                    <td>3.72</td>
-                    <td>TP hit</td>
-                    <th>Good trade</th>
-                </tr>                
-            </table>
-        </section> {% endcomment %}
     </section>
-    {% comment %} <section>
-        <div>
-            <h2>Notifications on Account</h2>
-
-        </div>
-        <div>
-            <h2>Trading Calender</h2>
-        </div>
-    </section> {% endcomment %}
     <script>
         window.trades = {{ cumulative_data|safe }}
     </script>

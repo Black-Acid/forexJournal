@@ -104,9 +104,27 @@ class TradesModel(models.Model):
     
 class AccountBalance(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="account_balance", default=1)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=500.00)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     profits = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
+    is_default_balance = models.BooleanField(default=True)
     last_update = models.DateTimeField(auto_now_add=True)  # Tracks the last update
+    
+    
+    def deposit(self, amount):
+        """Add funds to the account balance."""
+        self.balance += amount
+        self.save()
+
+    def withdraw(self, amount):
+        """Subtract funds from the account balance, ensuring it doesn't go below zero."""
+        if self.balance >= amount:
+            self.balance -= amount
+            self.save()
+            return True
+        return False
+    
+    def deposited_value(self):
+        return self.balance - self.profits
 
 class ProcessedProfit(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=1)  # Replace '1' with a valid user ID

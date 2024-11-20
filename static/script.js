@@ -184,10 +184,14 @@ const modal = document.querySelector(".modal")
 const overlay = document.querySelector(".modal-overlay")
 const closes = document.querySelector(".close-modal")
 
+const Transfer = document.getElementById('Transfer');
+const Transfer2 = document.getElementById("Transfer2")
     
 const closeModal = function(){
     modal.classList.add("hidden")
     overlay.classList.add("hidden")
+    Transfer.classList.add("hidden")
+    Transfer2.classList.add("hidden")
 }
 
 
@@ -220,4 +224,40 @@ document.querySelector('.dropdown-button').addEventListener('click', function ()
       document.querySelector('.custom-dropdown').classList.remove('open');
     });
   });
+
+
+// Get the button and menu elements
+const dotsButton = document.querySelector('.vertical-dots');
+const dropdownMenu = document.getElementById('dropdownMenu');
+const deposit = document.getElementById('depositBtn');
+const withdraw = document.getElementById('withdrawBtn');
+
+
+
+
+// Add event listener to the dots button to toggle the menu
+dotsButton.addEventListener('click', function() {
+    // Toggle the display property to show/hide the menu
+    dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+});
+
+withdraw.addEventListener("click", function(){
+    
+    Transfer2.classList.remove("hidden")
+    overlay.classList.remove("hidden")
+})
+
+deposit.addEventListener("click", function(){
+    Transfer.classList.remove("hidden")
+    overlay.classList.remove("hidden")
+
+})
+
+// Optional: Close the menu if the user clicks outside of it
+document.addEventListener('click', function(event) {
+    if (!dotsButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+        dropdownMenu.style.display = 'none';
+    }
+});
+
   
