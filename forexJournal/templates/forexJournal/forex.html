@@ -54,7 +54,7 @@
                       </div>
                       <div class="dropdown-item" data-value="mt5">
                         <img src="{% static 'forexJournal/images/mt5-logo.jpeg' %}" alt="MetaTrader 5 Logo">
-                        MetaTrader 5 (ACG Markets)
+                        MetaTrader 5
                       </div>
                       <div class="dropdown-item" data-value="mt5">
                         <img src="{% static 'forexJournal/images/ftmo2.png' %}" alt="FTMO Logo">
@@ -64,7 +64,7 @@
                 </div>
                 <div class="upload-area">
                     <label for="csvFile" class="custom-file-label">Choose Files</label>
-                    <input type="file" class="custom-file-input" id="csvFile" name="csv_file" onchange="updateLabel(this)">
+                    <input type="file" class="custom-file-input" id="csvFile" name="csv_file">
                     <p>Copy and paste or drag and drop your files here</p>
                 </div>
                 <div class="buttons">
@@ -140,7 +140,12 @@
                 <div class="line"></div>
                 <div class="child">
                     <div class="charts-container">
-                        <canvas class="my-chart"></canvas>
+                        {% if total_trades %}
+                            <canvas class="my-chart"></canvas>
+                        {% else %}
+                            <h2>Not Enough Data</h2>
+                        {% endif %}
+                        
                     </div>
 
                     <div class="charts-items">
@@ -194,11 +199,17 @@
                 <p>Current Streak : <span>{{ max_losing_streak }}</span> losses</p>
             </div>
             <div class="charts">
-                <canvas id="lineChart"></canvas>
+                {% if total_trades %}
+                    <canvas id="lineChart"></canvas>
+                {% else %}
+                    <h2>Please Upload Trades to view Chart</h2>
+                {% endif %}
+                
             </div>
         </section>
     </section>
     <script>
+        window.totalTrades = {{ total_trades|safe }}
         window.trades = {{ cumulative_data|safe }}
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

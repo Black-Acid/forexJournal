@@ -431,8 +431,12 @@ body{
 
 .charts-container{
     width: 16rem;
-    height: 16rem;  
+    height: 18rem;  
     margin-left: 1rem;
+}
+
+.charts-container h2{
+    padding-top: 5rem;
 }
 
 .child{
@@ -440,6 +444,12 @@ body{
     grid-template-columns: 1fr 3fr;
 }
 
+
+.charts h2{
+    margin-left: 4rem;
+    margin-top: 6rem;
+    height: 9rem;
+}
 
 .items{
     margin-top: 2rem;
@@ -574,7 +584,7 @@ body{
     font-family: "Roboto", sans-serif;
 }
 
-table {
+/* table {
     border: 1px solid rgb(255, 255, 255, 0.5);
     border-radius: 5px;
     border-collapse: separate;
@@ -618,7 +628,7 @@ select option {
     background-color: transparent;
     color: black;
 }
-  
+   */
 
 ::-webkit-scrollbar{
     width: 5px;

@@ -26,6 +26,8 @@ from django.contrib.auth.views import LoginView
 from .forms import CustomLoginForm, LoginForm, NewSignUpForm
 from django.db import transaction
 from django.core.exceptions import ValidationError
+from io import StringIO
+
 
 
 import logging
@@ -58,7 +60,6 @@ ACCOUNT_BALANCE = apps.get_model("forexJournal", "AccountBalance")
 def convertXLSXFILE(file_path):
     xls = pd.ExcelFile(file_path)
 
-    print(xls.sheet_names)
 
     df = pd.read_excel(xls, sheet_name=0)
 
@@ -433,6 +434,7 @@ def forex(request):
         # first get the broker from which the csv data is coming from
         broker_name = request.POST.get("broker")
         csv_file = request.FILES.get("csv_file")
+        
         if broker_name.lower() == "exness":
             data = pd.read_csv(csv_file)
             for index, row in data.iterrows():
@@ -457,8 +459,74 @@ def forex(request):
                         margin_level=row['margin_level'],
                         close_reason=row['close_reason'],
                     ).save()
-        elif broker_name.lower() == "mt5":
-            pass
+        elif broker_name.lower() == "metatrader 5":
+            print(broker_name.lower())
+            print("We got to mt5")
+            converted_data = convertXLSXFILE(csv_file)
+            csv_data = converted_data.to_csv(index=False, header=False)
+            csv_buffer = StringIO(csv_data)
+            data = pd.read_csv(csv_buffer)
+            print(data.columns)
+            
+            
+            def safe_decimal(value):
+                try:
+                    # Check for 'NaN' and other invalid values explicitly
+                    if value in (None, '', 'NaN', 'nan'):
+                        return Decimal(0)  # Or any valid value your validation expects, not Decimal(0)
+                    return Decimal(value)
+                except InvalidOperation:
+                    return Decimal(0)
+            
+            for index, row in data.iterrows():
+                sl = ""
+                tp = ""
+                if str(row["S / L"]).lower() == "nan":
+                    sl = "0"
+                else:
+                    sl = row["S / L"]
+                
+                if str(row["T / P"]).lower() == "nan":
+                    tp = "0"
+                else:
+                    tp = row["T / P"]
+                
+                
+                
+                print(sl, tp)
+                
+                if not trades_instance.filter(ticket=row["Position"]):
+                    meta_trades = TradesModel(
+                        user=logged_in_user,
+                        ticket=row["Position"],
+                        opening_time=datetime.strptime(row['Time'], "%Y.%m.%d %H:%M:%S"),
+                        closing_time=datetime.strptime(row['Time.1'], "%Y.%m.%d %H:%M:%S"),
+                        order_type=row['Type'],
+                        lot_size=row['Volume'],
+                        original_position_size=row['Volume'],
+                        symbol=row['Symbol'],
+                        opening_price=Decimal(row['Price']).quantize(Decimal('0.000001')),  # Round to 6 decimal places
+                        closing_price=Decimal(row['Price.1']).quantize(Decimal('0.000001')),
+                        stop_loss=Decimal(sl).quantize(Decimal('0.000001')),
+                        take_profit=Decimal(tp).quantize(Decimal('0.000001')),
+                        commission_usd=Decimal(row['Commission']).quantize(Decimal('0.01')),  # 2 decimal places
+                        swap_usd=Decimal(row['Swap']).quantize(Decimal('0.01')),  
+                        profit_usd=Decimal(row['Profit']).quantize(Decimal('0.01')),
+                        equity_usd= 0,
+                        margin_level= 0,
+                        close_reason= "nothing",
+                    )
+                    meta_trades.save()
+                    try:
+                        # Validate the instance without saving
+                        meta_trades.full_clean()  # Will raise ValidationError if something's wrong
+                        # Proceed with further logic after validation, e.g., saving if needed
+                    except ValidationError as e:
+                        # Handle validation errors here
+                        print(f"Validation error: {e}")
+                    
+            
+            
         elif broker_name.lower() == "ftmo":
             data = pd.read_csv(csv_file, delimiter=';')
             print(data.columns)
@@ -691,7 +759,7 @@ def trade_details(request, trade_id):
     
     acc_balance = account.latest("last_update")
     default = acc_balance.deposited_value()
-    return_on_investment = (profit_before_change - float(trade["commission_usd"])) / default
+    return_on_investment = (profit_before_change - float(trade["commission_usd"])) / float(default)
     return_on_investment *= PERCENT
     trade["ROI"] = round(return_on_investment, 2)
     trade["commission_usd"] = format(float(trade["commission_usd"]), ".2f")

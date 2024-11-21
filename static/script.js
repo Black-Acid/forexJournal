@@ -38,7 +38,7 @@ const centerTextPlugin = {
         ctx.textAlign = "center";
 
         // Draw the first line of text
-        const text1 = "25";
+        const text1 = "0";
         const textX = width / 2;
         const textY = height / 2 - 10;  // Adjust Y position to move it slightly up
         ctx.fillText(text1, textX, textY);
@@ -59,125 +59,131 @@ const centerTextPlugin = {
 
 // Chart.register(centerTextPlugin);
 
+if (window.totalTrades != 0){
+    const myChart = document.querySelector(".my-chart");
 
-const myChart = document.querySelector(".my-chart");
+    new Chart(myChart, {
+        type: "doughnut",
+        data: {
+            labels: chartData.labels ,
+            datasets: [
+                {
+                    label: "Trades",
+                    data: chartData.data,
+                    backgroundColor: [
+                        "#6dc407", 
+                        "#b5fb5c", 
+                        "#519008", 
+                        "#1F3504",
+                        "#eaf1d8", 
+                        "#dafc85",
+                    ],
+                    borderWidth: 0,
+                }
+            ]
+        },
+        options: {
+            cutout: '65%', 
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        },
+        plugins: [centerTextPlugin]  // Apply the custom plugin
+    })
 
-new Chart(myChart, {
-    type: "doughnut",
-    data: {
-        labels: chartData.labels ,
-        datasets: [
-            {
-                label: "Trades",
-                data: chartData.data,
-                backgroundColor: [
-                    "#6dc407", 
-                    "#b5fb5c", 
-                    "#519008", 
-                    "#1F3504",
-                    "#eaf1d8", 
-                    "#dafc85",
-                ],
-                borderWidth: 0,
-            }
-        ]
-    },
-    options: {
-        cutout: '65%', 
-        plugins: {
-            legend: {
-                display: false
-            }
+}
+
+if (window.totalTrades != 0){
+    const some = document.getElementById('lineChart').getContext('2d');
+    const gradient = some.createLinearGradient(0, 0, 0, 400);  // Adjust the gradient dimensions as needed
+    gradient.addColorStop(0, '#004d00');  // Dark green at the bottom
+    gradient.addColorStop(1, '#00FF00');
+
+    let cumulativePnL = 0;
+    const NewchartData = window.trades.map(trade => {
+        cumulativePnL += trade.pnl;
+        return{
+            date: trade.date,
+            cumulativePnL: cumulativePnL
         }
-    },
-    plugins: [centerTextPlugin]  // Apply the custom plugin
-})
+    })
 
-const some = document.getElementById('lineChart').getContext('2d');
-
-const gradient = some.createLinearGradient(0, 0, 0, 400);  // Adjust the gradient dimensions as needed
-gradient.addColorStop(0, '#004d00');  // Dark green at the bottom
-gradient.addColorStop(1, '#00FF00');
-
-let cumulativePnL = 0;
-const NewchartData = window.trades.map(trade => {
-    cumulativePnL += trade.pnl;
-    return{
-        date: trade.date,
-        cumulativePnL: cumulativePnL
-    }
-})
-
-const Newdates = NewchartData.map(item => item.date)
-const NewpnlValues = NewchartData.map(item => item.cumulativePnL)
+    const Newdates = NewchartData.map(item => item.date)
+    const NewpnlValues = NewchartData.map(item => item.cumulativePnL)
 
 
 
 
-new Chart(some, {
-    type: 'line',
-    data: {
-    labels: Newdates,
-    datasets: [{
-        label: 'Cumulative Profits',
-        data: NewpnlValues,
-        borderWidth: 1,
-        tension: 0.4,
-        borderColor: "green",
-        fill: true,
-        backgroundColor: 'rgba(0, 255, 0, 0.3)',
-        //pointRadius: 0,
-    }]
-    },
-    options: {
-        plugins: {
-            tooltip: {
-                callbacks: {
-                    title: function(tooltipItems) {
-                        const label = tooltipItems[0].label;
-                        return `Total Profits\n${label}, 2024`;  // Customize title
+    new Chart(some, {
+        type: 'line',
+        data: {
+        labels: Newdates,
+        datasets: [{
+            label: 'Cumulative Profits',
+            data: NewpnlValues,
+            borderWidth: 1,
+            tension: 0.4,
+            borderColor: "green",
+            fill: true,
+            backgroundColor: 'rgba(0, 255, 0, 0.3)',
+            //pointRadius: 0,
+        }]
+        },
+        options: {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const label = tooltipItems[0].label;
+                            return `Total Profits\n${label}, 2024`;  // Customize title
+                        },
+                        label: function(tooltipItem) {
+                            const value = tooltipItem.raw;
+                            return `$${value.toLocaleString()}`;  // Format value as currency
+                        }
                     },
-                    label: function(tooltipItem) {
-                        const value = tooltipItem.raw;
-                        return `$${value.toLocaleString()}`;  // Format value as currency
-                    }
+                    backgroundColor: '#000',  // Tooltip background color
+                    titleColor: '#FFF',  // Title color
+                    bodyColor: '#FFF',  // Body color
+                    borderColor: '#FFF',  // Border color
+                    borderWidth: 0.5,  // Border width
+                    padding: 10  // Padding inside the tooltip
                 },
-                backgroundColor: '#000',  // Tooltip background color
-                titleColor: '#FFF',  // Title color
-                bodyColor: '#FFF',  // Body color
-                borderColor: '#FFF',  // Border color
-                borderWidth: 0.5,  // Border width
-                padding: 10  // Padding inside the tooltip
+                legend: {
+                    display: false
+                }
             },
-            legend: {
-                display: false
+        scales: {
+            x: {
+                ticks: {
+                    display: false  // Hide x-axis labels
+                },
+                grid: {
+                    display: true,  // Optionally hide x-axis grid lines
+                    color: 'rgba(255, 255, 255, 0.5)',  // Set grid line color to white with 50% opacity
+                    lineWidth: 0.2  // Set grid line width
+                }
+            },
+            y: {
+                ticks: {
+                    display: false  // Hide y-axis labels
+                },
+                grid: {
+                    display: true,  // Optionally hide y-axis grid lines
+                    color: 'rgba(255, 255, 255, 0.5)',  // Set grid line color to white with 50% opacity
+                    lineWidth: 0.2  // Set grid line width
+                },
+            beginAtZero: true
             }
-        },
-    scales: {
-        x: {
-            ticks: {
-                display: false  // Hide x-axis labels
-            },
-            grid: {
-                display: true,  // Optionally hide x-axis grid lines
-                color: 'rgba(255, 255, 255, 0.5)',  // Set grid line color to white with 50% opacity
-                lineWidth: 0.2  // Set grid line width
-            }
-        },
-        y: {
-            ticks: {
-                display: false  // Hide y-axis labels
-            },
-            grid: {
-                display: true,  // Optionally hide y-axis grid lines
-                color: 'rgba(255, 255, 255, 0.5)',  // Set grid line color to white with 50% opacity
-                lineWidth: 0.2  // Set grid line width
-            },
-        beginAtZero: true
         }
-    }
-    }
-});
+        }
+    });
+}
+
+
+
 
 const showModal = document.querySelector(".show-modal")
 const modal = document.querySelector(".modal")
