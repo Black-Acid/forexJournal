@@ -1,0 +1,109 @@
+body{
+    font-family: "Roboto", sans-serif;
+    overflow: hidden;
+    
+}
+
+#first-part{
+    width: 15rem;
+    padding: 1rem;
+    min-height: 100%;
+    border-right: 1px solid white;
+}
+
+.container{
+    background: rgb(231, 250, 214);
+    color: black;
+    height: 95vh;
+    padding: 0 1rem;
+}
+
+.navigation-container{
+    width: 30%;
+    /* background: red; */
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    padding-left: 1rem;
+}
+
+.navigation-container .active {
+    position: relative; /* Ensures the pseudo-element is positioned relative to this element */
+    color: rgb(94, 149, 94);
+}
+
+.navigation-container .active::after{
+    content: ""; /* Creates the pseudo-element */
+    position: absolute; /* Positions the bar relative to the .active element */
+    bottom: -0.6rem; /* Adjust this value to control the spacing below the text */
+    left: 50%; /* Start positioning the bar from the middle of the text */
+    transform: translateX(-50%); /* Aligns the bar to the start of the text */
+    width: 5rem; /* Width of the bar */
+    height: 4px; /* Thickness of the bar */
+    border-radius: 10px;
+    background: rgb(76, 254, 76); /* Color of the bar */
+}
+
+.filter-container{
+    background: rgb(240, 254, 233);
+    height: 3rem;
+    border-radius: 10px;
+    display: flex;
+    /* text-align: center; */
+    align-items: center;
+    margin-top: 1rem;
+    justify-content: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); 
+}
+
+.filter-container-items{
+    width:60%;
+    display: flex;
+    height: 3rem;
+    align-items: center;
+    /* background: blue; */
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.filter-container-items h3{
+    color: rgb(94, 149, 94);
+}
+
+.filter-container-items button{
+    text-transform: uppercase;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    background: transparent;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.filter-container-items button:hover{
+    background: rgb(176, 244, 176, 0.5);
+    border-radius: 10px;
+    height: 2.5rem;
+}
+
+.first-charts-container{
+    margin-top: 1.2rem;
+    height: 25rem;
+    display: grid;
+    grid-template-columns: 2.8fr 1.2fr;
+    gap: 20px;
+    
+    border-radius: 10px;
+}
+
+.line-chart{
+    background: blue;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.doughnut-win-rate{
+    background: yellow;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}

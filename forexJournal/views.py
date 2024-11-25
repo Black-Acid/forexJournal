@@ -493,7 +493,7 @@ def forex(request):
                 
                 
                 
-                print(sl, tp)
+                
                 
                 if not trades_instance.filter(ticket=row["Position"]):
                     meta_trades = TradesModel(

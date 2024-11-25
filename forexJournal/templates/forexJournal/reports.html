@@ -1,5 +1,50 @@
 {% extends "base.html" %}
 
+{% load static %}
+
+
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'forexJournal/reports.css' %}">
+{% endblock css_files %}
+
+{% block title %}Reports{% endblock title %}
 {% block content %}
-    <h1>Hello there I have gotten here but before I come here let me finish with the reports page in the Strategy section</h1>
+    <main>
+        <div class="container">
+            <div class="navigation-container">
+                <h2 class="active">General Reports</h2>
+                <h2>Compare Strategies</h2>
+            </div>
+            <div class="filter-container">
+                <div class="filter-container-items">
+                    <h3>filter by: </h3>
+                    <button>Days</button>
+                    <button>Months</button>
+                    <button>Time</button>
+                    <button>Trade duration</button>
+                    <button>Assets</button>
+                    <button>Strategies</button>
+                </div>
+            </div>
+            <div class="first-charts-container">
+                <div class="line-chart">
+                    <h3>The line chart</h3>
+                </div>
+                <div class="doughnut-win-rate">
+                    <h3>The Win-rate doughnut chart</h3>
+                </div>
+            </div>
+            <div class="second-charts-container">
+                <div class="bar-chart-one">
+                    <h3>Trade by distribution</h3>
+                </div>
+                <div class="bar-chart-two">
+                    <h3>Trade by performance</h3>
+                </div>
+            </div>
+            <div class="big-table">
+                <h3>Plenty tabular stuffs wey me saf adey think about how ago make them</h3>
+            </div>
+        </div>
+    </main>
 {% endblock content %}
