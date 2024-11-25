@@ -29,6 +29,7 @@
             <div class="first-charts-container">
                 <div class="line-chart">
                     <h3>The line chart</h3>
+                    <canvas id="lineChart"></canvas>
                 </div>
                 <div class="doughnut-win-rate">
                     <h3>The Win-rate doughnut chart</h3>
@@ -47,4 +48,6 @@
             </div>
         </div>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'reports.js' %}"></script>
 {% endblock content %}

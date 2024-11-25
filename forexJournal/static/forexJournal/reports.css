@@ -97,9 +97,14 @@ body{
 }
 
 .line-chart{
-    background: blue;
+    background: rgb(236, 252, 228);
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.first-charts-container canvas{
+    max-width: 100%;
+    max-height: 80%;
 }
 
 .doughnut-win-rate{
