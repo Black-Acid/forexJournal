@@ -16,6 +16,21 @@ body{
     color: black;
     height: 95vh;
     padding: 0 1rem;
+    overflow: auto;
+}
+
+.container::-webkit-scrollbar{
+    width: 5px;
+}
+
+.container::-webkit-scrollbar-track{
+    background: #8b8b8b;
+    border-radius: 10px;
+}
+
+.container::-webkit-scrollbar-thumb{
+    border-radius: 10px;
+    background: #3d3e3d;
 }
 
 .navigation-container{
@@ -25,6 +40,7 @@ body{
     gap: 1rem;
     font-size: 0.8rem;
     padding-left: 1rem;
+    cursor: pointer;
 }
 
 .navigation-container .active {
@@ -41,11 +57,11 @@ body{
     width: 5rem; /* Width of the bar */
     height: 4px; /* Thickness of the bar */
     border-radius: 10px;
-    background: rgb(76, 254, 76); /* Color of the bar */
+    background: #4cfe4c; /* Color of the bar */
 }
 
 .filter-container{
-    background: rgb(240, 254, 233);
+    background: rgb(241, 246, 238);
     height: 3rem;
     border-radius: 10px;
     display: flex;
@@ -97,18 +113,70 @@ body{
 }
 
 .line-chart{
-    background: rgb(236, 252, 228);
+    background: rgb(241, 246, 238);
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 }
 
+
+.line-chart h3{
+    text-align: center;
+}
 .first-charts-container canvas{
     max-width: 100%;
     max-height: 80%;
 }
 
+
+.doughnut-win-rate canvas{
+    max-width: 70%;
+    max-height: 70%;
+    margin: auto;
+}
+
 .doughnut-win-rate{
-    background: yellow;
+    background: rgb(241, 246, 238);
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.doughnut-win-rate h3{
+    text-align: center;
+}
+
+
+
+
+.second-charts-container{
+    /* background: red; */
+    height: 25rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 1.2rem;
+    gap: 20px;
+}
+
+
+
+.bar-chart-one{
+    background: rgb(241, 246, 238);
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.bar-chart-one h3,
+.bar-chart-two h3{
+    text-align: center;
+}
+
+.bar-chart-two{
+    background: rgb(241, 246, 238);
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.big-table{
+    background: red;
+    height: 35rem;
+    margin-bottom: 1rem;
 }
