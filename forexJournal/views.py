@@ -595,8 +595,10 @@ def forex(request):
     return render(request, "forexJournal/forex.html", context)
 
 @login_required
-def reports(requests):
-    return render(requests, "forexJournal/reports.html")
+def reports(request):
+    logged_in_user = request.user
+    trades = TradesModel.objects.filter(user=logged_in_user)
+    return render(request, "forexJournal/reports.html")
 
 @login_required
 def journal(request):
