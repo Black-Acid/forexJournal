@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 import pandas as pd
 from .models import TradesModel, AccountBalance, ProcessedProfit, StrategyModel, Profile, mt5login
-from django.db.models import Sum, Count, Q, Max, Avg, F, Case, When, Value, CharField
+from django.db.models import Sum, Count, Q, Max, Avg, F, Case, When, Value, CharField, Min, ExpressionWrapper, DurationField
 from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from django.utils import timezone
 from django.shortcuts import redirect
@@ -24,9 +24,10 @@ from .forms import SignUpForm
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.views import LoginView
 from .forms import CustomLoginForm, LoginForm, NewSignUpForm
-from django.db import transaction
+
 from django.core.exceptions import ValidationError
 from io import StringIO
+from django.db.models.functions import TruncDate, ExtractWeekDay
 
 
 
@@ -598,7 +599,170 @@ def forex(request):
 def reports(request):
     logged_in_user = request.user
     trades = TradesModel.objects.filter(user=logged_in_user)
-    return render(request, "forexJournal/reports.html")
+    account_balance = AccountBalance.objects.filter(user=logged_in_user)
+    user_bal = account_balance.latest("last_update")
+    profits = trades.filter(profit_usd__gt=0)
+    losses = trades.filter(profit_usd__lt=0)
+    break_even = trades.filter(profit_usd=0).count()
+    profitable_trades_sum = profits.aggregate(Sum("profit_usd"))["profit_usd__sum"]
+    profitable_trades_max = profits.aggregate(Max("profit_usd"))["profit_usd__max"]
+    losing_trades_sum = losses.aggregate(Sum("profit_usd"))["profit_usd__sum"]
+    losing_trades_max = losses.aggregate(Min("profit_usd"))["profit_usd__min"]
+    profitable_trades = profits.count()
+    losing_trades = losses.count()
+    winRate = calculateWinRate(profitable_trades, trades.count())
+    commissions = trades.aggregate(Sum("commission_usd"))["commission_usd__sum"]
+    swap = trades.aggregate(Sum("swap_usd"))["swap_usd__sum"]
+    
+    
+    trade_duration = trades.annotate(
+        duration=ExpressionWrapper(
+            F("closing_time") - F("opening_time"),
+            output_field=DurationField()
+        )
+    )
+    winning_trade_duration = profits.annotate(
+        winning_duration=ExpressionWrapper(
+            F("closing_time") - F("opening_time"),
+            output_field=DurationField()
+        )
+    )
+    
+    average_duration = trade_duration.aggregate(Avg("duration"))["duration__avg"]
+    winning_average_duration = winning_trade_duration.aggregate(Avg("winning_duration"))["winning_duration__avg"]
+    
+    winning_total_secs = winning_average_duration.total_seconds()
+    w_hours, w_remainder = divmod(winning_total_secs, 3600)
+    w_mins, w_secs = divmod(w_remainder, 60)
+    
+    total_secs = average_duration.total_seconds()
+    hours, remainder = divmod(total_secs, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    
+    #One more of the above here
+    
+    
+    def consecutiveWins():
+        max_consecutive_wins = 0
+        current_streak = 0
+        new_form = trades.order_by("opening_time")
+        
+        for trade in new_form:
+            if trade.profit_usd > 0:
+                current_streak += 1
+                max_consecutive_wins = max(current_streak, max_consecutive_wins)
+            else:
+                current_streak = 0
+                
+        return max_consecutive_wins
+    
+    # When refining define this one outside to be used by multiple views
+    def consecutiveLoss():
+        max_consecutive_loss = 0
+        current_streak = 0
+        new_form = trades.order_by("opening_time")
+        
+        for trade in new_form:
+            if trade.profit_usd < 0:
+                current_streak += 1
+                max_consecutive_loss = max(current_streak, max_consecutive_loss)
+            else:
+                current_streak = 0
+        
+        return max_consecutive_loss
+    
+    # Daily average volume
+    daily_volume = trades.annotate(
+        date=TruncDate("opening_time")
+    ).values("date").annotate(
+        total_volume=Sum("lot_size")
+    )
+    
+    total_volume = sum(day["total_volume"] for day in daily_volume)
+    total_days = len(daily_volume)
+    
+    average_daily_volume = (total_volume / total_days) if total_days else "N/A"
+    
+    
+    #trade count by days
+    trades_by_weekday = trades.annotate(
+        weekday=ExtractWeekDay('opening_time')
+    ).values('weekday').annotate(
+        trade_count=Count('id')
+    )
+    
+    profits_by_weekday = trades.annotate(
+        weekday=ExtractWeekDay('opening_time')  # Extract weekday as a number (1-7)
+    ).values('weekday').annotate(
+        total_profit=Sum('profit_usd')  # Sum profits for each day
+    )
+
+    # Step 2: Map weekday numbers to names (optional)
+    weekday_names = {
+        1: 'Sunday',
+        2: 'Monday',
+        3: 'Tuesday',
+        4: 'Wednesday',
+        5: 'Thursday',
+        6: 'Friday',
+        7: 'Saturday'
+    }
+
+    # Step 3: Replace weekday numbers with names
+    result = {
+        weekday_names[item['weekday']]: item['trade_count']
+        for item in trades_by_weekday
+    }
+    
+    
+    result_for_profits = {
+        weekday_names[item['weekday']]: item['total_profit']
+        for item in profits_by_weekday
+    }
+    
+    
+    days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    
+    corresponding_trade_count = []
+    corresponding_trade_profit = []
+    
+    for value in days:
+        corresponding_trade_count.append(result.get(f"{value}", 0))
+        
+    for value in days:
+        corresponding_trade_profit.append(round(float(result_for_profits.get(f"{value}", 0)), 2))
+    
+    
+    print(result_for_profits)
+    print(corresponding_trade_profit)
+    context = {}
+    average_winning_trades = (profitable_trades_sum / profitable_trades) if profitable_trades else "N/A"
+    average_losing_trades = (losing_trades_sum / losing_trades) if losing_trades else "N/A"
+    context["total_pnl"] = Money(user_bal.profits, "USD")
+    context["total_trades"] = trades.count()
+    context["winning_trades"] = profitable_trades
+    context["losing_trades"] = losing_trades
+    context["break_even"] = break_even
+    context["win_rate"] = winRate
+    context["average_winning_trade"] = Money(average_winning_trades, "USD")
+    context["average_losing_trade"] = Money(average_losing_trades, "USD")
+    context["commisions"] = Money(commissions, "USD")
+    context["swap"] = Money(swap, "USD")
+    context["total_fees"] = Money(commissions + swap, "USD")
+    context["largest_profit"] = Money(profitable_trades_max, "USD")
+    context["largest_loss"] = Money(losing_trades_max, "USD")
+    context["average_hold_hours"] = int(hours)
+    context["average_hold_minutes"] = int(minutes)
+    context["average_hold_seconds"] = int(seconds)
+    context["average_win_hours"] = int(w_hours)
+    context["average_win_minutes"] = int(w_mins)
+    context["average_win_seconds"] = int(w_secs)
+    context["max_consecutive_wins"] = consecutiveWins()
+    context["max_consecutive_loss"] = consecutiveLoss()
+    context["average_daily_volume"] = average_daily_volume
+    context["trade_distribution"] = corresponding_trade_count
+    context["trade_profit"] = corresponding_trade_profit
+    return render(request, "forexJournal/reports.html", context)
 
 @login_required
 def journal(request):

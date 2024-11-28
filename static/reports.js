@@ -20,7 +20,7 @@ const customCenterTextPlugin = {
       ctx.fillStyle = "#000"; // Black text color
       ctx.textAlign = "center";
       ctx.textBaseline = "middle"; // Aligns text vertically
-      ctx.fillText("62%", centerX, centerY - 20);
+      ctx.fillText(`${window.winRate}%`, centerX, centerY - 20);
   
       // Add the secondary label text
       ctx.font = "20px 'Roboto', sans-serif";
@@ -112,7 +112,7 @@ const options = {
 const doughData = {
     labels: ["Consumed", "Untapped"],
     datasets: [{
-        data: [62, 38],
+        data: [window.winRate, 100 - window.winRate],
         backgroundColor: ['#76f233', '#E0E0E0'],
         borderWidth: 0,
         hoverOffset: 4,
@@ -148,7 +148,7 @@ const distributionData = {
     labels:["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     datasets: [{
         label: "trades",
-        data: [0, 3, 46, 50, 18, 6, 24],
+        data: window.distribution,
         backgroundColor: "green",
         borderWidth: 1,
     }]
@@ -182,7 +182,7 @@ const performanceData = {
     labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     datasets: [{
         label: "PnL",
-        data: [0, 320, 150, -120, 469, 425, 215],
+        data: window.profit,
         backgroundColor: "#4cfe4c",
         borderWidth: 1,
     }]

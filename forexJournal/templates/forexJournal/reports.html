@@ -50,71 +50,71 @@
                 <div class="theory-container-one">
                     <div class="theory-detail-row">
                         <div class="theory-property">Total Pnl</div>
-                        <div class="theory-value">$7,435.00</div>
+                        <div class="theory-value">{{total_pnl}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Average-daily Volume</div>
-                        <div class="theory-value">254.91</div>
+                        <div class="theory-value">{{average_daily_volume}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Average Winning Trade</div>
-                        <div class="theory-value">$3,281.00</div>
+                        <div class="theory-value">{{average_winning_trade}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Average Losing Trade</div>
-                        <div class="theory-value">1,255.74</div>
+                        <div class="theory-value">{{average_losing_trade}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Total number of trades</div>
-                        <div class="theory-value">143</div>
+                        <div class="theory-value">{{total_trades}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Number of Winning Trades</div>
-                        <div class="theory-value">93</div>
+                        <div class="theory-value">{{winning_trades}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Number of Losing Trades</div>
-                        <div class="theory-value">50</div>
+                        <div class="theory-value">{{losing_trades}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Number of break even trades</div>
-                        <div class="theory-value">0</div>
+                        <div class="theory-value">{{break_even}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Max Consecutive Wins</div>
-                        <div class="theory-value">12</div>
+                        <div class="theory-value">{{max_consecutive_wins}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Max Consecutive Loss</div>
-                        <div class="theory-value">8</div>
+                        <div class="theory-value">{{max_consecutive_loss}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Total Commisions</div>
-                        <div class="theory-value">$1,534.92</div>
+                        <div class="theory-value">{{commisions}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Total fees</div>
-                        <div class="theory-value">$1,887.34</div>
+                        <div class="theory-value">{{total_fees}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Total Swap</div>
-                        <div class="theory-value">$349.21</div>
+                        <div class="theory-value">{{swap}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Largest Profit</div>
-                        <div class="theory-value">$2,612.15</div>
+                        <div class="theory-value">{{largest_profit}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Largest Loss</div>
-                        <div class="theory-value">$722.56</div>
+                        <div class="theory-value">{{largest_loss}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Average Hold Time(All trades)</div>
-                        <div class="theory-value">N/A</div>
+                        <div class="theory-value">{{average_hold_hours}}hrs {{average_hold_minutes}}mins {{average_hold_seconds}}secs</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Average Hold time(Winning Trades)</div>
-                        <div class="theory-value">25 minutes</div>
+                        <div class="theory-value">{{average_win_hours}}hrs {{average_win_minutes}}mins {{average_win_seconds}}secs</div>
                     </div>
                 </div>
                 <div class="theory-container-two">
@@ -190,6 +190,11 @@
             </div>
         </div>
     </main>
+    <script>
+        window.winRate = {{ win_rate|safe }}
+        window.distribution = {{trade_distribution|safe}}
+        window.profit = {{trade_profit|safe}}
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'reports.js' %}"></script>
 {% endblock content %}
