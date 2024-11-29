@@ -614,6 +614,9 @@ def reports(request):
     commissions = trades.aggregate(Sum("commission_usd"))["commission_usd__sum"]
     swap = trades.aggregate(Sum("swap_usd"))["swap_usd__sum"]
     
+    total_pnl = trades.aggregate(Sum("profit_usd"))["profit_usd__sum"]
+    average_pnl = (total_pnl / trades.count()) if trades.count() else 0
+    
     
     trade_duration = trades.annotate(
         duration=ExpressionWrapper(
@@ -628,12 +631,24 @@ def reports(request):
         )
     )
     
+    losing_trade_duration = losses.annotate(
+        losing_duration=ExpressionWrapper(
+            F("closing_time") - F("opening_time"),
+            output_field=DurationField()
+        )
+    )
+    
     average_duration = trade_duration.aggregate(Avg("duration"))["duration__avg"]
     winning_average_duration = winning_trade_duration.aggregate(Avg("winning_duration"))["winning_duration__avg"]
+    losing_average_duration = losing_trade_duration.aggregate(Avg("losing_duration"))["losing_duration__avg"]
     
     winning_total_secs = winning_average_duration.total_seconds()
     w_hours, w_remainder = divmod(winning_total_secs, 3600)
     w_mins, w_secs = divmod(w_remainder, 60)
+    
+    losing_total_secs = losing_average_duration.total_seconds()
+    l_hours, l_remainder = divmod(losing_total_secs, 3600)
+    l_mins, l_secs = divmod(l_remainder, 60)
     
     total_secs = average_duration.total_seconds()
     hours, remainder = divmod(total_secs, 3600)
@@ -726,6 +741,7 @@ def reports(request):
     corresponding_trade_count = []
     corresponding_trade_profit = []
     
+    
     for value in days:
         corresponding_trade_count.append(result.get(f"{value}", 0))
         
@@ -733,8 +749,20 @@ def reports(request):
         corresponding_trade_profit.append(round(float(result_for_profits.get(f"{value}", 0)), 2))
     
     
-    print(result_for_profits)
-    print(corresponding_trade_profit)
+    trade_days_count = trades.annotate(
+        trade_days=TruncDate("opening_time")
+    ).values("trade_days").distinct().count()
+    
+    
+    daily_profits = trades.annotate(
+        trade_date = TruncDate("opening_time")
+    ).values("trade_date").annotate(
+        total_profit=Sum("profit_usd")
+    )
+    
+    w_days_count = daily_profits.filter(total_profit__gt=0).count()
+    l_days_count = daily_profits.filter(total_profit__lt=0).count()
+    
     context = {}
     average_winning_trades = (profitable_trades_sum / profitable_trades) if profitable_trades else "N/A"
     average_losing_trades = (losing_trades_sum / losing_trades) if losing_trades else "N/A"
@@ -757,11 +785,21 @@ def reports(request):
     context["average_win_hours"] = int(w_hours)
     context["average_win_minutes"] = int(w_mins)
     context["average_win_seconds"] = int(w_secs)
+    context["average_loss_hours"] = int(l_hours)
+    context["average_loss_minutes"] = int(l_mins)
+    context["average_loss_seconds"] = int(l_secs)
     context["max_consecutive_wins"] = consecutiveWins()
     context["max_consecutive_loss"] = consecutiveLoss()
     context["average_daily_volume"] = average_daily_volume
     context["trade_distribution"] = corresponding_trade_count
     context["trade_profit"] = corresponding_trade_profit
+    context["average_pnl"] = Money(average_pnl, "USD")
+    context["profit_factor"] = calculateProfitFactor(profitable_trades_sum, losing_trades_sum)
+    context["total_trading_days"] = trade_days_count
+    context["number_of_win_days"] = w_days_count
+    context["number_of_loss_days"] = l_days_count
+    
+    
     return render(request, "forexJournal/reports.html", context)
 
 @login_required

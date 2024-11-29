@@ -120,7 +120,7 @@
                 <div class="theory-container-two">
                     <div class="theory-detail-row">
                         <div class="theory-property">Average Hold time(Losing trades)</div>
-                        <div class="theory-value">40 minutes</div>
+                        <div class="theory-value">{{average_loss_hours}}hrs {{average_loss_minutes}}mins {{average_loss_seconds}}secs</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Average Hold Time(Scratch trades)</div>
@@ -128,23 +128,23 @@
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Average PnL</div>
-                        <div class="theory-value">$2,285.00</div>
+                        <div class="theory-value">{{average_pnl}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Profit factor</div>
-                        <div class="theory-value">1.4</div>
+                        <div class="theory-value">{{profit_factor}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Total trading days</div>
-                        <div class="theory-value">78</div>
+                        <div class="theory-value">{{total_trading_days}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Number of Winning days</div>
-                        <div class="theory-value">55</div>
+                        <div class="theory-value">{{number_of_win_days}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Number of Losing days</div>
-                        <div class="theory-value">23</div>
+                        <div class="theory-value">{{number_of_loss_days}}</div>
                     </div>
                     <div class="theory-detail-row">
                         <div class="theory-property">Number of break even days</div>
