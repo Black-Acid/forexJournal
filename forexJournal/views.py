@@ -198,23 +198,21 @@ def auth_view(request):
     if request.method == 'POST':
           # Sign-up form submitted
         if 'signup' in request.POST:  # Sign-up form submitted
-            signup_form = NewSignUpForm(request.POST)
-            if signup_form.is_valid():
-                user = signup_form.save()  
+            signup_form_with_data = NewSignUpForm(request.POST)
+            # signup_form = NewSignUpForm(request.POST)
+            if signup_form_with_data.is_valid():
+                user = signup_form_with_data.save()  
                 login(request, user)  
                 return redirect('first-page')  
             else:
-                # Log the form errors for debugging
                 print("Signup form invalid:", signup_form.errors)
+                return render(request, f"{PATH}/login2.html", {"signup_form": signup_form_with_data})
         elif 'login' in request.POST:  
-            print("I got in")
-            login_form = LoginForm(request, data=request.POST)
-            print("i don't know what happened")
-            if login_form.is_valid():
-                print("I'm here")
+            login_form_with_data = LoginForm(request, data=request.POST)
+            if login_form_with_data.is_valid():
                 user = authenticate(
-                    username=login_form.cleaned_data['username'],
-                    password=login_form.cleaned_data['password']
+                    username=login_form_with_data.cleaned_data['username'],
+                    password=login_form_with_data.cleaned_data['password']
                 )
                 if user is not None:
                     login(request, user)
@@ -222,9 +220,18 @@ def auth_view(request):
                 else:
                     print("We don't know you")
             else:
-                print("Login form errors:", login_form.errors)
+                print("Login form errors:", login_form_with_data.errors)
+                return render(request, f'{PATH}/login2.html', {'login_form': login_form_with_data})
+                
+    context = {
+        'signup_form': signup_form, 
+        'login_form': login_form
+    }
+    
+    print(context)
 
-    return render(request, f'{PATH}/login2.html', {'signup_form': signup_form, 'login_form': login_form})
+    return render(request, f'{PATH}/login2.html', context)
+
 
 
 
@@ -604,15 +611,15 @@ def reports(request):
     profits = trades.filter(profit_usd__gt=0)
     losses = trades.filter(profit_usd__lt=0)
     break_even = trades.filter(profit_usd=0).count()
-    profitable_trades_sum = profits.aggregate(Sum("profit_usd"))["profit_usd__sum"]
+    profitable_trades_sum = profits.aggregate(Sum("profit_usd"))["profit_usd__sum"] or  0
     profitable_trades_max = profits.aggregate(Max("profit_usd"))["profit_usd__max"]
-    losing_trades_sum = losses.aggregate(Sum("profit_usd"))["profit_usd__sum"]
+    losing_trades_sum = losses.aggregate(Sum("profit_usd"))["profit_usd__sum"] or 0
     losing_trades_max = losses.aggregate(Min("profit_usd"))["profit_usd__min"]
     profitable_trades = profits.count()
     losing_trades = losses.count()
     winRate = calculateWinRate(profitable_trades, trades.count())
-    commissions = trades.aggregate(Sum("commission_usd"))["commission_usd__sum"]
-    swap = trades.aggregate(Sum("swap_usd"))["swap_usd__sum"]
+    commissions = trades.aggregate(Sum("commission_usd"))["commission_usd__sum"] or 0
+    swap = trades.aggregate(Sum("swap_usd"))["swap_usd__sum"] or  0
     
     total_pnl = trades.aggregate(Sum("profit_usd"))["profit_usd__sum"]
     average_pnl = (total_pnl / trades.count()) if trades.count() else 0
@@ -642,15 +649,30 @@ def reports(request):
     winning_average_duration = winning_trade_duration.aggregate(Avg("winning_duration"))["winning_duration__avg"]
     losing_average_duration = losing_trade_duration.aggregate(Avg("losing_duration"))["losing_duration__avg"]
     
-    winning_total_secs = winning_average_duration.total_seconds()
-    w_hours, w_remainder = divmod(winning_total_secs, 3600)
-    w_mins, w_secs = divmod(w_remainder, 60)
     
-    losing_total_secs = losing_average_duration.total_seconds()
-    l_hours, l_remainder = divmod(losing_total_secs, 3600)
-    l_mins, l_secs = divmod(l_remainder, 60)
+    winning_total_secs = winning_average_duration.total_seconds() if winning_average_duration else 0
     
-    total_secs = average_duration.total_seconds()
+    w_hours = 0
+    w_mins = 0
+    w_secs = 0
+    
+    if winning_average_duration: 
+        w_hours, w_remainder = divmod(winning_total_secs, 3600)
+        w_mins, w_secs = divmod(w_remainder, 60)
+    
+    
+    losing_total_secs = losing_average_duration.total_seconds() if losing_average_duration else 0
+    
+    
+    l_hours = 0
+    l_mins = 0
+    l_secs = 0
+    
+    if losing_total_secs:
+        l_hours, l_remainder = divmod(losing_total_secs, 3600)
+        l_mins, l_secs = divmod(l_remainder, 60)
+    
+    total_secs = average_duration.total_seconds() if average_duration else 0
     hours, remainder = divmod(total_secs, 3600)
     minutes, seconds = divmod(remainder, 60)
     
@@ -764,21 +786,21 @@ def reports(request):
     l_days_count = daily_profits.filter(total_profit__lt=0).count()
     
     context = {}
-    average_winning_trades = (profitable_trades_sum / profitable_trades) if profitable_trades else "N/A"
-    average_losing_trades = (losing_trades_sum / losing_trades) if losing_trades else "N/A"
+    average_winning_trades = (profitable_trades_sum / profitable_trades) if profitable_trades else 0
+    average_losing_trades = (losing_trades_sum / losing_trades) if losing_trades else 0
     context["total_pnl"] = Money(user_bal.profits, "USD")
     context["total_trades"] = trades.count()
     context["winning_trades"] = profitable_trades
     context["losing_trades"] = losing_trades
     context["break_even"] = break_even
     context["win_rate"] = winRate
-    context["average_winning_trade"] = Money(average_winning_trades, "USD")
-    context["average_losing_trade"] = Money(average_losing_trades, "USD")
-    context["commisions"] = Money(commissions, "USD")
-    context["swap"] = Money(swap, "USD")
-    context["total_fees"] = Money(commissions + swap, "USD")
-    context["largest_profit"] = Money(profitable_trades_max, "USD")
-    context["largest_loss"] = Money(losing_trades_max, "USD")
+    context["average_winning_trade"] = Money(average_winning_trades or Decimal(0), "USD")
+    context["average_losing_trade"] = Money(average_losing_trades or 0, "USD")
+    context["commisions"] = Money(commissions or 0, "USD")
+    context["swap"] = Money(swap or 0, "USD")
+    context["total_fees"] = Money((commissions + swap) or 0, "USD")
+    context["largest_profit"] = Money(profitable_trades_max or 0, "USD")
+    context["largest_loss"] = Money(losing_trades_max or 0, "USD")
     context["average_hold_hours"] = int(hours)
     context["average_hold_minutes"] = int(minutes)
     context["average_hold_seconds"] = int(seconds)

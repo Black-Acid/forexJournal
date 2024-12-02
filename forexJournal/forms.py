@@ -88,26 +88,90 @@ class CustomLoginForm(AuthenticationForm):
         
         
         
+# class LoginForm(AuthenticationForm):
+#     username = forms.CharField(label="Username", max_length=30)
+#     password = forms.CharField(widget=forms.PasswordInput(), label="Password")
+    
+#     class Meta:
+#         fields = ("username", "Password")
+        
+        
+        
+# class NewSignUpForm(UserCreationForm):
+#     first_name = forms.CharField(max_length=30, required=True, help_text="Enter your first name")
+#     last_name = forms.CharField(max_length=30, required=True, help_text="Enter your last name")
+#     email = forms.EmailField(max_length=254, required=True, help_text="Enter a valid email address")
+    
+#     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+#     password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput)
+
+#     class Meta:
+#         model = User
+#         fields = ['first_name', 'last_name', 'email', 'username', 'password1', 'password2']
+
+#     def clean(self):
+#         cleaned_data = super().clean()
+#         password = cleaned_data.get("password1")
+#         confirm_password = cleaned_data.get("password2")
+
+#         if password and confirm_password and password != confirm_password:
+#             self.add_error("confirm_password", "Passwords do not match")
+    
+#     class Meta:
+#         model = User
+#         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+    
+#     def clean_email(self):
+#         email = self.cleaned_data.get('email')
+#         if User.objects.filter(email=email).exists():
+#             raise ValidationError("A user with this email already exists.")
+#         return email
+
+
+
 class LoginForm(AuthenticationForm):
-    username = forms.CharField(label="Username", max_length=30)
-    password = forms.CharField(widget=forms.PasswordInput(), label="Password")
-    
-    class Meta:
-        fields = ("username", "Password")
-        
-        
-        
+    username = forms.CharField(label="Username", max_length=30, widget=forms.TextInput(attrs={'placeholder': 'Username'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}), label="Password")
+
+
+
 class NewSignUpForm(UserCreationForm):
-    first_name = forms.CharField(max_length=30, required=True, help_text="Enter your first name")
-    last_name = forms.CharField(max_length=30, required=True, help_text="Enter your last name")
-    email = forms.EmailField(max_length=254, required=True, help_text="Enter a valid email address")
-    
-    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
-    password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput)
+    first_name = forms.CharField(
+        max_length=30, 
+        required=True, 
+        help_text="Enter your first name",
+        widget=forms.TextInput(attrs={"placeholder": "First Name"})
+    )
+    last_name = forms.CharField(
+        max_length=30, 
+        required=True, 
+        help_text="Enter your last name", 
+        widget=forms.TextInput(attrs={"placeholder": "Last Name"})
+    )
+    username = forms.CharField(
+        max_length=150, 
+        required=True, 
+        help_text="Enter your username",
+        widget=forms.TextInput(attrs={"placeholder": "Username"})
+    )
+    email = forms.EmailField(
+        max_length=254, 
+        required=True, 
+        help_text="Enter a valid email address", 
+        widget=forms.TextInput(attrs={"placeholder": "Email"})
+    )
+    password1 = forms.CharField(
+        label="Password", 
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"})
+    )
+    password2 = forms.CharField(
+        label="Confirm Password", 
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirm Password"})
+    )
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'username', 'password1', 'password2']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
 
     def clean(self):
         cleaned_data = super().clean()
@@ -115,14 +179,10 @@ class NewSignUpForm(UserCreationForm):
         confirm_password = cleaned_data.get("password2")
 
         if password and confirm_password and password != confirm_password:
-            self.add_error("confirm_password", "Passwords do not match")
-    
-    class Meta:
-        model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
-    
+            self.add_error("password2", "Passwords do not match")
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
-            raise ValidationError("A user with this email already exists.")
+            raise forms.ValidationError("A user with this email already exists.")
         return email

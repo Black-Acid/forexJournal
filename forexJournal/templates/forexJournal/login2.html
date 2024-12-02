@@ -13,7 +13,118 @@
 </head>
 <body>
     <main>
-        <div class="wrapper">
+        <div class="container" id="container">
+            <div class="form-container sign-up-container">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {% if signup_form.non_field_errors %}
+                        <div style="color: red;">
+                            <ul>
+                                {% for error in signup_form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <h1>Create Account</h1> 
+                    <div class="social-container">
+                        <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                        <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <span>or use your account</span>
+                    <div class="grid-display">
+                        <div class="infield item">
+                            {{ signup_form.first_name }}
+                            <label></label>
+                        </div>
+                        <div class="infield item">
+                            {{ signup_form.last_name }}
+                            <label></label>
+                        </div>
+                        <div class="infield item">
+                            {{ signup_form.username }}
+                            <label></label>
+                        </div>
+                        <div class="infield item">
+                            {{ signup_form.email }}
+                            <label></label>
+                        </div>
+                        <div class="infield item">
+                            {{ signup_form.password1 }}
+                            <label></label>
+                        </div>
+                        <div class="infield item">
+                            {{ signup_form.password2 }}
+                            <label></label>
+                        </div>
+                    </div>
+                    <button type="submit" name="signup">Sign Up</button>
+                </form>
+            </div>
+            <div class="form-container sign-in-container">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {% if login_form.non_field_errors %}
+                        <div style="color: red;">
+                            <ul>
+                                {% for error in login_form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <h1>Sign In</h1>
+                    <div class="social-container">
+                        <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                        <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <span>or use your email for registration</span>
+                    <div class="infield">
+                        {{ login_form.username }}
+                        {% if login_form.username.errors %}
+                            <ul class="errorlist">
+                                {% for error in login_form.username.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <label></label>
+                    </div>
+                    <div class="infield">
+                        {{ login_form.password }}
+                        <label></label>
+                        {% if login_form.password.errors %}
+                            <ul class="errorlist">
+                                {% for error in login_form.password.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                    <a href="" class="forgot">Forgot your password</a>
+                    <button type="submit" name="login">LOGIN</button>
+                </form>
+            </div>
+    
+            <div class="overlay-container" id="overlayCon">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">
+                        <h1>Hello, Friend</h1>
+                        <p>Enter your personal details and start a journey with us</p>
+                        <button>Sign In</button>
+                    </div>
+                    <div class="overlay-panel overlay-right">
+                        <h1>Welcome Back</h1>
+                        <p>To keep connected with us please login with your personal details</p>
+                        <button>Sign Up</button>
+                    </div>
+                </div>
+                <button id="overlayBtn"></button>
+            </div>
+        </div>   
+        {% comment %} <div class="wrapper">
             <span class="bg1"></span>
             <div class="form-wrapper login">
                 <h1 class="title">Login</h1>
@@ -24,11 +135,17 @@
                         {{ login_form.username }}
                         <label for="">Username</label>
                         <i class="fas fa-user"></i>
+                        {% for error in login_form.username.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
                     </div>
                     <div class="input-box">
                         {{ login_form.password }}
                         <label for="">Password</label>
                         <i class="fas fa-lock"></i>
+                        {% for error in login_form.password.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
                     </div>
                     <button class="btn" type="submit" name="login">Login</button>
                     <div class="link">
@@ -99,8 +216,22 @@
                 <h2>Welcome!</h2>
                 <p>Create your account to access our services</p>
             </div>
-        </div>
+        </div> {% endcomment %}
     </main>
-    <script src="{% static 'login2.js' %}"></script>
+    {% comment %} <script src="{% static 'login2.js' %}"></script> {% endcomment %}
+    <script>
+        const container = document.getElementById("container")
+        const overlayCon = document.getElementById("overlayCon")
+        const overlayBtn = document.getElementById("overlayBtn")
+
+        overlayBtn.addEventListener("click", ()=> {
+            container.classList.toggle("right-panel-active")
+
+            overlayBtn.classList.remove("btnScaled")
+            window.requestAnimationFrame( ()=> {
+                overlayBtn.classList.add("btnScaled")
+            })
+        })
+    </script>
 </body>
 </html>
