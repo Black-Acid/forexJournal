@@ -11,7 +11,6 @@ et_xmlfile==2.0.0
 forex-python==1.8
 gunicorn==23.0.0
 idna==3.10
-MetaTrader5==5.0.4424
 numpy==1.26.4
 openpyxl==3.1.5
 packaging==24.2

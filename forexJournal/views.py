@@ -11,8 +11,7 @@ import json
 import requests
 from django.apps import apps
 from djmoney.money import Money
-from django.core.exceptions import ObjectDoesNotExist
-import MetaTrader5 as mt5   
+from django.core.exceptions import ObjectDoesNotExist  
 from django.contrib import messages
 from django.http import HttpResponse
 from datetime import datetime, timedelta
@@ -28,6 +27,7 @@ from .forms import CustomLoginForm, LoginForm, NewSignUpForm
 from django.core.exceptions import ValidationError
 from io import StringIO
 from django.db.models.functions import TruncDate, ExtractWeekDay
+from forex_python.converter import CurrencyRates
 
 
 
@@ -138,39 +138,92 @@ def calculateRealisedRR(open_price, close_price, stop_loss):
     return round(reward / risk if risk != 0 else Decimal("0"), 2)
     
     
-def calculateTakeProfitValue(symbol, entry_price, stop_loss, take_profit, lot_size):
-    # Initialize the MT5 connection
-    if not mt5.initialize():
-        print("Failed to initialize MT5")
-        quit()
-
-    # Ensure the symbol is available in MT5
-    if not mt5.symbol_select(symbol, True):
-        print(f"Failed to select symbol {symbol}")
-        mt5.shutdown()
-        quit()
-
-    # Get the symbol information
-    symbol_info = mt5.symbol_info(symbol)
-
-    if symbol_info is None:
-        print(f"Symbol information for {symbol} not found")
-        mt5.shutdown()
-        quit()
-
-    # Calculate the distance in points
-    sl_points = float(abs(entry_price - stop_loss)) / symbol_info.point
-    tp_points = float(abs(take_profit - entry_price)) / symbol_info.point
     
 
-    # Calculate the dollar value for SL and TP
-    sl_dollar_value = sl_points * symbol_info.trade_tick_value * float(lot_size)
-    tp_dollar_value = tp_points * symbol_info.trade_tick_value * float(lot_size)
+# def get_pip_value_by_containment(symbol):
+    
+#     pip_values = {
+#         # Forex Pairs (Currency pip values)
+#         "EURUSD": 0.0001,
+#         "GBPUSD": 0.0001,
+#         "USDJPY": 0.01,
+#         "XAUUSD": 0.01,  # Gold
+#         "USDCAD": 0.0001,
+#         "AUDUSD": 0.0001,
+#         "CADJPY": 0.01,
+        
+#         # Commodities
+#         "XAGUSD": 0.001,  # Silver
+#         "WTI": 0.01,      # Crude Oil
+#         "BRENT": 0.01,    # Brent Oil
+        
+#         # Indices
+#         "US30": 1.0,       # Dow Jones
+#         "SPX500": 0.1,     # S&P 500
+#         "NAS100": 0.1,     # NASDAQ
+        
+#         # Stocks (Point value assumed as 1 for most equities)
+#         "AAPL": 1.0,
+#         "MSFT": 1.0,
+#         "TSLA": 1.0,
+#     }
+#     """
+#     Retrieve the pip value by checking if the pip_values key matches the symbol.
+
+#     :param symbol: str, instrument symbol (e.g., "GBPUSD.pro" or "US30m")
+#     :return: float, pip value
+#     """
+#     normalized_symbol = symbol.upper()  # Ensure case-insensitive matching
+
+#     # Iterate through pip_values keys to find a match
+#     for key in pip_values:
+#         if all(char in normalized_symbol for char in key):  # Check character containment
+#             return pip_values[key]
+    
+#     # If no match is found, raise an error
+#     raise ValueError(f"No pip value found for symbol: {symbol}")
 
 
-    # Shutdown the MT5 connection
-    mt5.shutdown()
-    return {"stop_loss_value": sl_dollar_value, "take_profit_value": tp_dollar_value}
+# def calculateTakeProfitValue(symbol, entry_price, stop_loss, take_profit, lot_size):
+    
+    
+#     if not mt5.initialize():
+#         print("Failed to initialize MT5")
+#         quit()
+
+#     # Ensure the symbol is available in MT5
+#     if not mt5.symbol_select(symbol, True):
+#         print(f"Failed to select symbol {symbol}")
+#         mt5.shutdown()
+#         quit()
+
+#     # Get the symbol information
+#     symbol_info = mt5.symbol_info(symbol)
+#     print(f"This is symbol info: {symbol_info}")
+
+#     if symbol_info is None:
+#         print(f"Symbol information for {symbol} not found")
+#         mt5.shutdown()
+#         quit()
+
+#     # Calculate the distance in points
+#     sl_points = float(abs(entry_price - stop_loss)) / symbol_info.point
+#     tp_points = float(abs(take_profit - entry_price)) / symbol_info.point
+    
+#     print(f"This is sl_points {sl_points}")
+#     print(f"This is tp_points {tp_points}")
+#     print(f"This is trade_tick_value {symbol_info.trade_tick_value}")
+#     print(f"this is symbol infp point {symbol_info.point}")
+    
+
+#     # Calculate the dollar value for SL and TP
+#     sl_dollar_value = sl_points * symbol_info.trade_tick_value * float(lot_size)
+#     tp_dollar_value = tp_points * symbol_info.trade_tick_value * float(lot_size)
+
+
+#     # Shutdown the MT5 connection
+#     mt5.shutdown()
+#     return {"stop_loss_value": sl_dollar_value, "take_profit_value": tp_dollar_value}
 
 
 @csrf_exempt
@@ -259,17 +312,19 @@ def forex(request):
     rounded_losing = total_losing_value.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
     
     
-    if trades_instance:
-        for value in trades_instance.iterator():
-            symbol = value.symbol
-            entry_price = value.opening_price
-            take_profit_price = value.take_profit or 0
-            stop_loss_value = value.stop_loss or 0
-            size = value.lot_size
-            value.stop_loss_value = calculateTakeProfitValue(symbol, entry_price, stop_loss_value, take_profit_price, size)["stop_loss_value"]
-            value.profit_target = calculateTakeProfitValue(symbol, entry_price, stop_loss_value, take_profit_price, size)["take_profit_value"]
-            value.save(update_fields=["stop_loss_value", "profit_target"])
-            value.refresh_from_db()
+    
+    
+    # if trades_instance:
+    #     for value in trades_instance.iterator():
+    #         symbol = value.symbol
+    #         entry_price = value.opening_price
+    #         take_profit_price = value.take_profit or 0
+    #         stop_loss_value = value.stop_loss or 0
+    #         size = value.lot_size
+    #         value.stop_loss_value = calculateTakeProfitValue(symbol, entry_price, stop_loss_value, take_profit_price, size)["stop_loss_value"]
+    #         value.profit_target = calculateTakeProfitValue(symbol, entry_price, stop_loss_value, take_profit_price, size)["take_profit_value"]
+    #         value.save(update_fields=["stop_loss_value", "profit_target"])
+    #         value.refresh_from_db()
                       
         
     
@@ -970,13 +1025,14 @@ def trade_details(request, trade_id):
     strategies = strategy_object.values()
     trade = TradesModel.objects.filter(ticket=trade_id, user=logged_in_user).values().first()
 
-    dollar_values = calculateTakeProfitValue(
-        trade["symbol"], 
-        trade["opening_price"], 
-        trade["stop_loss"], 
-        trade["take_profit"], 
-        trade["lot_size"]
-    )  
+    # dollar_values = calculateTakeProfitValue(
+    #     trade["symbol"], 
+    #     trade["opening_price"], 
+    #     trade["stop_loss"], 
+    #     trade["take_profit"], 
+    #     trade["lot_size"]
+    # )  
+    
     profit_before_change = float(trade["profit_usd"])
     trade["symbol"] = trade["symbol"] #[:-1]
     before_change = trade["opening_time"]
@@ -997,8 +1053,8 @@ def trade_details(request, trade_id):
     trade["duration_secs"] = int(seconds)
     trade["strategies"] = strategies
     trade["realisedRR"] = calculateRealisedRR(trade["opening_price"], trade["closing_price"], trade["stop_loss"])
-    trade["dollar_value_profit"] = Money(dollar_values["take_profit_value"], "USD")
-    trade["dollar_value_loss"] = Money(dollar_values["stop_loss_value"], "USD")
+    trade["dollar_value_profit"] = trade["profit_target"] or 0       # Money(dollar_values["take_profit_value"], "USD")
+    trade["dollar_value_loss"] = trade["profit_target"] or 0      # Money(dollar_values["stop_loss_value"], "USD")
     print(trade)
     
     
@@ -1031,6 +1087,12 @@ def trade_details(request, trade_id):
                 selected_strategy = data["setup_choices"]
                 selected_strategy_name = StrategyModel.objects.get(strategy_name=selected_strategy)
                 trade_update.strategy = selected_strategy_name
+            if data.get("take_profit"):
+                entered_profit = data["take_profit"]
+                trade_update.profit_target = entered_profit
+            if data.get("stop_loss"):
+                entered_loss = data["stop_loss"]
+                trade_update.stop_loss_value = entered_loss
         trade_update.save()
         return redirect("trade-details", trade_id=trade_id)
     return render(request, f"{PATH}/tradeDetails.html", trade)
@@ -1272,54 +1334,54 @@ def strategy_reports(request, strategy_id):
 def sync_MT5(request):
     print("MT5 sync function started", flush=True)
     
-    if request.method == "POST":
-        mt5_login = request.POST.get("mt5_login")
-        mt5_password =  request.POST.get("mt5_password")
-        mt5_server =  request.POST.get("mt5_server")
+    # if request.method == "POST":
+    #     mt5_login = request.POST.get("mt5_login")
+    #     mt5_password =  request.POST.get("mt5_password")
+    #     mt5_server =  request.POST.get("mt5_server")
         
-        # Initialize MT5 connection
-        print(f"Initializing MT5 with login: {mt5_login}, server: {mt5_server}", flush=True)
-        if not mt5.initialize(login=int(mt5_login), password=str(mt5_password), server=mt5_server):
-            messages.error(request, "Failed to initialize MT5")
-            print("MT5 initialization failed", flush=True)
-            return redirect(request.META.get("HTTP_REFERER", "/"))
+    #     # Initialize MT5 connection
+    #     print(f"Initializing MT5 with login: {mt5_login}, server: {mt5_server}", flush=True)
+    #     if not mt5.initialize(login=int(mt5_login), password=str(mt5_password), server=mt5_server):
+    #         messages.error(request, "Failed to initialize MT5")
+    #         print("MT5 initialization failed", flush=True)
+    #         return redirect(request.META.get("HTTP_REFERER", "/"))
         
-        # Authorize login
-        authorised = mt5.login(login=int(mt5_login), password=mt5_password, server=mt5_server)
-        if not authorised:
-            error_code, error_description = mt5.last_error()
-            messages.error(request, f"MT5 login failed. Error: {error_code} - {error_description}")
-            print(f"MT5 login failed: {error_code} - {error_description}", flush=True)
-            return redirect(request.META.get("HTTP_REFERER", "/"))
+    #     # Authorize login
+    #     authorised = mt5.login(login=int(mt5_login), password=mt5_password, server=mt5_server)
+    #     if not authorised:
+    #         error_code, error_description = mt5.last_error()
+    #         messages.error(request, f"MT5 login failed. Error: {error_code} - {error_description}")
+    #         print(f"MT5 login failed: {error_code} - {error_description}", flush=True)
+    #         return redirect(request.META.get("HTTP_REFERER", "/"))
         
-        # Get account info
-        account_info = mt5.account_info()
-        if account_info is None:
-            messages.error(request, "Failed to retrieve account info")
-            print("Failed to retrieve account info", flush=True)
-            return redirect(request.META.get("HTTP_REFERER", "/"))
+    #     # Get account info
+    #     account_info = mt5.account_info()
+    #     if account_info is None:
+    #         messages.error(request, "Failed to retrieve account info")
+    #         print("Failed to retrieve account info", flush=True)
+    #         return redirect(request.META.get("HTTP_REFERER", "/"))
         
-        print(f"Logged into account #{account_info.login}", flush=True)
-        print(f"Account balance: {account_info.balance}", flush=True)
+    #     print(f"Logged into account #{account_info.login}", flush=True)
+    #     print(f"Account balance: {account_info.balance}", flush=True)
         
-        from_date = datetime(2023, 1, 1)  # Replace with the desired start date
-        to_date = datetime.now()
+    #     from_date = datetime(2023, 1, 1)  # Replace with the desired start date
+    #     to_date = datetime.now()
         
-        trade_history = mt5.history_deals_get(from_date, to_date)
-        if trade_history is None:
-            messages.error(request, "Unable to retrieve trade history")
-            print("Failed to retrieve trade history", flush=True)
-        else:
-            print(f" {trade_history}", flush=True)
+    #     trade_history = mt5.history_deals_get(from_date, to_date)
+    #     if trade_history is None:
+    #         messages.error(request, "Unable to retrieve trade history")
+    #         print("Failed to retrieve trade history", flush=True)
+    #     else:
+    #         print(f" {trade_history}", flush=True)
         
-        messages.success(request, "MT5 synced successfully")
-        print("MT5 sync function completed successfully", flush=True)
+    #     messages.success(request, "MT5 synced successfully")
+    #     print("MT5 sync function completed successfully", flush=True)
         
-        # Shutdown MT5 connection
-        mt5.shutdown()
-        print("MT5 connection closed", flush=True)
+    #     # Shutdown MT5 connection
+    #     mt5.shutdown()
+    #     print("MT5 connection closed", flush=True)
         
-        return redirect(request.META.get('HTTP_REFERER', '/'))
+    #     return redirect(request.META.get('HTTP_REFERER', '/'))
     
     return HttpResponse('Invalid request', status=400)
 

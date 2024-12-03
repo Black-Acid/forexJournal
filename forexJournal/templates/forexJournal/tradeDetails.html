@@ -46,14 +46,30 @@
                     <div class="property">Realized R Multiple</div>
                     <div class="value">{{ realisedRR}}</div>
                 </div>
-                <div class="detail-row">
-                    <div class="property">Profit Target</div>
-                    <div class="value">{{ dollar_value_profit }}</div>
-                </div>
-                <div class="detail-row">
-                    <div class="property">Stop loss</div>
-                    <div class="value">{{ dollar_value_loss }}</div>
-                </div>
+                {% if dollar_value_profit %}
+                    <div class="detail-row">
+                        <div class="property">Profit Target</div>
+                        <div class="value">{{ dollar_value_profit }}</div>
+                    </div>
+                {% else %}
+                    <div class="detail-row">
+                        <div class="property">Profit Target</div>
+                        <div class="value"><input type="number" name="take_profit" placeholder="100.00"></div>
+                    </div>
+                {% endif %}
+                
+                {% if dollar_value_loss %}
+                    <div class="detail-row">
+                        <div class="property">Stop loss</div>
+                        <div class="value">{{ dollar_value_loss }}</div>
+                    </div>
+                {% else %}
+                    <div class="detail-row">
+                        <div class="property">Stop loss</div>
+                        <div class="value"><input type="number" name="stop_loss" placeholder="25.00"></div>
+                    </div>
+                {% endif %}
+                
                 <form action="" method="POST">
                     {% csrf_token %}
                     
