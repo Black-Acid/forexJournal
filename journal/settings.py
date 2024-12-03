@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", 'django-insecure-pv--%)$h!7sn9ee)9o6_m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = ["forexjournal.onrender.com"]
+ALLOWED_HOSTS = ["forexjournal.onrender.com", "127.0.0.1"]
 
 
 # Application definition
@@ -87,6 +87,7 @@ if not DEBUG:
     DATABASES = {
         "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
     }
+    print(os.environ.get("DATABASE_URL"))
 else: 
     DATABASES = {
         'default': {

@@ -27,8 +27,7 @@ from .forms import CustomLoginForm, LoginForm, NewSignUpForm
 from django.core.exceptions import ValidationError
 from io import StringIO
 from django.db.models.functions import TruncDate, ExtractWeekDay
-from forex_python.converter import CurrencyRates
-
+from django.db import IntegrityError
 
 
 import logging
@@ -500,28 +499,34 @@ def forex(request):
         
         if broker_name.lower() == "exness":
             data = pd.read_csv(csv_file)
+            
             for index, row in data.iterrows():
-                if not trades_instance.filter(ticket=row['ticket']).exists():
-                    TradesModel.objects.create(
-                        user=logged_in_user,
-                        ticket=row['ticket'],
-                        opening_time=row['opening_time_utc'],
-                        closing_time=row['closing_time_utc'],
-                        order_type=row['type'],
-                        lot_size=row['lots'],
-                        original_position_size=row['original_position_size'],
-                        symbol=row['symbol'],
-                        opening_price=row['opening_price'],
-                        closing_price=row['closing_price'],
-                        stop_loss=row['stop_loss'],
-                        take_profit=row['take_profit'],
-                        commission_usd=row['commission_usd'],
-                        swap_usd=row['swap_usd'],
-                        profit_usd=row['profit_usd'],
-                        equity_usd=row['equity_usd'],
-                        margin_level=row['margin_level'],
-                        close_reason=row['close_reason'],
-                    ).save()
+                try:
+                    if not trades_instance.filter(ticket=row['ticket']).exists():
+                        TradesModel.objects.create(
+                            user=logged_in_user,
+                            ticket=row['ticket'],
+                            opening_time=row['opening_time_utc'],
+                            closing_time=row['closing_time_utc'],
+                            order_type=row['type'],
+                            lot_size=row['lots'],
+                            original_position_size=row['original_position_size'],
+                            symbol=row['symbol'],
+                            opening_price=row['opening_price'],
+                            closing_price=row['closing_price'],
+                            stop_loss=row['stop_loss'],
+                            take_profit=row['take_profit'],
+                            commission_usd=row['commission_usd'],
+                            swap_usd=row['swap_usd'],
+                            profit_usd=row['profit_usd'],
+                            equity_usd=row['equity_usd'],
+                            margin_level=row['margin_level'],
+                            close_reason=row['close_reason'],
+                        ).save()
+                except IntegrityError:
+                    print(f"Error: Ticket {row['ticket']} failed due to duplicate")
+                
+                
         elif broker_name.lower() == "metatrader 5":
             print(broker_name.lower())
             print("We got to mt5")
