@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-pv--%)$h!7sn9ee)9o6_m2)9_s-ve$%kpf+pel#94c=7^b2o28'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS = ["forexjournal.onrender.com"]
 
@@ -81,12 +81,19 @@ WSGI_APPLICATION = 'journal.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+
+if not DEBUG:
+    DATABASES = {
+        "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
     }
-}
+else: 
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # DATABASES["default"] = dj_database_url.parse("postgresql://tradingjournal_xkkj_user:Ut8UnyDi6Cet2oiIRdROTvLKMZIxmXq4@dpg-cs4njdjtq21c73e29u7g-a.oregon-postgres.render.com/tradingjournal_xkkj")
 
