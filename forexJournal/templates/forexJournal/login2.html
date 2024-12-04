@@ -44,18 +44,46 @@
                         </div>
                         <div class="infield item">
                             {{ signup_form.username }}
+                            {% if signup_form.username.errors %}
+                                <ul class="errorlist">
+                                    {% for error in signup_form.username.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                             <label></label>
                         </div>
                         <div class="infield item">
                             {{ signup_form.email }}
+                            {% if signup_form.email.errors %}
+                                <ul class="errorlist">
+                                    {% for error in signup_form.email.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                             <label></label>
                         </div>
                         <div class="infield item">
                             {{ signup_form.password1 }}
+                            {% if signup_form.passsword1.errors %}
+                                <ul class="errorlist">
+                                    {% for error in signup_form.password1.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                             <label></label>
                         </div>
                         <div class="infield item">
                             {{ signup_form.password2 }}
+                            {% if signup_form.passsword2.errors %}
+                                <ul class="errorlist">
+                                    {% for error in signup_form.password2.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                             <label></label>
                         </div>
                     </div>
