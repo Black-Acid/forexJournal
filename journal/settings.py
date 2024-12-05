@@ -165,3 +165,20 @@ SESSION_COOKIE_AGE = 1800  # 30 minutes (in seconds)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Optionally, expire the session when the browser is closed.
 SESSION_SAVE_EVERY_REQUEST = True
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
