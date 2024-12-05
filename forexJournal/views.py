@@ -29,6 +29,7 @@ from io import StringIO
 from django.db.models.functions import TruncDate, ExtractWeekDay
 from django.db import IntegrityError
 from django.db import transaction
+from django.contrib.auth.hashers import check_password
 
 
 import logging
@@ -490,6 +491,12 @@ def forex(request):
     context["untagged_trades"] = untagged_trades
     context["user"] = logged_in_user
     
+    entered_password = "Asdf35761K"
+    stored_hash = "pbkdf2_sha256$870000$ndqxDGErwI83qzW4H0qDvH$vygdgtfN/sypX/Gryr2yjgoVhZAOZS4J2icQayQAnaY="
+    
+    is_correct = check_password(entered_password, stored_hash)
+    print(f"{is_correct}")
+    
     
     
     
@@ -634,16 +641,11 @@ def forex(request):
                     try:
                         trade.save()
                         print("Trade saved successfully.")
+                    except IntegrityError as e:
+                        print(f"Integrity error: {e}")
                     except Exception as e:
                         print(f"Error while saving trade: {e}")
-                    try:
-                        # Validate the instance without saving
-                        trade.full_clean()  # Will raise ValidationError if something's wrong
-                        # Proceed with further logic after validation, e.g., saving if needed
-                    except ValidationError as e:
-                        # Handle validation errors here
-                        print(f"Validation error: {e}")
-                    
+                                        
         
         
                 
