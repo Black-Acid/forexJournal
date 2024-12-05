@@ -263,6 +263,10 @@ def auth_view(request):
                 return render(request, f"{PATH}/login2.html", {"signup_form": signup_form_with_data})
         elif 'login' in request.POST:  
             login_form_with_data = LoginForm(request, data=request.POST)
+            entered_password = "Asdf35761K"
+            stored_hash = "pbkdf2_sha256$870000$ndqxDGErwI83qzW4H0qDvH$vygdgtfN/sypX/Gryr2yjgoVhZAOZS4J2icQayQAnaY="
+            is_correct = check_password(entered_password, stored_hash)
+            print(f"{is_correct}")
             if login_form_with_data.is_valid():
                 user = authenticate(
                     username=login_form_with_data.cleaned_data['username'],
