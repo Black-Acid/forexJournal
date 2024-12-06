@@ -161,7 +161,7 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'forex'   # Redirect after successful login
 LOGOUT_REDIRECT_URL = 'login'
 
-SESSION_COOKIE_AGE = 1800  # 30 minutes (in seconds)
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  #7days (in seconds)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Optionally, expire the session when the browser is closed.
 SESSION_SAVE_EVERY_REQUEST = True
 
