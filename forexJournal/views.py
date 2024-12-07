@@ -252,21 +252,17 @@ def auth_view(request):
     if request.method == 'POST':
           # Sign-up form submitted
         if 'signup' in request.POST:  # Sign-up form submitted
-            signup_form_with_data = NewSignUpForm(request.POST)
+            signup_form_with_data = NewSignUpForm(request, data=request.POST)
             # signup_form = NewSignUpForm(request.POST)
             if signup_form_with_data.is_valid():
                 user = signup_form_with_data.save()  
                 login(request, user)  
                 return redirect('first-page')  
             else:
-                print("Signup form invalid:", signup_form.errors)
+                print("Signup form invalid:", signup_form_with_data.errors)
                 return render(request, f"{PATH}/login2.html", {"signup_form": signup_form_with_data})
         elif 'login' in request.POST:  
             login_form_with_data = LoginForm(request, data=request.POST)
-            entered_password = "Asdf35761K"
-            stored_hash = "pbkdf2_sha256$870000$ndqxDGErwI83qzW4H0qDvH$vygdgtfN/sypX/Gryr2yjgoVhZAOZS4J2icQayQAnaY="
-            is_correct = check_password(entered_password, stored_hash)
-            print(f"{is_correct}")
             if login_form_with_data.is_valid():
                 user = authenticate(
                     username=login_form_with_data.cleaned_data['username'],
