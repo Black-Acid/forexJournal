@@ -252,7 +252,7 @@ def auth_view(request):
     if request.method == 'POST':
           # Sign-up form submitted
         if 'signup' in request.POST:  # Sign-up form submitted
-            signup_form_with_data = NewSignUpForm(request, data=request.POST)
+            signup_form_with_data = NewSignUpForm(data=request.POST)
             # signup_form = NewSignUpForm(request.POST)
             if signup_form_with_data.is_valid():
                 user = signup_form_with_data.save()  
