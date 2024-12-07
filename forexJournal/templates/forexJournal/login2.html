@@ -16,7 +16,23 @@
         <div class="container" id="container">
             <div class="form-container sign-up-container">
                 <form action="" method="POST">
+                    {% comment %} <h3>All Form Errors:</h3> {% endcomment %}
+                    {% comment %} <pre>{{ signup_form.errors }}</pre> {% endcomment %}
                     {% csrf_token %}
+                    {% if signup_form.password2.errors %}
+                        <ul>
+                            {% for error in signup_form.password2.errors %}
+                                <li style="color: red;">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if signup_form.email.errors %}
+                        <ul>
+                            {% for error in signup_form.email.errors %}
+                                <li style="color: red;">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                     {% if signup_form.non_field_errors %}
                         <div style="color: red;">
                             <ul>
@@ -55,21 +71,21 @@
                         </div>
                         <div class="infield item">
                             {{ signup_form.email }}
-                            {% if signup_form.email.errors %}
+                            {% comment %} {% if signup_form.email.errors %}
                                 <ul class="errorlist">
                                     {% for error in signup_form.email.errors %}
                                         <li>{{ error }}</li>
                                     {% endfor %}
                                 </ul>
-                            {% endif %}
+                            {% endif %} {% endcomment %}
                             <label></label>
                         </div>
                         <div class="infield item">
                             {{ signup_form.password1 }}
-                            {% if signup_form.passsword1.errors %}
-                                <ul class="errorlist">
+                            {% if signup_form.password1.errors %}
+                                <ul>
                                     {% for error in signup_form.password1.errors %}
-                                        <li>{{ error }}</li>
+                                        <li style="color: red;">{{ error }}</li>
                                     {% endfor %}
                                 </ul>
                             {% endif %}
@@ -77,13 +93,7 @@
                         </div>
                         <div class="infield item">
                             {{ signup_form.password2 }}
-                            {% if signup_form.passsword2.errors %}
-                                <ul class="errorlist">
-                                    {% for error in signup_form.password2.errors %}
-                                        <li>{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
+                            
                             <label></label>
                         </div>
                     </div>
