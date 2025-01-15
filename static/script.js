@@ -19,6 +19,8 @@ let untaggedTrades = document.querySelector(".untagged").textContent;
 let untaggedTradesNumericContent = parseInt(untaggedTrades);
 
 
+
+
 const chartData = {
     labels: ["healthy Trades", "Lucky trades", "Good lost Trades", "Bad lost trades", "Missed trades", "Untagged Trades"],
     data: [healthyNumericContent, luckyNumericContent, goodLossNumericContent, badTradesNumericContent, missedTradesNumericContent, untaggedTradesNumericContent]
@@ -267,3 +269,16 @@ document.addEventListener('click', function(event) {
 });
 
   
+const fileInput = document.getElementById('broker');
+const fileNameDisplay = document.getElementById('fileName');
+
+console.log(fileNameDisplay.textContent)
+fileInput.addEventListener('change', function () {
+    console.log(fileNameDisplay.textContent)
+    if (fileInput.files.length > 0) {
+        fileNameDisplay.textContent = `Uploaded: ${fileInput.files[0].name}`;
+        console.log(fileNameDisplay.textContent)
+    } else {
+        fileNameDisplay.textContent = ''; // Clear if no file
+    }
+});

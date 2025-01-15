@@ -1,0 +1,140 @@
+body{
+    font-family: "Roboto", sans-serif;
+    overflow: hidden;
+    
+}
+
+#first-part{
+    width: 15rem;
+    padding: 1rem;
+    min-height: 100%;
+    border-right: 1px solid white;
+}
+
+.backtest-container{
+    background-color: rgb(203, 204, 203);
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+}
+
+.backtest-tools{
+    background: rgb(254, 255, 253);
+    height: 2.7rem;
+    width: 100%;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 0.3rem;
+    gap: 15px;
+}
+
+.backtest-tools h3{
+    color: black;
+    font-size: 1.5rem;
+}
+
+.backtest-tools .timeframes{
+    display: flex;
+    color: black;
+    gap: 10px;
+    font-size: 1.2rem;
+    margin-left: 1rem;
+}
+
+.timeframes .active{
+    color: blue;
+} 
+
+.timeframes h4{
+    cursor: pointer;
+}
+
+.backtest-tools img,
+.vertical-tools img{
+    width: 35px;
+    height: 35px;
+    padding: 5px; /* Add some space inside */
+    border-radius: 5px; /* Optional: rounded corners */
+    background-color: transparent; /* Default background */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+    box-sizing: border-box;
+}
+
+.backtest-tools img:hover,
+.vertical-tools img:hover{
+    background: rgb(120, 118, 118);
+    cursor: pointer;
+}
+
+.backtest-second-column{
+    margin-top: 0.5rem;
+    display: flex;
+    width: 100%;
+    height: 90%;
+    gap: 10px;
+}
+
+.vertical-tools{
+    background: rgb(254, 255, 253);
+    width: 3.8rem;
+    height: 700px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.2rem;
+    gap: 10px;
+}
+
+.vertical-tools img{
+    width: 45px;
+    height: 45px;
+}
+
+.transact{
+    display: flex;
+    height: 2.5rem;
+    
+    width: 15rem;
+    gap: 40px;
+    padding: 0.5rem;
+}
+
+.sellBtn,
+.buyBtn{
+    border: 0.5px solid red;
+    border-radius: 10px;
+    font-family: "Roboto", sans-serif;
+    font-size: 15px;
+    padding: 0.5rem;
+    width: 4rem;
+    height: 2rem;
+    text-align: center;
+    color: red;
+    cursor: pointer;
+}
+
+.sellBtn span,
+.buyBtn span{
+    font-size: 12px;
+}
+
+.buyBtn{
+    border-color: blue;
+    color: blue;
+}
+
+
+.chart-container{
+    border-radius: 5px;
+}
+
+#chart{
+    border-radius: 5px;
+}
+
+
+
+
+

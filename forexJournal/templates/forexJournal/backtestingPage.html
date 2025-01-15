@@ -1,9 +1,69 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block css_files %}
+    <link rel="stylesheet" href="{% static 'forexJournal/backtesting.css' %}">
+{% endblock css_files %}
 {% block title %}backtest{% endblock title %}
 {% block content %}
-    <div id="chart" style="width: 600px; height: 400px;"></div>
+    <div class="backtest-container">
+        <div class="backtest-tools">
+            <h3>GBPUSD</h3>
+            <img src="{% static 'forexJournal/images/addButton.png' %}" alt="">
+            <div class="timeframes">
+                <h4>1m</h4>
+                <h4>3m</h4>
+                <h4>5m</h4>
+                <h4>15m</h4>
+                <h4>30m</h4>
+                <h4 class="active">1h</h4>
+                <h4>2h</h4>
+                <h4>4h</h4>
+            </div>
+            <img src="{% static 'forexJournal/images/newReplay.png' %}" alt="">
+            <img src="{% static 'forexJournal/images/indicators.png' %}" alt="">
+            <img src="{% static 'forexJournal/images/candlestick-chart.png' %}" alt="">
+            
+        </div>
+        <div class="backtest-second-column">
+            <div class="vertical-tools">
+                <img src="{% static 'forexJournal/images/nodes.png' %}" alt="">
+                <img src="{% static 'forexJournal/images/recorder.png' %}" alt="">
+                <img src="{% static 'forexJournal/images/Untitled-3.png' %}" alt="">
+                <img src="{% static 'forexJournal/images/Untitled.png' %}" alt="">
+                <img src="{% static 'forexJournal/images/art-brush.png' %}" alt="">
+                <img src="{% static 'forexJournal/images/letter-t.png' %}" alt="">
+                <img src="{% static 'forexJournal/images/ruler.png' %}" alt="">
+                <img src="{% static 'forexJournal/images/unlock.png' %}" alt="">
+                <img src="{% static 'forexJournal/images/hide.png' %}" alt="">
+                <img src="{% static 'forexJournal/images/bin.png' %}" alt="">
+
+            </div>
+            <div class="chart-container">
+                <div id="watermark" style="position: absolute; top: 350px; left: 750px; color: rgba(50, 50, 50, 0.2); font-size: 100px; z-index: 100;">
+                    GBPUSD, 1h
+                </div>
+                <div id="watermark" style="position: absolute; top: 80px; left: 400px; color: rgba(0, 0, 0); font-size: 25px; z-index: 100;">
+                    British Pound / U.S. Dollar 1h Oanda
+                </div>
+                <div id="watermark" style="position: absolute; top: 120px; left: 400px; color: rgba(0, 0, 0); font-size: 25px; z-index: 100;">
+                    <div class="transact">
+                        <div class="sellBtn">
+                            1.23283
+                            <span>SELL</span>
+                        </div>
+                        <div class="buyBtn">
+                            1.23783
+                            <span>BUY</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="chart" style="width: 1000px; height: 800px;"></div>
+                <canvas id="drawing-canvas" style="position: absolute; top: 0; left: 0; z-index: 10; pointer-events: none;"></canvas>
+            </div>
+        </div>
+    </div>
+    
 
 
 
