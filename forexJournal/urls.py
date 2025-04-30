@@ -1,5 +1,10 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.views.generic import RedirectView
+from django.conf import settings
+from django.conf.urls.static import static
+from django.templatetags.static import static as static_tag
+
 from . import views
 
 
@@ -24,4 +29,5 @@ urlpatterns = [
     path("settings", views.settingsPage, name="settings"),
     path("set-balance", views.set_Initial_balance, name="set-balance"),
     path('fetch-historical-data/', views.fetch_historical_data, name='fetch_historical_data'),
-]
+    path('favicon.ico', RedirectView.as_view(url=static_tag('forexJournal/images/favicon.ico'))),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
