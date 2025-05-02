@@ -27,7 +27,6 @@
             <img src="{% static 'forexJournal/images/3d-portrait-businessman.jpg' %}" alt="Profile">
             <h2>{{ user }}</h2>
         </div>
-        <button type="button" class="new-trade">Sync Metatrader</button>
         <div class="hidden sync-modal">
             <div class="close">&times;</div>
             <form action=" {% url "sync" %}" method="POST">
@@ -39,7 +38,7 @@
             </form>
         </div>
         <div class="modal-overlay hidden"></div>
-        <ul>
+        <ul class="nav-links">
             <li class="try"><a href="{% url "forex" %}" class="active" id="dashboard">Dashboard</a></li>
             <li><a href="{% url "All_trades" %}" id="all_trades" class="active">Calender View</a></li>
             <li><a href="{% url "journal" %}" id="journalss" class="active">All trades</a></li>

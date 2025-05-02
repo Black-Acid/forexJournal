@@ -1,75 +1,63 @@
 :root{
     --main-color:#000101;
-    --divBack: hsl(207, 35%, 10%);
-    --selectedColor: #B0E94E;
+    --divBack: #336496ca;
+    --selectedColor: #182739;
     --selectedColor2: #efef05;
+    --somecolor: #689bc855;
 }
 
 body{
-    color: white;
-    background: var(--main-color);
+    color: #182739;
+    background: #9cbddd53;
     height: 100vh;
     display: grid;
     grid-template-columns: 0.8fr 4fr ;
 }
 
 #first-part{
-    width: 14rem;
-    padding: 1rem;
+    width: 10rem;
     height: 100vh;
-    /* border-right: 1px solid white   ; */
-    
 }
 
 #profile{
     display: flex;
     align-items: center;
-    padding-left: 1rem;
+    justify-content: center;
+    gap: 10px;
 }
 
 #profile img{
     margin-right: 2rem;
     object-fit: cover;
     object-position: top;
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: var(--selectedColor);
 }
 
 #profile h2{
-    font-size: 1.2rem;
-    margin-left: -1.5rem;
-}
-
-.new-trade{
-    width: 70%;
-    height: 2.5rem;
-    margin-left: 1rem;
-    margin-top: 1rem;
-    background-color: var(--selectedColor);
     font-size: 1rem;
-    border-radius: 7px;
+    margin-left: -1.5rem;
+    color: #182739;
 }
 
 
 
 #first-part ul{
     list-style: none;
-    margin-top: 2rem;
-
-    height: 15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
-#first-part li{
-    margin-top: 2rem;
-}
+
 
 #first-part a{
     text-decoration: none;
-    color: rgb(69, 55, 55);
-    font-size: 1.2rem;
-    padding-left: 10px;
+    color: #336496;
+    font-size: 1rem;
+    margin-left: -1.5rem;
 }
 
 li .active{
@@ -85,67 +73,6 @@ li .active{
     padding: 0.5rem;
     border-radius: 5px;  
     transform: scale(1.05); /* Slightly enlarge the link */
-    transition: all 0.3s ease;   
-}
-
-
-.hidden{
-    display: none;
-}
-
-
-.sync-modal{
-    background: rgb(232, 243, 221);
-    position: fixed;
-    top: 23%;
-    left: 38%;
-    width: 30%;
-    /* background: white; */
-    height: 40%;
-    padding: 1rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
-    color: black;
-    border-radius: 5px;
-    z-index: 20;
-}
-
-.sync-modal form{
-    display: flex;
-    flex-direction: column;
-}
-.sync-modal input{
-    margin: 1rem 0;
-    height: 2.7rem;
-    border-radius: 10px;
-    padding-left: 1rem;
-    font-size: 1.2rem;
-}
-
-.sync-modal button{
-    width: 8rem;
-    height: 3rem;
-    text-align: center;
-    margin: auto;
-    border-radius: 10px;
-    background: var(--selectedColor);
-    border: none;
-    cursor: pointer;
-}
-
-.modal-overlay{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); 
-    backdrop-filter: blur(5px); 
-    z-index: 10;
-}
-
-.close{
-    margin-left: 31rem;
-    font-size: 1.5rem;
-    cursor: pointer;
+    transition: all 0.5s ease;  
+    color: #e7eef7; 
 }

@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             profitSpan.style.right = '5px'; 
                             profitSpan.style.bottom = '30px'; // Position it 5px from the bottom
                             profitSpan.style.textAlign = 'right'; // Align text to the right
-                            profitSpan.style.fontSize = '30px'
+                            profitSpan.style.fontSize = '20px'
 
                             cell.style.position = 'relative'; // Set position to enable absolute positioning
                             // cell.appendChild(profitSpan); 

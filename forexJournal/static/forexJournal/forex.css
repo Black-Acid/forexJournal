@@ -14,16 +14,16 @@ body{
 
 .vertical-dots {
     margin-top: 0.2rem;
-    font-size: 24px; /* Adjust size as needed */
+    font-size: 24px;
     padding: 0;
     background: none;
     border: none;
     cursor: pointer;
     display: inline-block;
-    writing-mode: vertical-rl; /* Rotates the text vertically */
+    writing-mode: vertical-rl;
     text-align: center;
-    line-height: 1.2; /* Ensures the dots are spaced well */
-    height: 40px; /* Adjust based on your design */
+    line-height: 1.2; 
+    height: 40px;
 }
 
 
@@ -45,7 +45,7 @@ body{
     cursor: pointer;
     width: 100%;
     text-align: left;
-    color: white;
+    color: #182739;
 }
 
 .menu-item:hover {
@@ -109,23 +109,26 @@ body{
     justify-content: space-between;
     margin-top: -1rem;
     align-items: center;
+    height: 5rem;
+    color: #182739;
 }
 
 .btnAdd{
-    height: 2.8rem;
-    background: var(--selectedColor);
+    height: 2.2rem;
+    background: #336496;
     text-align: center;
     border-radius: 8px;
-    font-size: 1rem;
-    padding: 10px;
-
+    font-size: 12px;
+    outline: none;
+    border: none;
 }
 
 .overview h1{
     font-family: "Roboto", sans-serif;
-    font-weight: 500;
+    font-weight: 700;
     font-style: normal;
-    font-size: 2rem;
+    font-size: 1.5rem;
+    color: #182739;
 }
 
 .hidden{
@@ -217,10 +220,9 @@ body{
 #second-part{
     display: flex;
     flex-direction: column;
-    /* border-right: 1px solid rgba(255, 255, 255, 0.5);  */
-    border-left: 1px solid rgba(255, 255, 255, 0.5);
+    border-left: 1px solid rgba(30, 29, 29, 0.5);
     margin-left: -3rem;
-    padding: 2rem;
+    padding: 1rem;
 }
 
 .modal .buttons{
@@ -253,23 +255,23 @@ body{
 .account{
     background: var(--divBack);
     border-radius: 10px;
-    padding-left: 1rem;
-    background: rgb(239, 253, 214);
-    color: black;
+    padding-left: 0.5rem;
+    background: #336496;
+    color: #e7eef7;
 }
 
 
 .account h2{
     font-family: 'Poppins', sans-serif;
     font-weight: 300;
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-top: -0.2rem;
 }
 
 .account h3{
     font-family: 'Poppins', sans-serif;
     font-weight: 200;
-    font-size: 1.1rem;
+    font-size: 0.8rem;
     margin-top: -1rem;
 }
 
@@ -279,22 +281,23 @@ body{
 }
 
 .profit{
-    background: var(--divBack);
+    background: #336496ca;
     border-radius: 10px;
     padding-left: 1rem;
+    color: #e7eef7;
 }
 
 .profit h2{
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-top: -0.2rem;
 }
 
 .profit h3{
     /* font-family: 'Poppins', sans-serif; */
     font-weight: 400;
-    font-size: 1.1rem;
+    font-size: 0.8rem;
     margin-top: -1rem;
 }
 
@@ -304,22 +307,23 @@ body{
 }
 
 .factor{
-    background: var(--divBack);
+    background: #336496ca;
     border-radius: 10px;
     padding-left: 1rem;
+    color: #e7eef7;
 }
 
 .factor h2{
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-top: -0.2rem;
 }
 
 .factor h3{
     /* font-family: 'Poppins', sans-serif; */
     font-weight: 400;
-    font-size: 1.1rem;
+    font-size: 0.8rem;
     margin-top: -1rem;
 }
 
@@ -331,24 +335,25 @@ body{
     background: var(--divBack);
     border-radius: 10px;
     padding-left: 1rem;
+    color: #e7eef7;
 }
 
 .trades h2{
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-top: -0.2rem;
 }
 
 .trades h3{
     font-weight: 400;
-    font-size: 1rem;
+    font-size: 0.8rem;
     margin-top: -1rem;
 }
 
 .winRate h3{
     font-weight: 400;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
 }
 
 .trades span{
@@ -369,17 +374,18 @@ body{
     grid-row: span 2;
     background: var(--divBack);
     border-radius: 5px;
-    padding-left: 1rem;
+    padding-left: 0.5rem;
+    background: #adcdeb;
 }
 
 .profitable img{
     margin-right: 2rem;
     object-fit: cover;
     object-position: top;
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    background: var(--selectedColor);
+    background: #2a517a93;
 }
 
 
@@ -393,6 +399,7 @@ body{
 .head{
     display: flex;
     align-items: center;
+    color: #e7eef7;
 }
 
 .head p{
@@ -402,12 +409,15 @@ body{
 .profitable h2{
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-top: 0.2rem;
+    color: #e7eef7;
 }
 
 .profitable h3{
     margin-top: -1rem;
+    font-size: 0.8rem;
+    color: #e7eef7;
 }
 
 .profitable span{
@@ -424,14 +434,14 @@ body{
     background: transparent;
     border-radius: 5px;
     padding-left: 1rem;
-   
     border: 1px solid rgba(255, 255, 255, 0.5);
+    background: #375c8492;
 }
 
 
 .charts-container{
-    width: 16rem;
-    height: 18rem;  
+    width: 14rem;
+    height: 16rem;  
     margin-left: 1rem;
 }
 
@@ -442,6 +452,7 @@ body{
 .child{
     display: grid;
     grid-template-columns: 1fr 3fr;
+
 }
 
 
@@ -452,20 +463,25 @@ body{
 }
 
 .items{
-    margin-top: 2rem;
+    margin-top: 1rem;
     margin-left: 4rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto;
-    width: 70%;
+    width: 80%;
     column-gap: 3px;
     row-gap: 0;
+    color: #243b55;
 }
 
+
+.items h3{
+    font-size: 1rem;
+}
 .spec p{
     margin-top: -1rem;
     padding-left: 1rem;
-    font-size: 1.3rem;
+    font-size: 1rem;
 }
 
 
@@ -473,7 +489,7 @@ body{
     content: '';
     width: 10px; 
     height: 10px; 
-    background-color: #6dc407;
+    background-color: #243b55;
     border-radius: 50%; 
     display: inline-block;
     margin-right: 8px; 
@@ -482,7 +498,7 @@ body{
     content: '';
     width: 10px; 
     height: 10px; 
-    background-color: #b5fb5c;
+    background-color: #264666;
     border-radius: 50%; 
     display: inline-block;
     margin-right: 8px; 
@@ -491,7 +507,7 @@ body{
     content: '';
     width: 10px; 
     height: 10px; 
-    background-color: #519008; 
+    background-color: #2a517a; 
     border-radius: 50%; 
     display: inline-block;
     margin-right: 8px; 
@@ -500,7 +516,7 @@ body{
     content: '';
     width: 10px; 
     height: 10px; 
-    background-color: #1F3504; 
+    background-color: #336496; 
     border-radius: 50%; 
     display: inline-block;
     margin-right: 8px; 
@@ -509,7 +525,7 @@ body{
     content: '';
     width: 10px; 
     height: 10px; 
-    background-color: #eaf1d8; 
+    background-color: #447eb3; 
     border-radius: 50%; 
     display: inline-block;
     margin-right: 8px; 
@@ -519,7 +535,7 @@ body{
     content: '';
     width: 10px; 
     height: 10px; 
-    background-color: #dafc85; 
+    background-color: #689bc8; 
     border-radius: 50%; 
     display: inline-block;
     margin-right: 8px; 
@@ -528,10 +544,13 @@ body{
 
 .header{
     display: flex;
-    
     height: 5rem;
     justify-content: space-between;
     align-items: center;
+}
+
+.header h1{
+    color: #243b55;
 }
 
 
@@ -539,7 +558,9 @@ body{
     display: flex;
     margin-top: 1rem;
     align-items: center;
-    margin-right: 9.5rem;
+    margin-right: 2rem;
+    justify-content: space-between;
+    color: #e7eef7;
 }
 
 .heading img{
@@ -547,14 +568,14 @@ body{
     height: 60px;
     object-fit: cover;
     object-position: top;
-    background: #284701;
+    background: #2a517a;
     border-radius: 5px;
 }
 
 .line {
     border-bottom: 0.5px solid rgb(255, 255, 255, 0.5); 
     width: 40%; 
-    margin-left: 21.5rem;
+    margin-left: 20.5rem;
     margin-top: 1.5rem;
   }
   
@@ -567,15 +588,17 @@ body{
     font-family: "Roboto", sans-serif;
     font-weight: 100;
     font-style: normal;
+    color: #243b55;
 }
 
 .text h2{
     height: fit-content;
     margin-left: 1rem;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-family: "Roboto", sans-serif;
     font-weight: 300;
-    font-style: normal
+    font-style: normal;
+    color: #243b55;
 }
 
 .header h1{
@@ -584,51 +607,6 @@ body{
     font-family: "Roboto", sans-serif;
 }
 
-/* table {
-    border: 1px solid rgb(255, 255, 255, 0.5);
-    border-radius: 5px;
-    border-collapse: separate;
-    border-spacing: 0px;
-    width: 100%;
-}
-  
-th, td {
-    border-bottom: 0.5px solid rgb(255, 255, 255, 0.5); 
-    padding: 10px;
-    font-weight: Bold;
-    text-align: center;
-    font-family: "Roboto", sans-serif;
-    font-weight: 100;
-    font-style: normal;
-}
-
-table tr:hover {
-    background-color: var(--selectedColor);
-    color: black;
-    font-family: "Roboto", sans-serif;
-    font-weight: 500;
-    font-style: normal;
-}
-  
-table td, table th {
-    border: none;
-}
-
-
-
-
-
-select {
-    border: none;
-    background-color: transparent; 
-    color: white;
-}
-  
-select option {
-    background-color: transparent;
-    color: black;
-}
-   */
 
 ::-webkit-scrollbar{
     width: 5px;
