@@ -2,15 +2,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const asset = document.getElementById("asset").textContent
     let symbol;
     
+    
     if (asset === "XAUUSD"){
+        console.log(asset)
         symbol = "FX_IDC:XAUUSD";
-    }else{
+    }else if (asset === "US30.cash"){
+        console.log(asset)
+        symbol = "OANDA:US30USD";
+    } else {
+        console.log(asset)
         symbol = `FX:${asset.slice(0, -1)}`;
+        console.log("I'm here")
     }
     
     new TradingView.widget({
         "container_id": "forex-chart", // Match this ID with your div
-        "width": "100%", // Full width
+        "width": "110%", // Full width
         "height": "50rem", // Full height
         "symbol": symbol, // Example symbol
         "interval": "D",
@@ -31,34 +38,3 @@ document.addEventListener('DOMContentLoaded', function() {
     }); 
 });
 
-
-const quill = new Quill('#editor', {
-    theme: 'snow'
-});
-
-const pnl = document.getElementById("pnl")
-const pnlProperty = document.getElementById("property")
-const value = parseFloat(pnl.textContent.replace(/[^0-9.-]+/g, ""));
-if (value > 0){
-    pnl.style.color = "rgb(1, 149, 1)"
-} else {
-    pnl.style.color = "red"
-    pnlProperty.style.color = "red"
-
-}
-
-
-document.getElementById("quill-form").onsubmit = function(){
-    let quillHtmlContent = quill.root.innerHTML;
-    
-    let tempElement = document.createElement("div");
-    tempElement.innerHTML = quillHtmlContent;
-
-    // Extract plain text (without HTML tags)
-    let plainText = tempElement.textContent || tempElement.innerText;
-
-    // Assign plain text to the hidden input for form submission
-    let quillContentInput = document.querySelector("input[name=quill_content]");
-    quillContentInput.value = plainText;
-    
-}

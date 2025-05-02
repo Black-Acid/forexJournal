@@ -1,21 +1,15 @@
-/* Base CSS */
 body {
     height: 100%;
-    /* overflow: hidden; */
+    overflow: hidden;
 }
 
 .whole-body {
-    margin-left: 20rem;
-    width: 78vw;
+    width: 83vw;
+    border-left: 0.5px solid black;
+    margin-left: -0.5rem;
+    padding: 0px 20px 0px;
 }
 
-#first-part {
-    width: 15rem;
-    padding: 1rem;
-    min-height: 100%;
-    border-right: 0.0625rem solid white; /* 1px = 0.0625rem */
-    position: fixed;
-}
 
 #trade-details-container {
     width: 100%;
@@ -28,8 +22,8 @@ body {
 }
 
 .trade-details {
-    background-color: #e7f9dc;
-    padding: 1rem;
+    background-color: #9cbddd;
+    padding: 0.5rem;
     color: black;
     height: 95.6%;
     border-radius: 0.3125rem; /* 5px = 0.3125rem */
@@ -43,16 +37,18 @@ body {
     background: yellow;
     height: 50rem; /* 800px = 50rem */
     border-radius: 0.3125rem; /* 5px = 0.3125rem */
+
 }
 
 .detail-row {
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 0;
+    margin-top: -0.3rem;
 }
 
 #asset {
-    font-size: 1.7rem;
+    font-size: 1.3rem;
     font-family: "Roboto", sans-serif;
     font-weight: 500;
     font-style: normal;
@@ -74,7 +70,7 @@ body {
 }
 
 .property, .value {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-family: "Roboto", sans-serif;
     font-weight: 400;
     font-style: normal;
@@ -110,12 +106,12 @@ body {
 .value input {
     width: 5rem;
     margin-left: 0.5rem;
-    height: 1.7rem;
+    height: 1.3rem;
     border-radius: 0.3125rem; /* 5px = 0.3125rem */
     background: transparent;
     border: 0.0625rem solid black; /* 1px = 0.0625rem */
     padding-left: 0.5rem;
-    font-size: 1.3rem;
+    font-size: 1rem;
 }
 
 .value select {
@@ -127,15 +123,18 @@ body {
 
 .trade-details button {
     margin-top: 0.5rem;
-    margin-left: 10rem;
-    height: 2.5rem;
+    margin-left: -2rem;
+    height: 2.1rem;
     width: 6rem;
-    border-radius: 0.3125rem; /* 5px = 0.3125rem */
-    border: 0.0625rem solid var(--selectedColor); /* 1px = 0.0625rem */
-    background: var(--selectedColor);
-    font-size: 1.2rem;
+    border-radius: 0.3125rem;
+    border: 0.0625rem solid var(--selectedColor); 
+    background: #243b55;
+    font-size: 1rem;
     transition: transform 0.3s ease;
     cursor: pointer;
+    position: absolute;
+    left: 12%;
+    color: #f4f7fb;
 }
 
 .trade-details button:hover {

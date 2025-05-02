@@ -1,16 +1,20 @@
 const strategyButton = document.getElementById("modalsss")
 const content = document.querySelector(".strategy-modal")
 const closeModal = document.querySelector(".close-modal")
+const overlay = document.querySelector(".play-overlay")
 
 
 strategyButton.addEventListener("click", function(){
     content.classList.remove("hidden")
+    overlay.classList.remove("hidden")
 })
 
-
-closeModal.addEventListener("click", function(){
+overlay.addEventListener("click", () => {
     content.classList.add("hidden")
+    overlay.classList.add("hidden")
 })
+
+
 
 
 
@@ -49,7 +53,10 @@ const updateProgress = () => {
 
 }
 
+console.log(nextButton)
+
 nextButton.addEventListener("click", () => {
+    console.log("I have been clicked")
     active++
     if (active > steps.length){
         active = steps.length;

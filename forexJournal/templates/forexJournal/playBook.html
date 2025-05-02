@@ -42,12 +42,12 @@
                 </tbody>
             </table>
         </section>
+        <div class="play-overlay hidden"></div>
         <div class="strategy-modal hidden" id="page">
-            <button class="close-modal">&times;</button>
+            {% comment %} <button class="close-modal">&times;</button> {% endcomment %}
             <div class="container">
                 <div class="form-box">
                     <div class="progress">
-                        <div class="logo"><span>Well</span>done</div>
                         <ul class="progress-steps">
                             <li class="step active">
                                 <span>1</span>
@@ -63,6 +63,7 @@
                             </li>
                         </ul>
                     </div>
+                    
                     <form action="" method="POST">
                         {% csrf_token %}
                         <div class="form-one form-step active">
@@ -149,7 +150,6 @@
                     </form>
                 </div>
             </div>
-            
         </div>
     </main>
     <script src="{% static 'playBook.js' %}"></script>

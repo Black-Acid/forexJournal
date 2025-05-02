@@ -5,18 +5,18 @@ tradeElements.forEach(tradeElement => {
     const profitValue = parseFloat(profitText.replace(/[^0-9.-]+/g, ""));
 
     if (profitValue > 0) {
-        tradeElement.style.borderColor = "greenyellow";
+        tradeElement.style.borderColor = "#182739";
         tradeElement.querySelector(".bar").style.backgroundColor = "greenyellow"
     } else {
-        tradeElement.style.borderColor = "red"; 
-        tradeElement.querySelector(".bar").style.backgroundColor = "red"
+        tradeElement.style.borderColor = "#182739"; 
+        tradeElement.querySelector(".bar").style.backgroundColor = "#676767"
     }
 
     tradeElement.addEventListener("mouseover", () => {
         if (profitValue > 0) {
             tradeElement.style.backgroundColor = "#DFEFDA"; // Light green background on hover for profit
         } else {
-            tradeElement.style.backgroundColor = "rgba(255, 99, 71, 0.5)"; // Light red background on hover for loss
+            tradeElement.style.backgroundColor = "#999999"; // Light red background on hover for loss
         }
         tradeElement.style.color = "black";
     });

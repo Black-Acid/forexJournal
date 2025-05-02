@@ -40,10 +40,12 @@ const centerTextPlugin = {
         ctx.textAlign = "center";
 
         // Draw the first line of text
-        const text1 = "0";
+        const text1 = healthyNumericContent;
         const textX = width / 2;
         const textY = height / 2 - 10;  // Adjust Y position to move it slightly up
+        ctx.fillStyle = "#243b55";
         ctx.fillText(text1, textX, textY);
+        
 
         // Set font properties for the second line (regular "solid trades")
         fontSize = (height / 200).toFixed(2);  // Smaller font size for "solid trades"

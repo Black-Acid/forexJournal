@@ -27,16 +27,6 @@
             <img src="{% static 'forexJournal/images/3d-portrait-businessman.jpg' %}" alt="Profile">
             <h2>{{ user }}</h2>
         </div>
-        <div class="hidden sync-modal">
-            <div class="close">&times;</div>
-            <form action=" {% url "sync" %}" method="POST">
-                {% csrf_token %}
-                <input type="text" placeholder="MT5 login" name="mt5_login" required>
-                <input type="password" placeholder="Password" name="mt5_password" required>
-                <input type="text" placeholder="Server" name="mt5_server" required>
-                <button type="submit">Connect to MT5</button>
-            </form>
-        </div>
         <div class="modal-overlay hidden"></div>
         <ul class="nav-links">
             <li class="try"><a href="{% url "forex" %}" class="active" id="dashboard">Dashboard</a></li>
