@@ -16,14 +16,14 @@ const customCenterTextPlugin = {
       const centerY = height / 2;
   
       // Add the main percentage text
-      ctx.font = "50px 'Poppins', sans-serif";
+      ctx.font = "35px 'Poppins', sans-serif";
       ctx.fillStyle = "#000"; // Black text color
       ctx.textAlign = "center";
       ctx.textBaseline = "middle"; // Aligns text vertically
       ctx.fillText(`${window.winRate}%`, centerX, centerY - 20);
   
       // Add the secondary label text
-      ctx.font = "20px 'Roboto', sans-serif";
+      ctx.font = "15px 'Roboto', sans-serif";
       ctx.fillStyle = "#666"; // Gray text color
       ctx.fillText("Win Rate", centerX, centerY + 20);
   
@@ -45,24 +45,24 @@ const data = {
         {
             label: "GBPUSD",
             data: [200, 300, 150, 500, 450, 78, 250, 310, 370, 350, 420, 500],
-            borderColor: "green",
-            backgroundColor: "green",
+            borderColor: "#182739",
+            backgroundColor: "#182739",
             tension: 0.4,
             fill: false,
         },
         {
             label: "GBPJPY",
             data: [80, 90, 150, 120, 200, 250, 300, 310, 390, 376, 400, 420],
-            borderColor: "Cyan",
-            backgroundColor: "Cyan",
+            borderColor: "#336496c9",
+            backgroundColor: "#336496c9",
             tension: 0.4,
             fill: false
         },
         {
             label: "XAUUSD",
             data: [100, 90, 140, 230, 400, 350, 510, 490, 534, 568, 543, 579],
-            borderColor: "#9BEC00",
-            backgroundColor: "#9BEC00",
+            borderColor: "#9dbedc",
+            backgroundColor: "#9dbedc",
             tension: 0.4,
             fill: false
         },
@@ -113,7 +113,7 @@ const doughData = {
     labels: ["Consumed", "Untapped"],
     datasets: [{
         data: [window.winRate, 100 - window.winRate],
-        backgroundColor: ['#76f233', '#E0E0E0'],
+        backgroundColor: ['#182739', '#cbdcec'],
         borderWidth: 0,
         hoverOffset: 4,
         borderRadius: (ctx) => {
@@ -149,7 +149,7 @@ const distributionData = {
     datasets: [{
         label: "trades",
         data: window.distribution,
-        backgroundColor: "green",
+        backgroundColor: "#2a517a",
         borderWidth: 1,
     }]
 }
@@ -183,7 +183,7 @@ const performanceData = {
     datasets: [{
         label: "PnL",
         data: window.profit,
-        backgroundColor: "#4cfe4c",
+        backgroundColor: "#9dbedc",
         borderWidth: 1,
     }]
 }
