@@ -148,18 +148,19 @@ body{
     color: black;
     border-radius: 5px;
     z-index: 20;
-    border: 3px solid var(--selectedColor);
+    border: 2px solid var(--selectedColor);
 }
 
 .upload-area{
-    border: 2px solid var(--selectedColor);
+    border: 1px solid var(--selectedColor);
     padding: 20px;
     text-align: center;
     cursor: pointer;
     border-radius: 5px;
-    background-color: #e9f3dc;
-    margin-bottom: 20px;
-    height: 7rem;
+    background-color: #3364964e;
+    margin-bottom: 30px;
+    height: 5rem;
+    margin-top: -1rem;
 }
 
 .custom-file-input {
@@ -176,7 +177,8 @@ body{
 }
 
 .upload-area p{
-    font-size: 1.25rem;
+    font-size: 1rem;
+    margin-top: -0.1rem;
 }
 
 .modal-header{
@@ -189,10 +191,11 @@ body{
 .modal-header button{
     height: 1.5rem;
     width: 1.5rem;
+    color: black;
 }
 
 .modal-header h2{
-    font-size: 2rem;
+    font-size: 1.3rem;
     font-family: "Roboto", sans-serif;
     font-weight: 500;
     font-style: normal;
@@ -232,17 +235,17 @@ body{
     width: 100%;
     gap: 1rem;
     margin-left: 0.48rem;
-    
 }
 
 .buttons button{
     padding: 1rem;
-    background-color: var(--selectedColor);
-    color: #1F3504;
+    background-color: #336496;
+    color: white;
     border: 1px solid var(--selectedColor);
     border-radius: 5px;
-    
 }
+
+
 
 
 #top-widgets{
@@ -303,7 +306,7 @@ body{
 
 .profit span{
     font-weight: bold;
-    color: var(--selectedColor);
+    color: rgb(8, 247, 8);
 }
 
 .factor{
