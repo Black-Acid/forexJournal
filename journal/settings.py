@@ -13,6 +13,7 @@ import dj_database_url
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from decouple import config
 
 load_dotenv()
 FERNET_KEY = os.getenv('FERNET_KEY')
@@ -82,20 +83,39 @@ WSGI_APPLICATION = 'journal.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-
 if not DEBUG:
+    # Production environment (e.g. Render)
     DATABASES = {
-        "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
+        "default": dj_database_url.parse(
+            os.environ.get("DATABASE_URL"),
+            conn_max_age=600,
+            ssl_require=True
+        )
     }
-    print(os.environ.get("DATABASE_URL"))
-else: 
+else:
+    # Local development
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-            # 'ATOMIC_REQUESTS': True,
-        }
+        "default": dj_database_url.parse(
+            config("DATABASE_URL"),
+            conn_max_age=600,
+            ssl_require=True
+        )
     }
+
+
+# if not DEBUG:
+#     DATABASES = {
+#         "default": dj_database_url.parse(os.environ.get("DATABASE_URL"))
+#     }
+#     print(os.environ.get("DATABASE_URL"))
+# else: 
+#     DATABASES = {
+#         'default': dj_database_url.parse(
+#             config('DATABASE_URL'),
+#             conn_max_age=600,
+#             ssl_require=True
+#         )
+#     }
 
 # DATABASES["default"] = dj_database_url.parse("postgresql://tradingjournal_xkkj_user:Ut8UnyDi6Cet2oiIRdROTvLKMZIxmXq4@dpg-cs4njdjtq21c73e29u7g-a.oregon-postgres.render.com/tradingjournal_xkkj")
 
