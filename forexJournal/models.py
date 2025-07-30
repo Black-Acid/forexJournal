@@ -74,7 +74,7 @@ class StrategyModel(models.Model):
 
 class TradesModel(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="trades", default=1)
-    ticket = models.IntegerField(null=False, unique=True)
+    ticket = models.BigIntegerField(null=False, unique=True)
     opening_time = models.DateTimeField()
     closing_time = models.DateTimeField()
     order_type = models.CharField(null=False, blank=False, max_length=10)
