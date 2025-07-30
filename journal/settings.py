@@ -82,9 +82,7 @@ WSGI_APPLICATION = 'journal.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-
 if not DEBUG:
-    # Production environment (e.g. Render)
     DATABASES = {
         "default": dj_database_url.parse(
             os.environ.get("DATABASE_URL"),
@@ -93,7 +91,6 @@ if not DEBUG:
         )
     }
 else:
-    # Local development
     DATABASES = {
         "default": dj_database_url.parse(
             config("DATABASE_URL"),
@@ -101,7 +98,6 @@ else:
             ssl_require=True
         )
     }
-
 
 # if not DEBUG:
 #     DATABASES = {
