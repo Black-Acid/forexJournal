@@ -549,7 +549,7 @@ def forex(request):
         try:
             with transaction.atomic():
                 if broker_name.lower() == "exness":
-                    data = pd.read_csv(csv_file, nrows=30)
+                    chunked_data = pd.read_csv(csv_file, nrows=30)
                     for _, row in data.iterrows():
                         if not trades_instance.filter(ticket=row['ticket']).exists():
                             trade = TradesModel(
