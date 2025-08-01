@@ -638,7 +638,7 @@ def forex(request):
                             trades_saved = True
 
                 if trades_saved:
-                    update_balance(trades_instance, processed_profit, account_balance)
+                    update_balance()
 
         except Exception as e:
             print(f"BROKEN  {e}")
