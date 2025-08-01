@@ -548,17 +548,17 @@ def forex(request):
                                 opening_time=row['opening_time_utc'],
                                 closing_time=row['closing_time_utc'],
                                 order_type=row['type'],
-                                lot_size=safe_decimal(row['lots']),
-                                original_position_size=safe_decimal(row['original_position_size']),
+                                lot_size=safe_decimal(row['lots'], 3),
+                                original_position_size=safe_decimal(row['original_position_size'], 3),
                                 symbol=row['symbol'],
-                                opening_price=safe_decimal(row['opening_price']),
-                                closing_price=safe_decimal(row['closing_price']),
-                                stop_loss=safe_decimal(row['stop_loss']),
-                                take_profit=safe_decimal(row['take_profit']),
-                                commission_usd=safe_decimal(row['commission_usd']),  # keep full, DB will enforce
-                                swap_usd=safe_decimal(row['swap_usd']),
-                                profit_usd=safe_decimal(row['profit_usd']),
-                                equity_usd=safe_decimal(row['equity_usd']),
+                                opening_price=safe_decimal(row['opening_price'], 5),
+                                closing_price=safe_decimal(row['closing_price'], 5),
+                                stop_loss=safe_decimal(row['stop_loss'], 5),
+                                take_profit=safe_decimal(row['take_profit'], 5),
+                                commission_usd=safe_decimal(row['commission_usd'], 3),  # keep full, DB will enforce
+                                swap_usd=safe_decimal(row['swap_usd'], 4),
+                                profit_usd=safe_decimal(row['profit_usd'], 3),
+                                equity_usd=safe_decimal(row['equity_usd'], 3),
                                 margin_level=safe_decimal(row['margin_level']),
                                 close_reason=row['close_reason'],
                             )
@@ -635,8 +635,8 @@ def forex(request):
                     update_balance(trades_instance, processed_profit, account_balance)
 
         except Exception as e:
-            print(f"BROKEN ➡️ {e}")
-            return HttpResponse("Something went wrong while processing your trades.", status=500)
+            print(f"BROKEN  {e}")
+            return HttpResponse(f"Something went wrong while processing your trades. {e}", status=500)
 
         # try:
         #     with transaction.atomic():
