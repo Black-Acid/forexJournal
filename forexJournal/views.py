@@ -533,6 +533,8 @@ def forex(request):
         processed_profit, _ = ProcessedProfit.objects.get_or_create(user=logged_in_user)
         account_balance, _ = AccountBalance.objects.get_or_create(user=logged_in_user)
 
+        
+        
         try:
             with transaction.atomic():
                 if broker_name.lower() == "exness":
@@ -552,9 +554,9 @@ def forex(request):
                                 closing_price=safe_decimal(row['closing_price']),
                                 stop_loss=safe_decimal(row['stop_loss']),
                                 take_profit=safe_decimal(row['take_profit']),
-                                commission_usd=safe_decimal(row['commission_usd'], Decimal("0.01")),
-                                swap_usd=safe_decimal(row['swap_usd'], Decimal("0.01")),
-                                profit_usd=safe_decimal(row['profit_usd'], Decimal("0.01")),
+                                commission_usd=safe_decimal(row['commission_usd']),  # keep full, DB will enforce
+                                swap_usd=safe_decimal(row['swap_usd']),
+                                profit_usd=safe_decimal(row['profit_usd']),
                                 equity_usd=safe_decimal(row['equity_usd']),
                                 margin_level=safe_decimal(row['margin_level']),
                                 close_reason=row['close_reason'],
@@ -562,20 +564,18 @@ def forex(request):
                             trade.full_clean()
                             trade.save()
                             trades_saved = True
-                        else:
-                            print(f"Duplicate detected: {row['ticket']}")
 
                 elif broker_name.lower() == "metatrader 5":
                     converted_data = convertXLSXFILE(csv_file)
                     csv_data = converted_data.to_csv(index=False, header=False)
-                    csv_buffer = StringIO(csv_data)
-                    data = pd.read_csv(csv_buffer)
+                    data = pd.read_csv(StringIO(csv_data))
 
                     for _, row in data.iterrows():
                         sl = row.get("S / L", "0")
                         tp = row.get("T / P", "0")
-                        sl = sl if str(sl).lower() != "nan" else "0"
-                        tp = tp if str(tp).lower() != "nan" else "0"
+
+                        sl = "0" if str(sl).lower() in ["nan", "", "none"] else sl
+                        tp = "0" if str(tp).lower() in ["nan", "", "none"] else tp
 
                         if not trades_instance.filter(ticket=row["Position"]).exists():
                             trade = TradesModel(
@@ -587,13 +587,13 @@ def forex(request):
                                 lot_size=safe_decimal(row['Volume']),
                                 original_position_size=safe_decimal(row['Volume']),
                                 symbol=row['Symbol'],
-                                opening_price=safe_decimal(row['Price']).quantize(Decimal('0.000001')),
-                                closing_price=safe_decimal(row['Price.1']).quantize(Decimal('0.000001')),
-                                stop_loss=safe_decimal(sl).quantize(Decimal('0.000001')),
-                                take_profit=safe_decimal(tp).quantize(Decimal('0.000001')),
-                                commission_usd=safe_decimal(row['Commission'], Decimal("0.01")),
-                                swap_usd=safe_decimal(row['Swap'], Decimal("0.01")),
-                                profit_usd=safe_decimal(row['Profit'], Decimal("0.01")),
+                                opening_price=safe_decimal(row['Price']),
+                                closing_price=safe_decimal(row['Price.1']),
+                                stop_loss=safe_decimal(sl),
+                                take_profit=safe_decimal(tp),
+                                commission_usd=safe_decimal(row['Commission']),
+                                swap_usd=safe_decimal(row['Swap']),
+                                profit_usd=safe_decimal(row['Profit']),
                                 equity_usd=Decimal("0.0"),
                                 margin_level=Decimal("0.0"),
                                 close_reason="nothing",
@@ -615,13 +615,13 @@ def forex(request):
                                 lot_size=safe_decimal(row['Volume']),
                                 original_position_size=safe_decimal(row['Volume']),
                                 symbol=row['Symbol'],
-                                opening_price=safe_decimal(row['Price']).quantize(Decimal('0.000001')),
-                                closing_price=safe_decimal(row['Price.1']).quantize(Decimal('0.000001')),
-                                stop_loss=safe_decimal(row['SL']).quantize(Decimal('0.000001')),
-                                take_profit=safe_decimal(row['TP']).quantize(Decimal('0.000001')),
-                                commission_usd=safe_decimal(row['Commissions'], Decimal("0.01")),
-                                swap_usd=safe_decimal(row['Swap'], Decimal("0.01")),
-                                profit_usd=safe_decimal(row['Profit'], Decimal("0.01")),
+                                opening_price=safe_decimal(row['Price']),
+                                closing_price=safe_decimal(row['Price.1']),
+                                stop_loss=safe_decimal(row['SL']),
+                                take_profit=safe_decimal(row['TP']),
+                                commission_usd=safe_decimal(row['Commissions']),
+                                swap_usd=safe_decimal(row['Swap']),
+                                profit_usd=safe_decimal(row['Profit']),
                                 equity_usd=Decimal("0.0"),
                                 margin_level=Decimal("0.0"),
                                 close_reason="nothing",
@@ -634,10 +634,114 @@ def forex(request):
                     update_balance(trades_instance, processed_profit, account_balance)
 
         except Exception as e:
-            print(f"Error processing file: {e}")
-            return HttpResponse("An error occurred while processing your trades.", status=500)
+            print(f"BROKEN ➡️ {e}")
+            return HttpResponse("Something went wrong while processing your trades.", status=500)
 
-        return redirect("first-page")
+        # try:
+        #     with transaction.atomic():
+        #         if broker_name.lower() == "exness":
+        #             data = pd.read_csv(csv_file)
+        #             for _, row in data.iterrows():
+        #                 if not trades_instance.filter(ticket=row['ticket']).exists():
+        #                     trade = TradesModel(
+        #                         user=logged_in_user,
+        #                         ticket=row['ticket'],
+        #                         opening_time=row['opening_time_utc'],
+        #                         closing_time=row['closing_time_utc'],
+        #                         order_type=row['type'],
+        #                         lot_size=safe_decimal(row['lots']),
+        #                         original_position_size=safe_decimal(row['original_position_size']),
+        #                         symbol=row['symbol'],
+        #                         opening_price=safe_decimal(row['opening_price']),
+        #                         closing_price=safe_decimal(row['closing_price']),
+        #                         stop_loss=safe_decimal(row['stop_loss']),
+        #                         take_profit=safe_decimal(row['take_profit']),
+        #                         commission_usd=safe_decimal(row['commission_usd'], Decimal("0.01")),
+        #                         swap_usd=safe_decimal(row['swap_usd'], Decimal("0.01")),
+        #                         profit_usd=safe_decimal(row['profit_usd'], Decimal("0.01")),
+        #                         equity_usd=safe_decimal(row['equity_usd']),
+        #                         margin_level=safe_decimal(row['margin_level']),
+        #                         close_reason=row['close_reason'],
+        #                     )
+        #                     trade.full_clean()
+        #                     trade.save()
+        #                     trades_saved = True
+        #                 else:
+        #                     print(f"Duplicate detected: {row['ticket']}")
+
+        #         elif broker_name.lower() == "metatrader 5":
+        #             converted_data = convertXLSXFILE(csv_file)
+        #             csv_data = converted_data.to_csv(index=False, header=False)
+        #             csv_buffer = StringIO(csv_data)
+        #             data = pd.read_csv(csv_buffer)
+
+        #             for _, row in data.iterrows():
+        #                 sl = row.get("S / L", "0")
+        #                 tp = row.get("T / P", "0")
+        #                 sl = sl if str(sl).lower() != "nan" else "0"
+        #                 tp = tp if str(tp).lower() != "nan" else "0"
+
+        #                 if not trades_instance.filter(ticket=row["Position"]).exists():
+        #                     trade = TradesModel(
+        #                         user=logged_in_user,
+        #                         ticket=row["Position"],
+        #                         opening_time=datetime.strptime(row['Time'], "%Y.%m.%d %H:%M:%S"),
+        #                         closing_time=datetime.strptime(row['Time.1'], "%Y.%m.%d %H:%M:%S"),
+        #                         order_type=row['Type'],
+        #                         lot_size=safe_decimal(row['Volume']),
+        #                         original_position_size=safe_decimal(row['Volume']),
+        #                         symbol=row['Symbol'],
+        #                         opening_price=safe_decimal(row['Price']).quantize(Decimal('0.000001')),
+        #                         closing_price=safe_decimal(row['Price.1']).quantize(Decimal('0.000001')),
+        #                         stop_loss=safe_decimal(sl).quantize(Decimal('0.000001')),
+        #                         take_profit=safe_decimal(tp).quantize(Decimal('0.000001')),
+        #                         commission_usd=safe_decimal(row['Commission'], Decimal("0.01")),
+        #                         swap_usd=safe_decimal(row['Swap'], Decimal("0.01")),
+        #                         profit_usd=safe_decimal(row['Profit'], Decimal("0.01")),
+        #                         equity_usd=Decimal("0.0"),
+        #                         margin_level=Decimal("0.0"),
+        #                         close_reason="nothing",
+        #                     )
+        #                     trade.full_clean()
+        #                     trade.save()
+        #                     trades_saved = True
+
+        #         elif broker_name.lower() == "ftmo":
+        #             data = pd.read_csv(csv_file, delimiter=';')
+        #             for _, row in data.iterrows():
+        #                 if not trades_instance.filter(ticket=row["Ticket"]).exists():
+        #                     trade = TradesModel(
+        #                         user=logged_in_user,
+        #                         ticket=row["Ticket"],
+        #                         opening_time=row['Open'],
+        #                         closing_time=row['Close'],
+        #                         order_type=row['Type'],
+        #                         lot_size=safe_decimal(row['Volume']),
+        #                         original_position_size=safe_decimal(row['Volume']),
+        #                         symbol=row['Symbol'],
+        #                         opening_price=safe_decimal(row['Price']).quantize(Decimal('0.000001')),
+        #                         closing_price=safe_decimal(row['Price.1']).quantize(Decimal('0.000001')),
+        #                         stop_loss=safe_decimal(row['SL']).quantize(Decimal('0.000001')),
+        #                         take_profit=safe_decimal(row['TP']).quantize(Decimal('0.000001')),
+        #                         commission_usd=safe_decimal(row['Commissions'], Decimal("0.01")),
+        #                         swap_usd=safe_decimal(row['Swap'], Decimal("0.01")),
+        #                         profit_usd=safe_decimal(row['Profit'], Decimal("0.01")),
+        #                         equity_usd=Decimal("0.0"),
+        #                         margin_level=Decimal("0.0"),
+        #                         close_reason="nothing",
+        #                     )
+        #                     trade.full_clean()
+        #                     trade.save()
+        #                     trades_saved = True
+
+        #         if trades_saved:
+        #             update_balance(trades_instance, processed_profit, account_balance)
+
+        # except Exception as e:
+        #     print(f"Error processing file: {e}")
+        #     return HttpResponse("An error occurred while processing your trades.", status=500)
+
+        # return redirect("first-page")
     
     # if request.method == "POST":
     #     # first get the broker from which the csv data is coming from
