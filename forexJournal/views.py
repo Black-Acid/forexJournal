@@ -549,7 +549,7 @@ def forex(request):
         try:
             with transaction.atomic():
                 if broker_name.lower() == "exness":
-                    data = pd.read_csv(csv_file)
+                    data = pd.read_csv(csv_file, chunksize=30)
                     for _, row in data.iterrows():
                         if not trades_instance.filter(ticket=row['ticket']).exists():
                             trade = TradesModel(
@@ -643,10 +643,13 @@ def forex(request):
 
                 if trades_saved:
                     update_balance()
+                    return redirect("first-page")
 
         except Exception as e:
             print(f"BROKEN  {e}")
             return HttpResponse(f"Something went wrong while processing your trades. {e}", status=500)
+        
+        
 
         # try:
         #     with transaction.atomic():
