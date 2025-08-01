@@ -8,6 +8,8 @@ from django.utils import timezone
 from django.shortcuts import redirect
 from django.http import JsonResponse
 import json
+import math
+import numpy as np
 # import MetaTrader5 as mt5
 import requests
 from django.apps import apps
@@ -500,12 +502,16 @@ def forex(request):
     
     def safe_decimal(value, decimal_places=2, default=Decimal("0.00")):
         try:
-            if value in (None, '', 'NaN', 'nan'):
-                return default.quantize(Decimal(f"1.{'0'*decimal_places}"))
-            d = Decimal(str(value))
-            return d.quantize(Decimal(f"1.{'0'*decimal_places}"))
+            if (
+                value in (None, '', 'NaN', 'nan') or
+                (isinstance(value, float) and math.isnan(value)) or
+                (isinstance(value, np.generic) and np.isnan(value))
+            ):
+                value = default
+            return Decimal(str(value)).quantize(Decimal(f"1.{'0'*decimal_places}"))
         except (InvalidOperation, ValueError, TypeError):
-            return default.quantize(Decimal(f"1.{'0'*decimal_places}"))
+            return Decimal(default).quantize(Decimal(f"1.{'0'*decimal_places}"))
+
         
     def update_balance():
         amount = trades_instance.aggregate(Sum("profit_usd"))
