@@ -514,17 +514,21 @@ def forex(request):
 
         
     def update_balance():
+        trades_instance = TradesModel.objects.filter(user=logged_in_user)
         amount = trades_instance.aggregate(Sum("profit_usd"))
         total_amount_value = Decimal(amount["profit_usd__sum"] or 0.0)
-        
-        
-        
+
+        processed_profit, _ = ProcessedProfit.objects.get_or_create(user=logged_in_user)
+        account_balance, _ = AccountBalance.objects.get_or_create(user=logged_in_user)
+
         new_profit = total_amount_value - processed_profit.last_processed_profit
-        account_balance.balance += new_profit # Update balance
+        account_balance.balance += new_profit
         account_balance.profits += new_profit
-        account_balance.last_update = timezone.now()  # Record the update timestamp
+        account_balance.last_update = timezone.now()
         account_balance.save()
-        print("Balance has been updated Successfully")
+
+        processed_profit.last_processed_profit = total_amount_value
+        processed_profit.save()
 
         # Save the new processed profit
         processed_profit.last_processed_profit = total_amount_value
