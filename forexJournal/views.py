@@ -498,13 +498,14 @@ def forex(request):
     is_correct = check_password(entered_password, stored_hash)
     print(f"{is_correct}")
     
-    def safe_decimal(value, default=Decimal("0.00")):
+    def safe_decimal(value, decimal_places=2, default=Decimal("0.00")):
         try:
             if value in (None, '', 'NaN', 'nan'):
-                return default
-            return Decimal(str(value))
+                return default.quantize(Decimal(f"1.{'0'*decimal_places}"))
+            d = Decimal(str(value))
+            return d.quantize(Decimal(f"1.{'0'*decimal_places}"))
         except (InvalidOperation, ValueError, TypeError):
-            return default
+            return default.quantize(Decimal(f"1.{'0'*decimal_places}"))
         
     def update_balance():
         amount = trades_instance.aggregate(Sum("profit_usd"))
