@@ -549,32 +549,33 @@ def forex(request):
         try:
             with transaction.atomic():
                 if broker_name.lower() == "exness":
-                    chunked_data = pd.read_csv(csv_file, nrows=30)
-                    for _, row in data.iterrows():
-                        if not trades_instance.filter(ticket=row['ticket']).exists():
-                            trade = TradesModel(
-                                user=logged_in_user,
-                                ticket=row['ticket'],
-                                opening_time=row['opening_time_utc'],
-                                closing_time=row['closing_time_utc'],
-                                order_type=row['type'],
-                                lot_size=safe_decimal(row['lots'], 3),
-                                original_position_size=safe_decimal(row['original_position_size'], 3),
-                                symbol=row['symbol'],
-                                opening_price=safe_decimal(row['opening_price'], 5),
-                                closing_price=safe_decimal(row['closing_price'], 5),
-                                stop_loss=safe_decimal(row['stop_loss'], 5),
-                                take_profit=safe_decimal(row['take_profit'], 5),
-                                commission_usd=safe_decimal(row['commission_usd'], 3),  # keep full, DB will enforce
-                                swap_usd=safe_decimal(row['swap_usd'], 4),
-                                profit_usd=safe_decimal(row['profit_usd'], 3),
-                                equity_usd=safe_decimal(row['equity_usd'], 3),
-                                margin_level=safe_decimal(row['margin_level']),
-                                close_reason=row['close_reason'],
-                            )
-                            trade.full_clean()
-                            trade.save()
-                            trades_saved = True
+                    chunked_data = pd.read_csv(csv_file, chunksize=30)
+                    for data in chunked_data:
+                        for _, row in data.iterrows():
+                            if not trades_instance.filter(ticket=row['ticket']).exists():
+                                trade = TradesModel(
+                                    user=logged_in_user,
+                                    ticket=row['ticket'],
+                                    opening_time=row['opening_time_utc'],
+                                    closing_time=row['closing_time_utc'],
+                                    order_type=row['type'],
+                                    lot_size=safe_decimal(row['lots'], 3),
+                                    original_position_size=safe_decimal(row['original_position_size'], 3),
+                                    symbol=row['symbol'],
+                                    opening_price=safe_decimal(row['opening_price'], 5),
+                                    closing_price=safe_decimal(row['closing_price'], 5),
+                                    stop_loss=safe_decimal(row['stop_loss'], 5),
+                                    take_profit=safe_decimal(row['take_profit'], 5),
+                                    commission_usd=safe_decimal(row['commission_usd'], 3),  # keep full, DB will enforce
+                                    swap_usd=safe_decimal(row['swap_usd'], 4),
+                                    profit_usd=safe_decimal(row['profit_usd'], 3),
+                                    equity_usd=safe_decimal(row['equity_usd'], 3),
+                                    margin_level=safe_decimal(row['margin_level']),
+                                    close_reason=row['close_reason'],
+                                )
+                                trade.full_clean()
+                                trade.save()
+                                trades_saved = True
 
                 elif broker_name.lower() == "metatrader 5":
                     converted_data = convertXLSXFILE(csv_file)
