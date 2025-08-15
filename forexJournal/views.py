@@ -549,6 +549,7 @@ def forex(request):
         try:
             with transaction.atomic():
                 if broker_name.lower() == "exness":
+                    
                     chunked_data = pd.read_csv(csv_file, chunksize=30)
                     for data in chunked_data:
                         for _, row in data.iterrows():
