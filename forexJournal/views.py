@@ -123,9 +123,11 @@ def calculateWinRate(profitableTrades, number_of_trades):
 
 
 def calculateProfitFactor(profitable_value, losing_value):
-    if losing_value != 0:
-        return round(profitable_value / abs(losing_value), 2)
-    return "N/A"
+    # Make sure the values are numbers
+    if profitable_value is None or losing_value is None or losing_value == 0:
+        return "N/A"
+    
+    return round(profitable_value / losing_value, 2)
 
 
 def tradeExpectancy(win_rate, average_profit, average_loss):
@@ -1176,8 +1178,10 @@ def playBook(request):
         strategy['trade_count'] = matching_strategy.trade_count
         strategy['total_pnl'] = Money(matching_strategy.total_pnl or 0, "USD")
         strategy["win_rate"] = round(calculateWinRate(matching_strategy.profitable_trade_count, matching_strategy.trade_count) or 0, 2)
-        profit_factor = round(float(calculateProfitFactor(matching_strategy.profitable_trades, matching_strategy.losing_trades)), 2)
-        strategy["profit_factor"] = f"{profit_factor:.2f}"
+        
+        # come back and find out what is happening here with the profit factor 
+        profit_factor = ((calculateProfitFactor(matching_strategy.profitable_trades, matching_strategy.losing_trades)), 2)
+        strategy["profit_factor"] = 0 # f"{profit_factor:.2f}"
         
         
         
