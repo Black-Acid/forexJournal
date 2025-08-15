@@ -118,7 +118,7 @@ def extract_positons(csv_data):
 
 def calculateWinRate(profitableTrades, number_of_trades):
     if number_of_trades == 0:
-        return "N/A"
+        return 0
     return round((profitableTrades / number_of_trades) * PERCENT, 2)
 
 
