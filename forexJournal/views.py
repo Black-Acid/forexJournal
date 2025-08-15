@@ -1191,6 +1191,7 @@ def playBook(request):
     if request.method == "POST":
         data_recieved = request.POST.dict()
         new_strategy = StrategyModel(
+            user=logged_in_user,
             strategy_name=data_recieved["Strategy-name"],
             description=data_recieved["Description"],
             risk_reward_ratio=data_recieved["risk-reward"],
